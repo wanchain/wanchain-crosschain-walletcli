@@ -1,0 +1,48 @@
+{
+  "name": "wanchain_Command_Line_Wallet",
+  "version": "0.1.5",
+  "description": "wanchain Command line wallet",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "bn.js": "^4.11.8",
+    "chai": "^4.1.2",
+    "child_process": "^1.0.2",
+    "keccakjs": "^0.2.1",
+    "keythereum": "^1.0.2",
+    "log4js": "^2.3.12",
+    "lokijs": "^1.5.1",
+    "mocha": "^5.2.0",
+    "net": "^1.0.2",
+    "process": "^0.11.10",
+    "promisefy-util": "^1.2.0",
+    "prompt": "^1.0.0",
+    "readline-sync": "^1.4.9",
+    "scryptsy": "^2.0.0",
+    "secp256k1": "^3.4.0",
+    "should": "^13.2.1",
+    "sleep": "^5.1.1",
+    "solc": "^0.4.16",
+    "sprintf-js": "^1.1.1",
+    "tty": "^1.0.1",
+    "underscore": "^1.8.3",
+    "underscore-deep-extend": "^1.1.5",
+    "uuid": "^3.1.0",
+    "vorpal": "^1.12.0",
+    "wanchain-util": "^1.2.0",
+    "wanchain-keystore": "^0.0.1",
+    "wanchain-crosschain": "^0.0.1",
+    "web3": "^0.20.6",
+    "ws": "^5.1.0"
+  },
+  "keywords": [
+    "wanchain"
+  ],
+  "author": "wanchain",
+  "license": "MIT",
+  "devDependencies": {
+    "optimist": "^0.6.1"
+  },
+  "scripts": {
+    "test": "mocha --timeout 600000 tests"
+  }
+}
