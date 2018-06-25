@@ -1,5 +1,8 @@
 const spawn = require('child_process').spawn;
-const Description = require('../../schema/DescAndMsg.js').Description;
+const {
+  Description,
+  Message
+} = require('../../schema/DescAndMsg.js');
 const {
   getLogger
 } = require('./logger.js');
@@ -45,11 +48,12 @@ function checkHash(hash) {
 class templateDetailCommand {
   constructor(commandName) {
     this.options = {
-      cwd: '../../command/'
+      cwd: '../wanchain-crosschain-walletcli/command/'
     };
     this.cmdName = commandName;
     this.proc = null;
-    log.info("TemplateDetailCommand constructor");
+    this.isQuit = false;
+    log.debug("TemplateDetailCommand constructor");
   }
 
   createProc() {
@@ -57,11 +61,11 @@ class templateDetailCommand {
     let cmdFile = getCmdFile(this.cmdName);
     this.proc = spawn('node', [options.cwd + cmdFile]);
 
-    log.info('run', cmdFile);
+    log.debug('run', cmdFile);
 
     this.proc.stdout.on('data', (data) => {
       if (data.indexOf('Process is exited!') === -1) {
-        log.info(`${data}`);
+        log.debug(`${data}`);
       }
     });
     // this.proc.stderr.on('data', (data) => {
@@ -69,7 +73,7 @@ class templateDetailCommand {
     //   this.proc.stdin.write('q\n');
     // });
     this.proc.on('close', (code) => {
-      log.info(`Chile process quit code：${code}`);
+      log.debug(`Chile process quit code：${code}`);
     });
   };
 
@@ -78,7 +82,55 @@ class templateDetailCommand {
     let proc = this.proc;
     let input = null;
     proc.stdout.on('data', (data) => {
+      // wrong process and message
+      if (data.indexOf(Message.errPassword) != -1) {
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        callback(Message.errPassword);
+        return;
+      } else if (data.indexOf(Message.errRepeatPass) !== -1) {
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        callback(Message.errRepeatPass);
+        return;
+      } else if (data.indexOf(Message.errOptionNum) !== -1) {
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        callback(Message.errOptionNum);
+        return;
+      } else if (data.indexOf(Message.errAddress) !== -1) {
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        callback(Message.errAddress);
+        return;
+      } else if (data.indexOf(Message.errAmount) !== -1) {
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        callback(Message.errAmount);
+        return;
+      } else if (data.indexOf(Message.errInput) !== -1) {
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        callback(Message.errInput);
+        return;
+      } else if (data.indexOf(Message.errSubmit) !== -1) {
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        callback(Message.errSubmit);
+        return;
+      } else if (data.indexOf(Message.gasLimit) !== -1) {
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        callback(Message.gasLimit);
+        return;
+      } else if (data.indexOf(Message.gasPrice) !== -1) {
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        callback(Message.gasPrice);
+        return;
+      }
       if (data.indexOf("q to exit") != -1) {
+        // correct process
         if (data.indexOf(Description.password) != -1) {
           input = options.password;
         } else if (data.indexOf(Description.repeatPassword) !== -1) {
@@ -106,9 +158,16 @@ class templateDetailCommand {
         } else if (data.indexOf(Description.tokenBalance) !== -1) {
           input = options.tokenBalance;
         }
-        log.info(`stdin: >> `, input);
-        proc.stdin.write(input + '\n');
+        if (this.isQuit === false) {
+          log.debug(`stdin: >> `, input);
+          proc.stdin.write(input + '\n');
+        }
       }
+      //debug mode
+      // if (data.indexOf("sendRawTransaction:  0x") != -1 && checkHash(`${data}`.split('sendRawTransaction:  ')[1].toString())) {
+      //   callback(`${data}`.split('sendRawTransaction:  ')[1].toString());
+      // }
+      //info mode
       if (data.indexOf("0x") != -1 && checkHash(`${data}`.toString())) {
         callback(`${data}`);
       }
@@ -117,12 +176,41 @@ class templateDetailCommand {
 
   handleStderr(callback) {
     let proc = this.proc;
-
     proc.stderr.on('data', (data) => {
       log.error('StdError:', `${data}`);
       if (data.indexOf("IPC Connection Error") === -1) {
-        callback(`${data}`);
-        this.proc.stdin.write('q\n');
+        proc.stdin.write('q\n');
+        this.isQuit = true;
+        if (data.indexOf(Message.errPassword) != -1) {
+          callback(Message.errPassword);
+          return;
+        } else if (data.indexOf(Message.errRepeatPass) !== -1) {
+          callback(Message.errRepeatPass);
+          return;
+        } else if (data.indexOf(Message.errOptionNum) !== -1) {
+          callback(Message.errOptionNum);
+          return;
+        } else if (data.indexOf(Message.errAddress) !== -1) {
+          callback(Message.errAddress);
+          return;
+        } else if (data.indexOf(Message.errAmount) !== -1) {
+          callback(Message.errAmount);
+          return;
+        } else if (data.indexOf(Message.errInput) !== -1) {
+          callback(Message.errInput);
+          return;
+        } else if (data.indexOf(Message.errSubmit) !== -1) {
+          callback(Message.errSubmit);
+          return;
+        } else if (data.indexOf(Message.gasLimit) !== -1) {
+          callback(Message.gasLimit);
+          return;
+        } else if (data.indexOf(Message.gasPrice) !== -1) {
+          callback(Message.gasPrice);
+          return;
+        } else {
+          callback(`${data}`.replace(/[\r\n]/g, ""));
+        }
       }
     });
   }
@@ -135,10 +223,13 @@ class templateDetailCommand {
         self.options = Object.assign(self.options, options);
         self.createProc();
         self.handleStdout((out) => {
-          log.info("result been caught", out);
+          log.debug("result been caught:", out);
           result = out;
         });
-        self.handleStderr(reject);
+        self.handleStderr((out) => {
+          log.debug("error been caught:", out);
+          result = out;
+        });
         self.proc.on('close', (code) => {
           resolve(result);
         });
@@ -157,7 +248,7 @@ class templateScriptCommand {
     };
     this.cmdName = commandName;
     this.proc = null;
-    log.info("templateScriptCommand constructor");
+    log.debug("templateScriptCommand constructor");
   }
 
   createProc(callback) {
@@ -177,18 +268,18 @@ class templateScriptCommand {
       '--Fee', options.fee,
       '--submit', options.submit
     ]);
-    log.info('run', cmdFile);
+    log.debug('run', cmdFile);
 
     this.proc.stdout.on('data', (data) => {
       if (data.indexOf('Process is exited!') === -1) {
-        log.info(`${data}`);
+        log.debug(`${data}`);
       }
       if (data.indexOf("0x") != -1 && checkHash(`${data}`.toString())) {
         callback(`${data}`);
       }
     });
     this.proc.on('close', (code) => {
-      log.info(`Chile process quit code：${code}`);
+      log.debug(`Chile process quit code：${code}`);
     });
   };
 
@@ -199,7 +290,7 @@ class templateScriptCommand {
       log.error('StdError:', `${data}`);
       if (data.indexOf("IPC Connection Error") === -1) {
         callback(`${data}`);
-        this.proc.stdin.write('q\n');
+        proc.stdin.write('q\n');
       }
     });
   }
@@ -211,10 +302,13 @@ class templateScriptCommand {
       try {
         self.options = Object.assign(self.options, options);
         self.createProc((out) => {
-          log.info("result been caught", out);
+          log.debug("result been caught", out);
           result = out;
         });
-        self.handleStderr(reject);
+        self.handleStderr((out) => {
+          log.debug("error been caught:", out);
+          result = out;
+        });
         self.proc.on('close', (code) => {
           resolve(result);
         });

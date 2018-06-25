@@ -1,12 +1,12 @@
 'use strict'
 
-let databaseGroup = require('wanchaindb').databaseGroup;
-const crosschain = require('wanchainwalletcore/dbDefine/crossTransDefine.js');
-let backend = require('wanchainwalletcore/ccUtil.js').Backend;
-const messageFactory = require('wanchainwalletcore/webSocket/messageFactory.js');
-const socketServer = require("wanchainsender").socketServer;
-let sendFromSocket = require("wanchainsender").SendFromSocket;
-const mr = require('wanchainwalletcore/monitor.js').MonitorRecord;
+let databaseGroup = require('wanchain-crosschain/wanchaindb/index.js').databaseGroup;
+const crosschain = require('wanchain-crosschain/dbDefine/crossTransDefine.js');
+let backend = require('wanchain-crosschain/ccUtil.js').Backend;
+const messageFactory = require('wanchain-crosschain/webSocket/messageFactory.js');
+const socketServer = require("wanchain-crosschain/wanchainsender/index.js").socketServer;
+let sendFromSocket = require("wanchain-crosschain/wanchainsender/index.js").SendFromSocket;
+const mr = require('wanchain-crosschain/monitor.js').MonitorRecord;
 
 const config = require('../../config.js');
 let interval;
@@ -14,7 +14,7 @@ let interval;
 async function recordMonitor(config, ethSend, wanSend) {
   await mr.init(config, ethSend, wanSend);
   interval = setInterval(function() {
-     mr.monitorTask();
+    mr.monitorTask();
   }, 6000);
 }
 
@@ -31,11 +31,12 @@ class testCore {
     this.databaseGroup = databaseGroup;
     this.databaseGroup.useDatabase(config.databasePath, [crosschain]);
     this.backend = backend;
-
+    this.isClose = false;
   }
 
   async init() {
-    log.info("testCore init");
+    log.debug("testCore init");
+    this.isClose = false;
     for  (var  key  in  this.databaseGroup.databaseAry)  {
       await this.databaseGroup.databaseAry[key].init();
     }
@@ -50,6 +51,10 @@ class testCore {
           resolve();
         });
       })
+
+      newWebSocket.connection.on('error', function() {
+        log.error("error");
+      });
     });
   }
 
@@ -59,6 +64,7 @@ class testCore {
       databaseGroup.databaseAry[key].db.close();
     }
     this.wanSend.socket.connection.close();
+    this.isClose = true;
   }
 
   getSenderbyChain(chainType) {
@@ -70,9 +76,11 @@ class testCore {
 
     return new Promise(function(resolve, reject) {
       try {
-        let record = backend.getTxHistory(option);
-        log.info(record);
-        if (record !== []) {
+        let record = [];
+        record = backend.getTxHistory(option);
+        log.debug(record);
+
+        if (record.length !== 0) {
           log.debug("getTxHistory in getRecord result is", record[0], "while option is", option);
           resolve(record[0]);
         } else {
@@ -90,7 +98,7 @@ class testCore {
     let temp_option = option;
 
     return new Promise(function(resolve, reject) {
-      log.info("sleepAndUpdateStatus with ", time / 1000, "seconds");
+      log.debug("sleepAndUpdateStatus with ", time / 1000, "seconds");
       setTimeout(async function() {
         let record = await self.getRecord(temp_option);
         resolve(record);
@@ -134,7 +142,7 @@ class testCore {
         }
         log.debug("The receipt of checkOriginLockOnline is", receipt);
         if (receipt && receipt.length > 0) {
-          log.info("record.status is sentHashConfirming");
+          log.debug("record.status is sentHashConfirming");
           resolve(receipt);
         }
       } catch (err) {
@@ -160,11 +168,11 @@ class testCore {
         }
         log.debug("The receipt of checkXOnline is", receipt);
         if (receipt && receipt.length > 0) {
-          log.info("record.status is sentXConfirming");
+          log.debug("record.status is sentXConfirming");
           resolve(receipt);
         }
       } catch (err) {
-        console.log("checkTxOnline:", err);
+        log.error("checkTxOnline:", err);
         reject(err);
       }
     })
@@ -186,11 +194,11 @@ class testCore {
         }
         log.debug("The receipt of checkRevokeOnline is", receipt);
         if (receipt && receipt.length > 0) {
-          log.info("record.status is sentRevokeConfirming");
+          log.debug("record.status is sentRevokeConfirming");
           resolve(receipt);
         }
       } catch (err) {
-        console.log("checkRevokeOnline:", err);
+        log.error("checkRevokeOnline:", err);
         reject(err);
       }
     })
@@ -212,11 +220,11 @@ class testCore {
         }
         log.debug("The receipt of checkCrossHashOnline is", receipt);
         if (receipt && receipt.length > 0) {
-          log.info("record.status is waitingCrossConfirming");
+          log.debug("record.status is waitingCrossConfirming");
           resolve(receipt);
         }
       } catch (err) {
-        console.log("checkCrossHashOnline:", err);
+        log.error("checkCrossHashOnline:", err);
         reject(err);
       }
     })
@@ -233,12 +241,12 @@ class testCore {
         if (receipt) {
           record.lockConfirmed += 1;
           if (record.lockConfirmed >= config.confirmBlocks) {
-            log.info("record.status is waitingCross");
+            log.debug("record.status is waitingCross");
             resolve(receipt);
           }
         }
       } catch (err) {
-        console.log("checkHashConfirm:", err);
+        log.error("checkHashConfirm:", err);
         reject(err);
       }
     })
@@ -249,19 +257,19 @@ class testCore {
 
     return new Promise(async function(resolve, reject) {
       try {
-        let chain = record.chain=='ETH'?"WAN":"ETH";
+        let chain = record.chain == 'ETH' ? "WAN" : "ETH";
         let sender = self.getSenderbyChain(chain);
         let receipt = await backend.monitorTxConfirm(sender, record.refundTxHash, waitBlocks);
         log.debug("The receipt of checkXConfirm is", receipt);
         if (receipt) {
           record.refundConfirmed += 1;
           if (record.refundConfirmed >= config.confirmBlocks) {
-            log.info("record.status is refundFinished");
+            log.debug("record.status is refundFinished");
             resolve(receipt);
           }
         }
       } catch (err) {
-        console.log("checkXConfirm:", err);
+        log.error("checkXConfirm:", err);
         reject(err);
       }
     })
@@ -278,12 +286,12 @@ class testCore {
         if (receipt) {
           record.revokeConfirmed += 1;
           if (record.revokeConfirmed >= config.confirmBlocks) {
-            log.info("record.status is revokeFinished");
+            log.debug("record.status is revokeFinished");
             resolve(receipt);
           }
         }
       } catch (err) {
-        console.log("checkRevokeConfirm:", err);
+        log.error("checkRevokeConfirm:", err);
         reject(err);
       }
     })
@@ -302,12 +310,12 @@ class testCore {
           if (!record.crossConfirmed) record.crossConfirmed = 0;
           record.crossConfirmed += 1;
           if (record.crossConfirmed >= config.confirmBlocks) {
-            log.info("record.status is waitingX");
+            log.debug("record.status is waitingX");
             resolve(receipt);
           }
         }
       } catch (err) {
-        console.log("checkCrossHashConfirm:", err);
+        log.error("checkCrossHashConfirm:", err);
         reject(err);
       }
     })
@@ -326,12 +334,12 @@ class testCore {
       try {
         let HTLCtime = Number(record.HTLCtime);
         if (HTLCtime <= Date.now()) {
-          log.info("record.status is waitingRevoke");
+          log.debug("record.status is waitingRevoke");
           resolve(record);
           return true;
         }
       } catch (err) {
-        console.log("checkHashTimeout:", err);
+        log.error("checkHashTimeout:", err);
         reject(err);
       }
       return false;
