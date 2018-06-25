@@ -1,6 +1,6 @@
 module.exports = async function (invoke,chainType) {
     let config = require('../../config.js');
-    let WalletCore = require('wanchainwalletcore');
+    let WalletCore = require('wanchain-crosschain');
     let walletCore = new WalletCore(config);
     // walletCore.init(config,function () {
     //     invoke(walletCore.createSendTransaction(chainType));

@@ -2,7 +2,7 @@ let OptionalSchemaProperty = require('../wanschema/index.js').OptionalSchemaProp
 let pattern = require('../wanschema/index.js').pattern;
 let FunctionCell = require('../stepcell/index.js').FunctionCell;
 let dbname = 'crossTransDb';
-let walletCore = require('wanchainwalletcore');
+let walletCore = require('wanchain-crosschain');
 module.exports = class crossTransOptionalSchama extends OptionalSchemaProperty
 {
     constructor(name,message,description,lockTxchainType){

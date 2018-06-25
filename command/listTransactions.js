@@ -1,7 +1,7 @@
 'use strict'
 
 const sprintf=require("sprintf-js").sprintf;
-let WalletCore = require('wanchainwalletcore');
+let WalletCore = require('wanchain-crosschain');
 
 let backend;
 let config = require('../config.js');

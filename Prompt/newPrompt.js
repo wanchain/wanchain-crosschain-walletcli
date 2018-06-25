@@ -4,7 +4,6 @@ let FunctionCell = require('../stepcell/index.js').FunctionCell;
 let CellGroup = require('../stepcell/index.js').CellGroup;
 let mapCell = require('../stepcell/index.js').MapCell;
 
-//let walletCore = require('wanchainwalletcore');
 const colors = require("colors/safe");
 var optimist = require('optimist')
     .string(['password', 'repeatPass','from', 'to' ,'waddress','OTAaddress', 'tokenAddress','transHash','contractAddress',

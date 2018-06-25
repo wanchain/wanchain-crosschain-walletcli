@@ -9,7 +9,7 @@ let getStoremanGroup = require('./getStoremanGroup.js');
 let keystoreAccountSchema= require('../wanschema/index.js').keystoreAccountSchema;
 let EnumSchemaProperty = require('../wanschema/index.js').EnumSchemaProperty;
 let crossTransOptionalSchama = require('./crossTransOptionalSchama.js');
-let walletCore = require('wanchainwalletcore');
+let walletCore = require('wanchain-crosschain');
 let Descript= require('./DescAndMsg.js');
 module.exports = {
     password() {

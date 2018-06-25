@@ -4,7 +4,7 @@ const sprintf=require("sprintf-js").sprintf;
 const Web3 = require('web3');
 var web3 = new Web3();
 
-let WalletCore = require('wanchainwalletcore');
+let WalletCore = require('wanchain-crosschain');
 let config = require('../config.js');
 let backend;
 
