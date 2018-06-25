@@ -32,7 +32,7 @@ module.exports = class OptionalSchemaProperty extends SchemaProperty
         if(this.checkInputValue(value)){
             if(this.checkOption){
                 for(var i=0;i<this.options.length;++i){
-                    if(this.getValue(this.options[i]) == value)
+                    if(this.getValue(this.options[i]) == value.toLowerCase())
                         return value;
                 }
                 return null;

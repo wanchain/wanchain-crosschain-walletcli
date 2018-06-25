@@ -7,7 +7,7 @@ module.exports = class keystoreAccountSchema extends OptionalSchemaProperty
     constructor(name,message,description,keyStoreDir,chainType){
         super(name,message,description,pattern.addressPattern,Object.keys(keyStoreDir.Accounts));
         this.beginCell.children[0].reset = function () {};
-        if(chainType == "WAB"){
+        if(chainType == "WAN"){
             this.checkInputValue = this.conformWan
         }else{
             this.checkInputValue = this.conformEth
