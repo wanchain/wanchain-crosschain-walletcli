@@ -6,6 +6,11 @@ module.exports = async function (invoke,chainType) {
     //     invoke(walletCore.createSendTransaction(chainType));
     // })
     global.walletCore = walletCore;
-    await walletCore.init(config);
+    try {
+        await walletCore.init(config);
+    }catch(error){
+        console.log("Wallet initiate failed.");
+        process.exit(0);
+    }
     invoke(walletCore.createSendTransaction(chainType));
 }
