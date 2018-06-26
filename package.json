@@ -31,7 +31,7 @@
     "vorpal": "^1.12.0",
     "wanchain-util": "^1.2.0",
     "wanchain-keystore": "^0.0.1",
-    "wanchain-crosschain": "^0.0.1",
+    "wanchain-crosschain": "^0.0.3",
     "web3": "^0.20.6",
     "ws": "^5.1.0"
   },

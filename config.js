@@ -1,6 +1,6 @@
 const config = {};
-//config.socketUrl = 'ws://18.237.12.175:80/';
-config.socketUrl = 'ws://18.236.235.133';
+config.socketUrl = 'wss://api.wanchain.info';
+//config.socketUrl = 'ws://18.236.235.133';
 var wanchainNet = 'testnet';
 var ethereumNet = '';
 const path=require('path');
