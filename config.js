@@ -2,68 +2,36 @@ const config = {};
 config.socketUrl = 'wss://api.wanchain.info';
 //config.socketUrl = 'ws://18.236.235.133';
 var wanchainNet = 'testnet';
-var ethereumNet = '';
+var ethereumNet = 'testnet';
 const path=require('path');
 
 config.dataName = wanchainNet;
-if(wanchainNet.length)
-{
-    if(process.platform === 'win32')
-    {
-        wanchainNet = wanchainNet + '\\';
-    }
-    else
-    {
-        wanchainNet = wanchainNet + '/';
-    }
-}
-config.version = '1.0.0';
-config.host = '// http://localhost'; // http://localhost
 config.rpcIpcPath = process.env.HOME;
+config.keyStorePath = process.env.HOME;
+config.ethkeyStorePath = process.env.HOME;
 if (process.platform === 'darwin') {
     config.rpcIpcPath += '/Library/Wanchain/'+'gwan.ipc';
-} else if (process.platform === 'freebsd' ||
+    config.keyStorePath = path.join(config.keyStorePath, '/Library/wanchain/', wanchainNet, 'keystore/');
+    config.ethkeyStorePath = path.join(config.ethkeyStorePath, '/Library/ethereum/',ethereumNet,'keystore/');
+}
+
+if (process.platform === 'freebsd' ||
     process.platform === 'linux' ||
     process.platform === 'sunos') {
     config.rpcIpcPath += '/.wanchain/'+'gwan.ipc';
-} else if (process.platform === 'win32') {
+    config.keyStorePath = path.join(config.keyStorePath, '.wanchain',wanchainNet,'keystore/');
+    config.ethkeyStorePath = path.join(config.ethkeyStorePath, '.ethereum',ethereumNet,'keystore/');
+}
+
+if (process.platform === 'win32') {
     config.rpcIpcPath = '\\\\.\\pipe\\gwan.ipc';
-}
-config.keyStorePath = process.env.HOME;
-if (process.platform === 'darwin') {
-    config.keyStorePath += '/Library/wanchain/'+wanchainNet+'keystore/';
-}
-
-if (process.platform === 'freebsd' ||
-    process.platform === 'linux' ||
-    process.platform === 'sunos') {
-    config.keyStorePath += '/.wanchain/'+wanchainNet+'keystore/';
-}
-
-if (process.platform === 'win32') {
-    config.keyStorePath = process.env.APPDATA + '\\wanchain\\'+wanchainNet+'keystore\\';
-}
-config.ethkeyStorePath = process.env.HOME;
-if (process.platform === 'darwin') {
-    config.ethkeyStorePath += '/Library/ethereum/'+ethereumNet+'keystore/';
-}
-
-if (process.platform === 'freebsd' ||
-    process.platform === 'linux' ||
-    process.platform === 'sunos') {
-    config.ethkeyStorePath += '/.ethereum/'+ethereumNet+'keystore/';
-}
-
-if (process.platform === 'win32') {
-    config.ethkeyStorePath = process.env.APPDATA + '\\ethereum\\'+ethereumNet+'keystore\\';
+    config.keyStorePath = path.join(process.env.APPDATA, 'wanchain', wanchainNet,'keystore\\');
+    config.ethkeyStorePath = path.join(process.env.APPDATA, 'ethereum', ethereumNet,'keystore\\');
 }
 
 config.port = 8545;
-config.OTAMixNumber = 8;
-config.StampMixNumber = 3;
 config.useLocalNode = false;
-
- config.loglevel = 'debug';
+config.loglevel = 'debug';
 
 
 const logDebug = require('log4js');
