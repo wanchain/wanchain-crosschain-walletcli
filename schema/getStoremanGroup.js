@@ -40,9 +40,6 @@ module.exports = class getStoremanGroup extends OptionalSchemaProperty
         return smg;
     }
     getValue(item){
-        if(this.sendServer.chainType == 'WAN')
-            return item.wanAddress;
-        else
-            return item.ethAddress;
+        return [item];
     }
 };
