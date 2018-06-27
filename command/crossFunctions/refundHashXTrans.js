@@ -2,6 +2,7 @@ let prompt = require('../../Prompt/newPrompt.js');
 let SchemaFactory = require('../../schema/SchemaFactory.js');
 let FunctionCell = require('../../stepcell/index.js').FunctionCell;
 let DebugLog = require('../../logger/DebugLog.js');
+let config = require('../../config');
 module.exports = function (sendTransaction) {
     //first : get transaction from database
     let chainType = (sendTransaction.sendServer.chainType == 'ETH') ? 'WAN' : 'ETH';
@@ -21,17 +22,15 @@ module.exports = function (sendTransaction) {
             DebugLog.debug(result);
             let index = self.parent.index;
             let transResult = result;
-            self.parent.insertChild(index,new FunctionCell(false,function(self){
-                sendTransaction.sendServer.sendMessage('getCrossEthScAddress',function (err,result) {
-                    if(!err){
-                        transResult.tokenAddress = result;
-                    }
-                    self.stepNext();
-                });
 
-            }));
+            if (crossType === 'ETH2WETH') {
+                transResult.tokenAddress = config.wanchainHtlcAddr;
+            } else if (crossType === 'WETH2ETH') {
+                transResult.tokenAddress = config.originalChainHtlc;
+            }
 
-            index++;
+            DebugLog.debug(transResult);
+
             self.parent.insertChild(index,new FunctionCell(false,function(self) {
                 sendTransaction.createRefundFromLockTransaction(transResult.lockTxHash,transResult.tokenAddress,null,null,
                     null,transResult.gas,transResult.gasPrice,crossType);
