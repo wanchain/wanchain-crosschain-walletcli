@@ -5,8 +5,8 @@ let dbname = 'crossTransDb';
 let walletCore = require('wanchain-crosschain');
 module.exports = class crossTransOptionalSchama extends OptionalSchemaProperty
 {
-    constructor(name,message,description,lockTxchainType){
-        super(name,message,description,pattern.hashPattern,[]);
+    constructor(name,description,message,lockTxchainType){
+        super(name,description,message,pattern.hashPattern,[]);
         this.chainType = lockTxchainType;
 
         let select = new FunctionCell(true,function(self,param){

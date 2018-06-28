@@ -6,8 +6,8 @@ var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 module.exports = class getStoremanGroup extends OptionalSchemaProperty
 {
-    constructor(name,message,description,sendServer){
-        super(name,message,description,pattern.addressPattern,[]);
+    constructor(name,description,message,sendServer){
+        super(name,description,message,pattern.addressPattern,[]);
         this.sendServer = sendServer;
         let getStoremanGroup = new FunctionCell(false,function(self,param){
             sendServer.sendMessage('syncStoremanGroups',function (err,value) {

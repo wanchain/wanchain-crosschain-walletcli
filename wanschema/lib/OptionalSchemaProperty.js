@@ -4,8 +4,8 @@ let CellGroup = require('../../stepcell/index.js').CellGroup;
 let FunctionCell = require('../../stepcell/index.js').FunctionCell;
 module.exports = class OptionalSchemaProperty extends SchemaProperty
 {
-    constructor(name,message,description,pattern,options){
-        super(name,message,description);
+    constructor(name,description,message,pattern,options){
+        super(name,description,message);
         this.options = options;
         this.inputPattern = pattern;
         this.checkOption = true;

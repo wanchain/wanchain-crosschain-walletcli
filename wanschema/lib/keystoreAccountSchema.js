@@ -4,8 +4,8 @@ let wanUtil = require('wanchain-util');
 var util = require('ethereumjs-util');
 module.exports = class keystoreAccountSchema extends OptionalSchemaProperty
 {
-    constructor(name,message,description,keyStoreDir,chainType){
-        super(name,message,description,pattern.addressPattern,Object.keys(keyStoreDir.Accounts));
+    constructor(name,description,message,keyStoreDir,chainType){
+        super(name,description,message,pattern.addressPattern,Object.keys(keyStoreDir.Accounts));
         this.beginCell.children[0].reset = function () {};
         if(chainType == "WAN"){
             this.checkInputValue = this.conformWan

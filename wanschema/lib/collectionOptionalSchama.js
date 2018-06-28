@@ -2,8 +2,8 @@ let OptionalSchemaProperty = require('./OptionalSchemaProperty.js');
 let FunctionCell = require('../../stepcell/index.js').FunctionCell;
 module.exports = class collectionOptionalSchama extends OptionalSchemaProperty
 {
-    constructor(name,message,description,pattern,collections,collectionName){
-        super(name,message,description,pattern,[]);
+    constructor(name,description,message,pattern,collections,collectionName){
+        super(name,description,message,pattern,[]);
         this.collections = collections;
         this.collectionName = collectionName;
         this.select = {};
