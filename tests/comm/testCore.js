@@ -1,5 +1,6 @@
 'use strict'
-
+const sprintf = require("sprintf-js").sprintf;
+const Web3 = require('web3');
 let databaseGroup = require('wanchain-crosschain/wanchaindb/index.js').databaseGroup;
 const crosschain = require('wanchain-crosschain/dbDefine/crossTransDefine.js');
 let backend = require('wanchain-crosschain/ccUtil.js').Backend;
@@ -18,6 +19,10 @@ async function recordMonitor(config, ethSend, wanSend) {
   }, 6000);
 }
 
+function checkAddress(address) {
+  return /^(0x)?[0-9a-fA-F]{40}$/i.test(address);
+}
+
 const {
   getLogger
 } = require('./logger.js');
@@ -32,6 +37,7 @@ class testCore {
     this.databaseGroup.useDatabase(config.databasePath, [crosschain]);
     this.backend = backend;
     this.isClose = false;
+    this.web3 = new Web3();
   }
 
   async init() {
@@ -59,12 +65,12 @@ class testCore {
   }
 
   close() {
+    this.isClose = true;
     clearInterval(interval);
     for  (var  key  in  databaseGroup.databaseAry)  {
       databaseGroup.databaseAry[key].db.close();
     }
     this.wanSend.socket.connection.close();
-    this.isClose = true;
   }
 
   getSenderbyChain(chainType) {
@@ -100,7 +106,9 @@ class testCore {
     return new Promise(function(resolve, reject) {
       log.debug("sleepAndUpdateStatus with ", time / 1000, "seconds");
       setTimeout(async function() {
-        let record = await self.getRecord(temp_option);
+        let record = await self.getRecord(temp_option).catch(r => {
+          reject(r)
+        });
         resolve(record);
       }, time);
     })
@@ -123,6 +131,125 @@ class testCore {
         reject(err);
       }
     })
+  }
+
+  async getEthAccountsInfo(address) {
+    let backend = this.backend;
+    let ethAddressList = [];
+    let web3 = this.web3;
+    let sender = this.ethSend;
+
+    return new Promise(async function(resolve, reject) {
+      try {
+        ethAddressList = await backend.getEthAccountsInfo(sender);
+
+        ethAddressList.forEach(function(ethAddress) {
+          if (address === ethAddress.address) {
+            log.debug(sprintf("%46s %26s", "ETH address", "balance"));
+            log.debug(sprintf("%46s %26s", ethAddress.address, web3.fromWei(ethAddress.balance)));
+            resolve(ethAddress);
+          }
+        });
+        reject("getEthAccountsInfo error not found address");
+      } catch (err) {
+        reject((err.hasOwnProperty("message")) ? err.message : err);
+      }
+    });
+  }
+
+  async getWanAccountsInfo(address) {
+    let backend = this.backend;
+    let wanAddressList = [];
+    let web3 = this.web3;
+    let sender = this.wanSend;
+
+    return new Promise(async function(resolve, reject) {
+      try {
+        wanAddressList = await backend.getWanAccountsInfo(sender);
+
+        wanAddressList.forEach(function(wanAddress) {
+          if (address.toLowerCase() === wanAddress.address) {
+            log.debug(sprintf("%46s %26s %26s", "WAN address", "WAN balance", "WETH balance"));
+            log.debug(sprintf("%46s %26s %26s", wanAddress.address, web3.fromWei(wanAddress.balance), web3.fromWei(wanAddress.wethBalance)));
+            resolve(wanAddress);
+          }
+        });
+        reject("getWanAccountsInfo error not found address");
+      } catch (err) {
+        reject((err.hasOwnProperty("message")) ? err.message : err);
+      }
+    });
+  }
+
+  async getEthC2wRatio() {
+    let backend = this.backend;
+    let sender = this.wanSend;
+
+    return new Promise(async function(resolve, reject) {
+      try {
+        let c2wRatio = await backend.getEthC2wRatio(sender);
+        resolve(c2wRatio);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async getEthStoremanInfo(input) {
+    let backend = this.backend;
+    let sender = this.wanSend;
+
+    return new Promise(async function(resolve, reject) {
+      try {
+        let smgList = await backend.getEthSmgList(sender);
+        if (checkAddress(input)) {
+          smgList.forEach(function(smg) {
+            if (smg.wanAddress === input || smg.ethAddress === input) {
+              resolve(smg);
+            }
+          })
+        } else {
+          resolve(smgList[input - 1]);
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async getTxInfo(chain, txhash) {
+    let backend = this.backend;
+    let sender = this.getSenderbyChain(chain);
+
+    return new Promise(async function(resolve, reject) {
+      try {
+        let txInfo = await backend.getTxInfo(sender, txhash);
+        resolve(txInfo);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async getTxReceipt(chain, txhash) {
+    let backend = this.backend;
+    let sender = this.getSenderbyChain(chain);
+
+    return new Promise(async function(resolve, reject) {
+      try {
+        let receipt = await backend.getTxReceipt(sender, txhash);
+        resolve(receipt);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async caculateFee(storemanIndex, amount) {
+    let storeman = await getEthStoremanInfo(storemanIndex);
+    let c2wRatio = await getEthC2wRatio();
+
+    return this.backend.calculateLocWanFee(amount, c2wRatio, storeman.txFeeRatio);
   }
 
   async checkOriginLockOnline(record) {
@@ -151,6 +278,7 @@ class testCore {
       }
     })
   }
+
   async checkXOnline(record) {
     let backend = this.backend;
     let self = this;

@@ -23,7 +23,8 @@ const stateDict = {
   waitingRevoke: 9,
   sentRevokePending: 10,
   sentRevokeConfirming: 11,
-  revokeFinished: 12
+  revokeFinished: 12,
+  sentHashFailed: 13
 };
 
 const testCaseFile = __dirname + '/testcase/CommandWalletTestCase.xlsx';
