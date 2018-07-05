@@ -170,7 +170,7 @@ describe("Command Wallet Auto Test", function() {
 
           let lockTxHash = result.replace(/[\r\n]/g, "");
           let isHash = checkHash(lockTxHash);
-          assert.equal(isHash, true);
+          assert.equal(isHash, true, lockTxHash);
           option = {
             'lockTxHash': lockTxHash
           };
@@ -200,7 +200,7 @@ describe("Command Wallet Auto Test", function() {
             if (type === 'Sunny'|| result === null || (!checkHash(result))) {
               let resultTxHash = result.replace(/[\r\n]/g, "");
               let isHash = checkHash(resultTxHash);
-              assert.equal(isHash, true);
+              assert.equal(isHash, true, resultTxHash);
 
               await testcore.init();
               // testcore.mrinit();

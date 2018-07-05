@@ -133,7 +133,7 @@ describe.only('New Command Wallet test cases', () => {
     await testcore.init();
 
     let isHash = checkHash(lockTxHash);
-    assert.equal(isHash, true);
+    assert.equal(isHash, true, lockTxHash);
 
     lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
     option = {
@@ -169,7 +169,7 @@ describe.only('New Command Wallet test cases', () => {
     refundTxHash = refundTxHash.replace(/[\r\n]/g, "");
 
     isHash = checkHash(refundTxHash);
-    assert.equal(isHash, true);
+    assert.equal(isHash, true, refundTxHash);
 
     await testcore.init();
 
@@ -227,7 +227,7 @@ describe.only('New Command Wallet test cases', () => {
     await testcore.init();
 
     let isHash = checkHash(lockTxHash);
-    assert.equal(isHash, true);
+    assert.equal(isHash, true, lockTxHash);
 
     lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
     option = {
@@ -269,7 +269,7 @@ describe.only('New Command Wallet test cases', () => {
     refundTxHash = refundTxHash.replace(/[\r\n]/g, "");
 
     isHash = checkHash(refundTxHash);
-    assert.equal(isHash, true);
+    assert.equal(isHash, true, refundTxHash);
 
     await testcore.init();
 
@@ -353,7 +353,7 @@ describe.only('New Command Wallet test cases', () => {
         revokeTxHash = revokeTxHash.replace(/[\r\n]/g, "");
 
         let isHash = checkHash(revokeTxHash);
-        assert.equal(isHash, true);
+        assert.equal(isHash, true, revokeTxHash);
 
         await testcore.init();
         option = {
@@ -432,7 +432,7 @@ describe.only('New Command Wallet test cases', () => {
     await testcore.init();
 
     let isHash = checkHash(lockTxHash);
-    assert.equal(isHash, true);
+    assert.equal(isHash, true, lockTxHash);
 
     lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
     option = {
@@ -476,7 +476,7 @@ describe.only('New Command Wallet test cases', () => {
     refundTxHash = refundTxHash.replace(/[\r\n]/g, "");
 
     isHash = checkHash(refundTxHash);
-    assert.equal(isHash, true);
+    assert.equal(isHash, true, refundTxHash);
 
     await testcore.init();
 
@@ -528,7 +528,7 @@ describe.only('New Command Wallet test cases', () => {
     await testcore.init();
 
     let isHash = checkHash(lockTxHash);
-    assert.equal(isHash, true);
+    assert.equal(isHash, true, lockTxHash);
 
     lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
     option = {
@@ -570,7 +570,7 @@ describe.only('New Command Wallet test cases', () => {
     refundTxHash = refundTxHash.replace(/[\r\n]/g, "");
 
     isHash = checkHash(refundTxHash);
-    assert.equal(isHash, true);
+    assert.equal(isHash, true, refundTxHash);
 
     await testcore.init();
 
@@ -655,7 +655,7 @@ describe.only('New Command Wallet test cases', () => {
         revokeTxHash = revokeTxHash.replace(/[\r\n]/g, "");
 
         let isHash = checkHash(revokeTxHash);
-        assert.equal(isHash, true);
+        assert.equal(isHash, true, revokeTxHash);
 
         await testcore.init();
         option = {
