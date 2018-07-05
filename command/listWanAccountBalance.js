@@ -17,9 +17,7 @@ async function main(){
     // wan address list
     let wanAddressList = [];
     try {
-        let sender = await backend.createrSender("WAN");
-        wanAddressList = await backend.getWanAccountsInfo(sender);
-        sender.close();
+        wanAddressList = await backend.getWanAccountsInfo(backend.wanSender);
 
         console.log(sprintf("%46s %26s %26s", "WAN address", "WAN balance", "WETH balance"));
         wanAddressList.forEach(function(wanAddress){

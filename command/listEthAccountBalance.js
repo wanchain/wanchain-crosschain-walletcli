@@ -17,9 +17,7 @@ async function main(){
     // eth address list
     let ethAddressList = [];
     try {
-        let sender = await backend.createrSender("ETH");
-        ethAddressList = await backend.getEthAccountsInfo(sender);
-        sender.close();
+        ethAddressList = await backend.getEthAccountsInfo(backend.ethSender);
 
         console.log(sprintf("%46s %26s", "ETH address", "balance"));
         ethAddressList.forEach(function(ethAddress){
