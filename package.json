@@ -1,7 +1,7 @@
 {
-  "name": "wanchain_Command_Line_Wallet",
-  "version": "0.1.5",
-  "description": "wanchain Command line wallet",
+  "name": "wanchain-crosschain-wallet",
+  "version": "0.1.6",
+  "description": "wanchain cross chain command line wallet",
   "dependencies": {
     "bluebird": "^3.5.1",
     "bn.js": "^4.11.8",
@@ -30,7 +30,7 @@
     "underscore-deep-extend": "^1.1.5",
     "uuid": "^3.1.0",
     "vorpal": "^1.12.0",
-    "wanchain-crosschain": "^0.0.6",
+    "wanchain-crosschain": "^0.0.8",
     "wanchain-keystore": "^0.0.1",
     "wanchain-util": "^1.2.0",
     "web3": "^0.20.6",
