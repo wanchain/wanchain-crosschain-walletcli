@@ -85,8 +85,13 @@ function initAccounts(keyStorePath) {
     let filename = keyStorePath + item;
     var stat = fs.lstatSync(filename);
     if (!stat.isDirectory()) {
-      accounts[index] = '0x' + filename.split('--')[2];
-      index++;
+      //accounts[index] = '0x' + filename.split('--')[2];
+      try {
+        let keystoreStr = fs.readFileSync(filename, "utf8");
+        let keystore = JSON.parse(keystoreStr);
+        accounts[index] = '0x' + keystore.address;
+        index++;
+      } catch (e) {}
     }
   }
   return accounts;
@@ -152,7 +157,7 @@ describe("Command Wallet Auto Test", function() {
         if (option1.password == undefined) {
           option1.password = password;
         }
-        
+
         if (!(/^(0x)?[0-9a-fA-F]{40}$/i.test(option1.cross))) {
           let cross = getWanAccounts(option1.cross);
           option1.cross = cross;
@@ -197,7 +202,7 @@ describe("Command Wallet Auto Test", function() {
             let secondCmd = new templateCommand(command2);
             result = await secondCmd.runProc(option2);
 
-            if (type === 'Sunny'|| result === null || (!checkHash(result))) {
+            if (type === 'Sunny' || result === null || (!checkHash(result))) {
               let resultTxHash = result.replace(/[\r\n]/g, "");
               let isHash = checkHash(resultTxHash);
               assert.equal(isHash, true, resultTxHash);

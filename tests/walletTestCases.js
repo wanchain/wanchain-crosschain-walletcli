@@ -42,8 +42,13 @@ function initAccounts(keyStorePath) {
     let filename = keyStorePath + item;
     var stat = fs.lstatSync(filename);
     if (!stat.isDirectory()) {
-      accounts[index] = '0x' + filename.split('--')[2];
-      index++;
+      //accounts[index] = '0x' + filename.split('--')[2];
+      try {
+        let keystoreStr = fs.readFileSync(filename, "utf8");
+        let keystore = JSON.parse(keystoreStr);
+        accounts[index] = '0x' + keystore.address;
+        index++;
+      } catch (e) {}
     }
   }
   return accounts;
@@ -388,7 +393,7 @@ describe.only('New Command Wallet test cases', () => {
         assert.equal(beforeWANBalance.toString(), afterWANBalance.toString());
       }
     } catch (err) {
-      assert.equal(err, "Record was not found");
+      assert.equal(err, "Record was not found", (err.hasOwnProperty("message")) ? err.message : err);
       console.log(err, ", no local Trans need to revoke");
     }
   });
@@ -695,7 +700,7 @@ describe.only('New Command Wallet test cases', () => {
         assert.equal(afterWANBalance.toString(), beforeWANBalance.sub(gasPrice.mul(gasUsed).mul(gWei)).add(fee).toString());
       }
     } catch (err) {
-      assert.equal(err, "Record was not found");
+      assert.equal(err, "Record was not found", (err.hasOwnProperty("message")) ? err.message : err);
       console.log(err, ", no local Trans need to revoke");
     }
   });
