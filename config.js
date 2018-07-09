@@ -1,6 +1,5 @@
 const config = {};
 config.socketUrl = 'wss://apitest.wanchain.info';
-//config.socketUrl = 'ws://18.236.235.133';
 var wanchainNet = 'testnet';
 var ethereumNet = 'testnet';
 const path=require('path');
@@ -38,8 +37,8 @@ if (process.platform === 'win32') {
 
 config.port = 8545;
 config.useLocalNode = false;
-//config.loglevel = 'info';
-config.loglevel = 'debug';
+config.loglevel = 'info';
+//config.loglevel = 'debug';
 
 
 config.listOption = true;

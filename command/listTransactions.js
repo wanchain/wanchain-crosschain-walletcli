@@ -6,7 +6,7 @@ let WalletCore = require('wanchain-crosschain');
 let backend;
 let config = require('../config.js');
 let col = require('colors');
-let tsf = require('tranStatusFactory');  // tsf:  trans status factory.
+let tsf = require('./tranStatusFactory.js');  // tsf:  trans status factory.
 
 function listDetail(option){
     let records = backend.getTxHistory(option);
