@@ -106,12 +106,16 @@ class testCore {
 
     return new Promise(function(resolve, reject) {
       log.debug("sleepAndUpdateStatus with ", time / 1000, "seconds");
-      setTimeout(async function() {
-        let record = await self.getRecord(temp_option).catch(r => {
-          reject(r)
-        });
-        resolve(record);
-      }, time);
+      if (self.isClose) {
+        reject("TestCore closed");
+      } else {
+        setTimeout(async function() {
+          let record = await self.getRecord(temp_option).catch(r => {
+            reject(r)
+          });
+          resolve(record);
+        }, time);
+      }
     })
   };
 
