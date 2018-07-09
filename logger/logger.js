@@ -25,6 +25,7 @@ class Logger {
       port: logServerPort,
     };
     this.logger = winston.createLogger({
+      levels: winston.config.syslog.levels,
       level: level,
       format: winston.format(function(info, opts) {
         let prefix = util.format('%s %s %s %s', "walletGui", moment().format('YYYY-MM-DD hh:mm:ss,SSS').trim(), name, info.level.toUpperCase());
@@ -71,7 +72,7 @@ class Logger {
   }
 
   warn(...params) {
-    this.logger.warn(...params);
+    this.logger.warning(...params);
   }
 
   error(...params) {
