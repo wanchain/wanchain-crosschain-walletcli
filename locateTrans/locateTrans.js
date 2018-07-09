@@ -14,6 +14,7 @@ function checkHash(hash) {
 
 class locateCore {
   constructor(config, callback = false) {
+    global.getLogger = config.getLogger;
     this.socketUrl = config.socketUrl;
     this.wanSend = new sendFromSocket(null, 'WAN');
     this.ethSend = new sendFromSocket(null, 'ETH');
@@ -272,7 +273,7 @@ async function main() {
         logger.debug("The CrossTrans event log is", crossevent1);
 
         let crossLockHash = crossevent1[0].transactionHash;
-        logger.debug("The CrossTrans transHash is", crossLockHash);
+        logger.info("The CrossTrans transHash is", crossLockHash);
 
         let refundEvent = await locateTransCore.checkXOnline(transDir, hashX);
         let revokeEvent = await locateTransCore.checkRevokeOnline(transDir, hashX);
