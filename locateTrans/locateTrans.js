@@ -5,7 +5,7 @@ let backend = require('wanchain-crosschain/ccUtil.js').Backend;
 const socketServer = require("wanchain-crosschain/wanchainsender/index.js").socketServer;
 let sendFromSocket = require("wanchain-crosschain/wanchainsender/index.js").SendFromSocket;
 const messageFactory = require('wanchain-crosschain/webSocket/messageFactory.js');
-let logger = config.logDebug.getLogger("LocateTrans");
+let logger = config.getLogger("LocateTrans");
 
 function checkHash(hash) {
   let thash = hash.replace(/[\r\n]/g, "");

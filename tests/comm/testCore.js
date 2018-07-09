@@ -31,6 +31,7 @@ const log = getLogger("Wallet_TC");
 class testCore {
   constructor(config, callback = false) {
     this.socketUrl = config.socketUrl;
+    global.getLogger = getLogger;
     this.wanSend = new sendFromSocket(null, 'WAN');
     this.ethSend = new sendFromSocket(null, 'ETH');
     this.databaseGroup = databaseGroup;

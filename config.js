@@ -4,6 +4,13 @@ config.socketUrl = 'wss://apitest.wanchain.info';
 var wanchainNet = 'testnet';
 var ethereumNet = 'testnet';
 const path=require('path');
+const Logger = require('./logger/logger.js');
+config.ccLog = path.join('logs', 'crossChainLog.log');
+config.ccErr = path.join('logs', 'crossChainErr.log');
+config.logger = new Logger('CrossChain',config.ccLog, config.ccErr,config.loglevel);
+config.getLogger = function(name){
+    return new Logger(name,config.ccLog, config.ccErr,config.loglevel);
+}
 
 config.dataName = wanchainNet;
 config.rpcIpcPath = process.env.HOME;
@@ -31,30 +38,10 @@ if (process.platform === 'win32') {
 
 config.port = 8545;
 config.useLocalNode = false;
-config.loglevel = 'info';
+//config.loglevel = 'info';
+config.loglevel = 'debug';
 
 
-const logDebug = require('log4js');
-const log4jsOptions = {
-    appenders: {
-        console: { type: 'console' }
-    },
-    categories: {
-        default: { appenders: ['console'], level: (config.loglevel || 'info').toUpperCase()}
-    }
-};
-
-if (config.logfile) {
-    log4jsOptions.appenders.filelog = {
-        type: 'file',
-        filename: config.logfile,
-        maxLogSize: 10 * 1000 * 1000,
-        alwaysIncludePattern: true
-    };
-
-}
-config.logDebug = logDebug;
-logDebug.configure(log4jsOptions);
 config.listOption = true;
 
 
