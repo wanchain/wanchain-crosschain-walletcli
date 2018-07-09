@@ -23,15 +23,15 @@ function checkAddress(address) {
   return /^(0x)?[0-9a-fA-F]{40}$/i.test(address);
 }
 
-const {
-  getLogger
-} = require('./logger.js');
-const log = getLogger("Wallet_TC");
+// const {
+//   getLogger
+// } = require('./logger.js');
+const log = config.getLogger("Wallet_TC");
 
 class testCore {
   constructor(config, callback = false) {
     this.socketUrl = config.socketUrl;
-    global.getLogger = getLogger;
+    global.getLogger = config.getLogger;
     this.wanSend = new sendFromSocket(null, 'WAN');
     this.ethSend = new sendFromSocket(null, 'ETH');
     this.databaseGroup = databaseGroup;
@@ -106,12 +106,16 @@ class testCore {
 
     return new Promise(function(resolve, reject) {
       log.debug("sleepAndUpdateStatus with ", time / 1000, "seconds");
-      setTimeout(async function() {
-        let record = await self.getRecord(temp_option).catch(r => {
-          reject(r)
-        });
-        resolve(record);
-      }, time);
+      if (self.isClose) {
+        reject("TestCore closed");
+      } else {
+        setTimeout(async function() {
+          let record = await self.getRecord(temp_option).catch(r => {
+            reject(r)
+          });
+          resolve(record);
+        }, time);
+      }
     })
   };
 
