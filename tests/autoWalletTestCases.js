@@ -151,85 +151,91 @@ describe("Command Wallet Auto Test", function() {
       let option;
 
       it(tcid + ':' + operType + '-->' + type + '-->' + summary, async () => {
-        let command1 = testData[i][xlsxHeaderPos.firstCMD];
-        let option1 = JSON.parse(testData[i][xlsxHeaderPos.firstOption]);
+        try {
+          let command1 = testData[i][xlsxHeaderPos.firstCMD];
+          let option1 = JSON.parse(testData[i][xlsxHeaderPos.firstOption]);
 
-        if (option1.password == undefined) {
-          option1.password = password;
-        }
+          if (option1.password == undefined) {
+            option1.password = password;
+          }
 
-        if (!(/^(0x)?[0-9a-fA-F]{40}$/i.test(option1.cross))) {
-          let cross = getWanAccounts(option1.cross);
-          option1.cross = cross;
-        }
+          if (!(/^(0x)?[0-9a-fA-F]{40}$/i.test(option1.cross))) {
+            let cross = getWanAccounts(option1.cross);
+            option1.cross = cross;
+          }
 
-        let firstCmd = new templateCommand(command1);
-        let result = await firstCmd.runProc(option1);
+          let firstCmd = new templateCommand(command1);
+          let result = await firstCmd.runProc(option1);
 
-        if ((flag === 1 && type === 'Rainy') || result === null || (!checkHash(result))) {
-          assert.equal(result, output);
-        } else {
-          let testcore = new testCore(config);
-          await testcore.init();
-          // testcore.mrinit();
-
-          let lockTxHash = result.replace(/[\r\n]/g, "");
-          let isHash = checkHash(lockTxHash);
-          assert.equal(isHash, true, lockTxHash);
-          option = {
-            'lockTxHash': lockTxHash
-          };
-
-          record = await testcore.getRecord(option);
-          assert.equal(record.lockTxHash, lockTxHash);
-
-          if (flag === 1 && type === 'Sunny') {
-            assert.equal(record.status, status, "record.status is wrong");
+          if ((flag === 1 && type === 'Rainy') || result === null || (!checkHash(result))) {
+            assert.equal(result, output);
           } else {
-            assert.equal(record.status, 'sentHashPending', "record.status is wrong");
+            let testcore = new testCore(config);
+            let testcoreInit = await testcore.init();
+            assert.equal(testcoreInit, true);
 
-            while (stateDict[record.status] < stateDict['waitingX']) {
-              record = await testcore.sleepAndUpdateStatus(sleepTime, option);
-            }
-            assert.equal(record.status, 'waitingX', "record.status is wrong");
+            let lockTxHash = result.replace(/[\r\n]/g, "");
+            let isHash = checkHash(lockTxHash);
+            assert.equal(isHash, true, lockTxHash);
+            option = {
+              'lockTxHash': lockTxHash
+            };
 
-            await testcore.close();
+            record = await testcore.getRecord(option);
+            assert.equal(record.lockTxHash, lockTxHash);
 
-            let command2 = testData[i][xlsxHeaderPos.secondCMD];
-            let option2 = JSON.parse(testData[i][xlsxHeaderPos.secondOption]);
-            option2.password = password;
-            option2.lockTxHash = lockTxHash;
-            let secondCmd = new templateCommand(command2);
-            result = await secondCmd.runProc(option2);
-
-            if (type === 'Sunny' || result === null || (!checkHash(result))) {
-              let resultTxHash = result.replace(/[\r\n]/g, "");
-              let isHash = checkHash(resultTxHash);
-              assert.equal(isHash, true, resultTxHash);
-
-              await testcore.init();
-              // testcore.mrinit();
-
-              if (command2 === 'RefundWAN' || command2 === 'RefundETH') {
-                while (stateDict[record.status] < stateDict['refundFinished']) {
-                  record = await testcore.sleepAndUpdateStatus(sleepTime, option);
-                }
-                assert.equal(record.refundTxHash, resultTxHash);
-              }
-              if (command2 === 'RevokeWAN' || command2 === 'RevokeETH') {
-                while (stateDict[record.status] < stateDict['revokeFinished']) {
-                  record = await testcore.sleepAndUpdateStatus(sleepTime, option);
-                }
-                assert.equal(record.revokeTxHash, resultTxHash);
-              }
+            if (flag === 1 && type === 'Sunny') {
               assert.equal(record.status, status, "record.status is wrong");
             } else {
-              assert.equal(result, output);
+              assert.equal(record.status, 'sentHashPending', "record.status is wrong");
+
+              while (stateDict[record.status] < stateDict['waitingX']) {
+                record = await testcore.sleepAndUpdateStatus(sleepTime, option);
+              }
+              assert.equal(record.status, 'waitingX', "record.status is wrong");
+
+              testcore.close();
+
+              let command2 = testData[i][xlsxHeaderPos.secondCMD];
+              let option2 = JSON.parse(testData[i][xlsxHeaderPos.secondOption]);
+              option2.password = password;
+              option2.lockTxHash = lockTxHash;
+              let secondCmd = new templateCommand(command2);
+              result = await secondCmd.runProc(option2);
+
+              if (type === 'Sunny' || result === null || (!checkHash(result))) {
+                let resultTxHash = result.replace(/[\r\n]/g, "");
+                let isHash = checkHash(resultTxHash);
+                assert.equal(isHash, true, resultTxHash);
+
+                testcoreInit = await testcore.init();
+                assert.equal(testcoreInit, true);
+
+                if (command2 === 'RefundWAN' || command2 === 'RefundETH') {
+                  while (stateDict[record.status] < stateDict['refundFinished']) {
+                    record = await testcore.sleepAndUpdateStatus(sleepTime, option);
+                  }
+                  assert.equal(record.refundTxHash, resultTxHash);
+                }
+                if (command2 === 'RevokeWAN' || command2 === 'RevokeETH') {
+                  while (stateDict[record.status] < stateDict['revokeFinished']) {
+                    record = await testcore.sleepAndUpdateStatus(sleepTime, option);
+                  }
+                  assert.equal(record.revokeTxHash, resultTxHash);
+                }
+                assert.equal(record.status, status, "record.status is wrong");
+              } else {
+                assert.equal(result, output);
+              }
             }
+            testcore.close();
           }
-          await testcore.close();
+        } catch (err) {
+          console.log("CASE error", err);
+          assert.equal(err, null);
         }
       });
+
     }
   }
 });

@@ -55,12 +55,13 @@ class testCore {
       newWebSocket.connection.on('open', async function _cb() {
         recordMonitor(config, self.ethSend, self.wanSend);
         self.backend.init(config, self.ethSend, self.wanSend, function() {
-          resolve();
+          resolve(true);
         });
       })
 
       newWebSocket.connection.on('error', function() {
         log.error("error");
+        fail("connection error")
       });
     });
   }
@@ -72,6 +73,7 @@ class testCore {
       databaseGroup.databaseAry[key].db.close();
     }
     this.wanSend.socket.connection.close();
+    log.debug("testCore close");
   }
 
   getSenderbyChain(chainType) {
