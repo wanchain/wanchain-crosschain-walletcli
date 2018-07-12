@@ -8,7 +8,7 @@ function CheckProcessExit(value) {
 };
 module.exports = {
     passwordPattern : '[^\u4e00-\u9fa5]+',
-    floatPattern : /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/,
+    floatPattern : /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.[\d]{1,18})$/,
     UintPattern : /^[1-9]\d*$/,
     YesNoPattern : /^y$|^Y$|^n$|^N$/,
     addressPattern: /^(0x)?[0-9a-fA-F]{40}$/,

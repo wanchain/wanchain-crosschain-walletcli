@@ -7,7 +7,7 @@ exports.Description = {
     lockTxHash: 'Enter the index of the lockTransaction hash(1, 2, 3..):',
     toAddress: 'Enter Recipient\'s address:',
     address: 'Enter account address:',
-    amount: 'Enter transfer amount: ',
+    amount: 'Enter transfer amount(Up to 18 decimal places): ',
     inputFee: 'Input the transaction fee:',
     gasLimit: 'Input gas limit: ',
     gasPrice: 'Input gas price (Price limit is between 180Gwin-600Gwin): ',
