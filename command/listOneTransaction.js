@@ -39,13 +39,7 @@ let tsf = require('./tranStatusFactory.js');  // tsf:  trans status factory.
                     console.log(sprintf("%46s\t%46s","Status:",`${status}`.blue));
                     break;
                 default:
-                    console.log(sprintf("%46s %46s %10s %66s %20s",
-                        records[i].from,
-                        records[i].crossAdress,
-                        records[i].value,
-                        records[i].HashX,
-                        `${status}`));
-
+                    console.log(sprintf("%46s\t%46s","Status:",`${status}`));
             }
 
             console.log(sprintf("%46s\t%46s","from Address:",records[i].from));
