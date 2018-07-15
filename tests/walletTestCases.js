@@ -78,6 +78,9 @@ function getWanAccounts(index) {
 }
 
 function checkHash(hash) {
+  if (hash === null) {
+  	return false;
+  }
   let thash = hash.replace(/[\r\n]/g, "");
   return (/^(0x)?[0-9a-fA-F]{64}$/i.test(thash));
 }
@@ -108,7 +111,7 @@ describe.only('New Command Wallet test cases', () => {
       from: '1',
       storemanGroup: '1',
       cross: getWanAccounts(1),
-      amount: '0.5',
+      amount: '0.001',
       gasPrice: '200',
       gas: '2000000',
       password: password
@@ -116,7 +119,7 @@ describe.only('New Command Wallet test cases', () => {
     let refundWANCmd = new templateCommand("RefundWAN");
     let refundWANCmdOptions = {
       lockTxHash: '1',
-      gasPrice: '300',
+      gasPrice: '200',
       gas: '2000000',
       password: password
     };
@@ -130,15 +133,15 @@ describe.only('New Command Wallet test cases', () => {
     let beforeWETHBalance = new BigNumber(beforeWanAccountInfo.wethBalance);
     let beforeWANBalance = new BigNumber(beforeWanAccountInfo.balance);
 
-    await testcore.close();
+    testcore.close();
 
     let lockTxHash = await lockETHCmd.runProc(lockETHCmdOptions);
     console.log("LockETH successfully with result-lockTxHash", lockTxHash);
 
-    await testcore.init();
-
     let isHash = checkHash(lockTxHash);
     assert.equal(isHash, true, lockTxHash);
+
+    await testcore.init();
 
     lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
     option = {
@@ -168,7 +171,7 @@ describe.only('New Command Wallet test cases', () => {
     }
     assert.equal(record.status, 'waitingX', "record.status is wrong");
 
-    await testcore.close();
+    testcore.close();
 
     let refundTxHash = await refundWANCmd.runProc(refundWANCmdOptions);
     refundTxHash = refundTxHash.replace(/[\r\n]/g, "");
@@ -199,7 +202,7 @@ describe.only('New Command Wallet test cases', () => {
     assert.equal(afterStep2WETHBalance.toString(), beforeWETHBalance.add(testcore.web3.toWei(lockETHCmdOptions.amount)).toString());
     assert.equal(afterStep2WANBalance.toString(), beforeWANBalance.sub(gasPrice2.mul(gasUsed2).mul(gWei)).toString());
 
-    await testcore.close();
+    testcore.close();
   });
 
   it('TC0002: ETH-WETH Trans normal case status check.', async () => {
@@ -210,7 +213,7 @@ describe.only('New Command Wallet test cases', () => {
       from: '1',
       storemanGroup: '1',
       cross: getWanAccounts(1),
-      amount: '0.01',
+      amount: '0.001',
       gasPrice: '200',
       gas: '2000000',
       password: password
@@ -229,10 +232,10 @@ describe.only('New Command Wallet test cases', () => {
     let lockTxHash = await lockETHCmd.runProc(lockETHCmdOptions);
     console.log("LockETH successfully with result-lockTxHash", lockTxHash);
 
-    await testcore.init();
-
     let isHash = checkHash(lockTxHash);
     assert.equal(isHash, true, lockTxHash);
+
+    await testcore.init();
 
     lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
     option = {
@@ -268,7 +271,7 @@ describe.only('New Command Wallet test cases', () => {
     assert.equal(record.status, 'waitingX', "record.status is wrong");
     // result = await testcore.checkCrossHashConfirm(record, waitBlocks);
 
-    await testcore.close();
+    testcore.close();
     let refundTxHash = await refundWANCmd.runProc(refundWANCmdOptions);
     console.log("refundWAN successfully with result-refundTxHash", refundTxHash);
     refundTxHash = refundTxHash.replace(/[\r\n]/g, "");
@@ -297,7 +300,7 @@ describe.only('New Command Wallet test cases', () => {
     assert.equal(record.status, 'refundFinished', "record.status is wrong");
     // result = await testcore.checkXConfirm(record, waitBlocks);
 
-    await testcore.close();
+    testcore.close();
   });
 
   it('TC0003: ETH-WETH LockETH wrong from case.', async () => {
@@ -307,7 +310,7 @@ describe.only('New Command Wallet test cases', () => {
       from: '10',
       storemanGroup: '1',
       cross: getWanAccounts(1),
-      amount: '0.01',
+      amount: '0.001',
       gasPrice: '200',
       gas: '2000000',
       password: password
@@ -340,7 +343,7 @@ describe.only('New Command Wallet test cases', () => {
         beforeWanAccountInfo = await testcore.getWanAccountsInfo(record.crossAdress);
       }
 
-      await testcore.close();
+      testcore.close();
 
       if (record.length !== 0) {
         assert.equal(record.status, 'waitingRevoke');
@@ -383,7 +386,7 @@ describe.only('New Command Wallet test cases', () => {
         let afterWETHBalance = new BigNumber(afterWanAccountInfo.wethBalance);
         let afterWANBalance = new BigNumber(afterWanAccountInfo.balance);
 
-        await testcore.close();
+        testcore.close();
 
         assert.equal(record.revokeTxHash, revokeTxHash);
         assert.equal(record.status, 'revokeFinished', "record.status is wrong");
@@ -406,7 +409,7 @@ describe.only('New Command Wallet test cases', () => {
       from: '1',
       storemanGroup: '1',
       cross: getEthAccounts(1),
-      amount: '0.5',
+      amount: '0.001',
       gasPrice: '200',
       gas: '2000000',
       password: password
@@ -414,7 +417,7 @@ describe.only('New Command Wallet test cases', () => {
     let refundETHCmd = new templateCommand("RefundETH");
     let refundETHCmdOptions = {
       lockTxHash: '1',
-      gasPrice: '300',
+      gasPrice: '200',
       gas: '2000000',
       password: password
     };
@@ -429,15 +432,15 @@ describe.only('New Command Wallet test cases', () => {
     let beforeWETHBalance = new BigNumber(beforeWanAccountInfo.wethBalance);
     let beforeWANBalance = new BigNumber(beforeWanAccountInfo.balance);
 
-    await testcore.close();
+    testcore.close();
 
     let lockTxHash = await lockWANCmd.runProc(lockWANCmdOptions);
     console.log("LockWAN successfully with result-lockTxHash", lockTxHash);
 
-    await testcore.init();
-
     let isHash = checkHash(lockTxHash);
     assert.equal(isHash, true, lockTxHash);
+
+    await testcore.init();
 
     lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
     option = {
@@ -476,7 +479,8 @@ describe.only('New Command Wallet test cases', () => {
     }
     assert.equal(record.status, 'waitingX', "record.status is wrong");
 
-    await testcore.close();
+    testcore.close();
+
     let refundTxHash = await refundETHCmd.runProc(refundETHCmdOptions);
     refundTxHash = refundTxHash.replace(/[\r\n]/g, "");
 
@@ -500,7 +504,7 @@ describe.only('New Command Wallet test cases', () => {
 
     assert.equal(afterStep2ETHBalance.toString(), beforeETHBalance.add(testcore.web3.toWei(lockWANCmdOptions.amount)).sub(gasPrice2.mul(gasUsed2).mul(gWei)).toString());
 
-    await testcore.close();
+    testcore.close();
   });
 
   it('TC0006: WETH-ETH Trans normal case status check.', async () => {
@@ -511,7 +515,7 @@ describe.only('New Command Wallet test cases', () => {
       from: '1',
       storemanGroup: '1',
       cross: getEthAccounts(1),
-      amount: '0.01',
+      amount: '0.001',
       gasPrice: '200',
       gas: '2000000',
       password: password
@@ -530,10 +534,10 @@ describe.only('New Command Wallet test cases', () => {
     let lockTxHash = await lockWANCmd.runProc(lockWANCmdOptions);
     console.log("LockWAN successfully with result-lockTxHash", lockTxHash);
 
-    await testcore.init();
-
     let isHash = checkHash(lockTxHash);
     assert.equal(isHash, true, lockTxHash);
+
+    await testcore.init();
 
     lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
     option = {
@@ -569,7 +573,7 @@ describe.only('New Command Wallet test cases', () => {
     assert.equal(record.status, 'waitingX', "record.status is wrong");
     // result = await testcore.checkCrossHashConfirm(record, waitBlocks);
 
-    await testcore.close();
+    testcore.close();
     let refundTxHash = await refundETHCmd.runProc(refundETHCmdOptions);
     console.log("refundETH successfully with result-refundTxHash", refundTxHash);
     refundTxHash = refundTxHash.replace(/[\r\n]/g, "");
@@ -598,7 +602,7 @@ describe.only('New Command Wallet test cases', () => {
     assert.equal(record.status, 'refundFinished', "record.status is wrong");
     // result = await testcore.checkXConfirm(record, waitBlocks);
 
-    await testcore.close();
+    testcore.close();
   });
 
   it('TC0007: WETH-ETH LockWAN wrong from case.', async () => {
@@ -608,7 +612,7 @@ describe.only('New Command Wallet test cases', () => {
       from: '10',
       storemanGroup: '1',
       cross: getWanAccounts(1),
-      amount: '0.01',
+      amount: '0.001',
       gasPrice: '200',
       gas: '2000000',
       password: password
@@ -642,7 +646,7 @@ describe.only('New Command Wallet test cases', () => {
         beforeWanAccountInfo = await testcore.getWanAccountsInfo(record.from);
       }
 
-      await testcore.close();
+      testcore.close();
 
       if (record.length !== 0) {
         assert.equal(record.status, 'waitingRevoke');
@@ -690,7 +694,7 @@ describe.only('New Command Wallet test cases', () => {
         let txFeeRatio = (await testcore.getEthStoremanInfo(record.storeman)).txFeeRatio;
         let fee = testcore.backend.calculateLocWanFee(amount, c2wRatio, txFeeRatio);
 
-        await testcore.close();
+        testcore.close();
 
         assert.equal(record.revokeTxHash, revokeTxHash);
         assert.equal(record.status, 'revokeFinished', "record.status is wrong");

@@ -64,6 +64,9 @@ for (let i = 0; i < header.length; i++) {
 }
 
 function checkHash(hash) {
+  if (hash === null) {
+    return false;
+  }
   let thash = hash.replace(/[\r\n]/g, "");
   if (/^(0x)?[0-9a-fA-F]{64}$/i.test(thash)) {
     // check if it has the basic requirements of an hash
@@ -137,7 +140,7 @@ describe("Command Wallet Auto Test", function() {
 
   for (let i = 1; i < testData.length; i++) {
     if (testData[i].length !== 0 &&
-      // testData[i][xlsxHeaderPos.tcId] === 'TC1007' &&
+      //testData[i][xlsxHeaderPos.tcId] === 'TC1023' &&
       // testData[i][xlsxHeaderPos.type] === 'Sunny' &&
       testData[i][xlsxHeaderPos.flag] !== skipKeyword) {
       let tcid = testData[i][xlsxHeaderPos.tcId];
@@ -152,6 +155,7 @@ describe("Command Wallet Auto Test", function() {
 
       it(tcid + ':' + operType + '-->' + type + '-->' + summary, async () => {
         try {
+          console.log('Test case:' + tcid + ':' + operType + '-->' + type + '-->' + summary);
           let command1 = testData[i][xlsxHeaderPos.firstCMD];
           let option1 = JSON.parse(testData[i][xlsxHeaderPos.firstOption]);
 

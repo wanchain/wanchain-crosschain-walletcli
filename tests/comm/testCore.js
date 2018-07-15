@@ -23,10 +23,10 @@ function checkAddress(address) {
   return /^(0x)?[0-9a-fA-F]{40}$/i.test(address);
 }
 
-// const {
-//   getLogger
-// } = require('./logger.js');
-const log = config.getLogger("Wallet_TC");
+const {
+  getLogger
+} = require('./logger.js');
+const log = getLogger("Wallet_TC_Core");
 
 class testCore {
   constructor(config, callback = false) {
@@ -59,8 +59,8 @@ class testCore {
         });
       })
 
-      newWebSocket.connection.on('error', function() {
-        log.error("error");
+      newWebSocket.connection.on('error', function(err) {
+        log.error(err);
         fail("connection error")
       });
     });
@@ -74,6 +74,7 @@ class testCore {
     }
     this.wanSend.socket.connection.close();
     log.debug("testCore close");
+    // log.logger.close();
   }
 
   getSenderbyChain(chainType) {
