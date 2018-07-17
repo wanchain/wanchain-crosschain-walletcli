@@ -7,7 +7,7 @@ const fs = require('fs');
 const testCore = require('./comm/testCore.js');
 const templateCommand = require("./comm/templateCmd.js").templateCommand;
 const config = require('../config.js');
-const password = "wanglu";
+const password = process.env.KEYSTORE_PWD;//wanglu
 const sleepTime = 90000;
 const skipKeyword = 'skip';
 

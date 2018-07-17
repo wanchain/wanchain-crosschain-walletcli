@@ -10,7 +10,8 @@ const fs = require('fs');
 var BigNumber = require('bignumber.js');
 const gWei = 1000000000;
 
-const password = "wanglu";
+const password = process.env.KEYSTORE_PWD;//wanglu
+
 let sleepTime;
 let needClose = false;
 
@@ -23,11 +24,12 @@ const stateDict = {
   sentXPending: 6,
   sentXConfirming: 7,
   refundFinished: 8,
-  waitingRevoke: 9,
-  sentRevokePending: 10,
-  sentRevokeConfirming: 11,
-  revokeFinished: 12,
-  sentHashFailed: 13
+  suspending: 9,
+  waitingRevoke: 10,
+  sentRevokePending: 11,
+  sentRevokeConfirming: 12,
+  revokeFinished: 13,
+  sentHashFailed: 14
 };
 
 var ethAccounts = {};
@@ -112,7 +114,7 @@ describe.only('New Command Wallet test cases', () => {
       storemanGroup: '1',
       cross: getWanAccounts(1),
       amount: '0.001',
-      gasPrice: '200',
+      gasPrice: '10',
       gas: '2000000',
       password: password
     };
@@ -214,7 +216,7 @@ describe.only('New Command Wallet test cases', () => {
       storemanGroup: '1',
       cross: getWanAccounts(1),
       amount: '0.001',
-      gasPrice: '200',
+      gasPrice: '10',
       gas: '2000000',
       password: password
     };
@@ -226,8 +228,8 @@ describe.only('New Command Wallet test cases', () => {
       password: password
     };
 
-    let result;
-    let waitBlocks = config.confirmBlocks;
+    // let result;
+    // let waitBlocks = config.confirmBlocks;
 
     let lockTxHash = await lockETHCmd.runProc(lockETHCmdOptions);
     console.log("LockETH successfully with result-lockTxHash", lockTxHash);
@@ -303,7 +305,7 @@ describe.only('New Command Wallet test cases', () => {
     testcore.close();
   });
 
-  it('TC0003: ETH-WETH LockETH wrong from case.', async () => {
+  it('TC0003: ETH-WETH LockETH fail case: example.', async () => {
     needClose = false;
     let lockETHCmd = new templateCommand("LockETH");
     let lockETHCmdOptions = {
@@ -311,7 +313,7 @@ describe.only('New Command Wallet test cases', () => {
       storemanGroup: '1',
       cross: getWanAccounts(1),
       amount: '0.001',
-      gasPrice: '200',
+      gasPrice: '10',
       gas: '2000000',
       password: password
     };
@@ -320,7 +322,61 @@ describe.only('New Command Wallet test cases', () => {
     assert.equal(result, 'You entered the wrong number.');
   });
 
-  it('TC0004: ETH-WETH RevokeETHTrans normal case.', async () => {
+  it('TC0004: ETH-WETH Trans fail case: sentHashFailed because of low gas to sendTransaction.', async () => {
+    sleepTime = 20000;
+    needClose = true;
+    let lockETHCmd = new templateCommand("LockETH");
+    let lockETHCmdOptions = {
+      from: '1',
+      storemanGroup: '1',
+      cross: getWanAccounts(1),
+      amount: '0.001',
+      gasPrice: '10',
+      gas: '100000',
+      password: password
+    };
+
+    await testcore.init();
+    let beforeETHBalance = new BigNumber((await testcore.getEthAccountsInfo(getEthAccounts(lockETHCmdOptions.from))).balance);
+
+    testcore.close();
+
+    let lockTxHash = await lockETHCmd.runProc(lockETHCmdOptions);
+    console.log("LockETH successfully get result-lockTxHash", lockTxHash);
+
+    let isHash = checkHash(lockTxHash);
+    assert.equal(isHash, true, lockTxHash);
+
+    await testcore.init();
+
+    lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
+    option = {
+      'lockTxHash': lockTxHash
+    };
+
+    record = await testcore.getRecord(option);
+    assert.equal(record.lockTxHash, lockTxHash);
+    assert.equal(record.status, 'sentHashPending', "record.status is wrong");
+
+    while (stateDict[record.status] < stateDict['waitingCross']) {
+      record = await testcore.sleepAndUpdateStatus(sleepTime, option);
+    }
+
+    let receipt = await testcore.getTxReceipt('ETH', lockTxHash);
+    assert.equal(receipt.status, "0x0");
+
+    let gasUsed = new BigNumber(receipt.gasUsed);
+    let gasPrice = new BigNumber(lockETHCmdOptions.gasPrice);
+    let afterStep1ETHBalance = new BigNumber((await testcore.getEthAccountsInfo(getEthAccounts(lockETHCmdOptions.from))).balance);
+
+    assert.equal(afterStep1ETHBalance.toString(), beforeETHBalance.sub(gasPrice.mul(gasUsed).mul(gWei)).toString());
+
+    assert.equal(record.status, 'sentHashFailed', "record.status is wrong");
+
+    testcore.close();
+  });
+
+  it('TC0005: ETH-WETH RevokeETHTrans normal case.', async () => {
     sleepTime = 40000;
     needClose = true;
     option = {
@@ -401,7 +457,7 @@ describe.only('New Command Wallet test cases', () => {
     }
   });
 
-  it('TC0005: WETH-ETH Trans normal case.', async () => {
+  it('TC0006 WETH-ETH Trans normal case.', async () => {
     sleepTime = 90000;
     needClose = true;
     let lockWANCmd = new templateCommand("LockWAN");
@@ -417,7 +473,7 @@ describe.only('New Command Wallet test cases', () => {
     let refundETHCmd = new templateCommand("RefundETH");
     let refundETHCmdOptions = {
       lockTxHash: '1',
-      gasPrice: '200',
+      gasPrice: '10',
       gas: '2000000',
       password: password
     };
@@ -507,7 +563,7 @@ describe.only('New Command Wallet test cases', () => {
     testcore.close();
   });
 
-  it('TC0006: WETH-ETH Trans normal case status check.', async () => {
+  it('TC0007: WETH-ETH Trans normal case status check.', async () => {
     sleepTime = 4000;
     needClose = true;
     let lockWANCmd = new templateCommand("LockWAN");
@@ -523,13 +579,13 @@ describe.only('New Command Wallet test cases', () => {
     let refundETHCmd = new templateCommand("RefundETH");
     let refundETHCmdOptions = {
       lockTxHash: '1',
-      gasPrice: '200',
+      gasPrice: '10',
       gas: '2000000',
       password: password
     };
 
-    let result;
-    let waitBlocks = config.confirmBlocks;
+    // let result;
+    // let waitBlocks = config.confirmBlocks;
 
     let lockTxHash = await lockWANCmd.runProc(lockWANCmdOptions);
     console.log("LockWAN successfully with result-lockTxHash", lockTxHash);
@@ -605,7 +661,7 @@ describe.only('New Command Wallet test cases', () => {
     testcore.close();
   });
 
-  it('TC0007: WETH-ETH LockWAN wrong from case.', async () => {
+  it('TC0008: WETH-ETH LockWAN fail case: example.', async () => {
     needClose = false;
     let lockWANCmd = new templateCommand("LockWAN");
     let lockWANCmdOptions = {
@@ -622,7 +678,71 @@ describe.only('New Command Wallet test cases', () => {
     assert.equal(result, 'You entered the wrong number.');
   });
 
-  it('TC0008: WETH-ETH RevokeWANTrans normal case.', async () => {
+  it('TC0009 WETH-ETH Trans fail case: sentHashFailed because of low gas to sendTransaction.', async () => {
+    sleepTime = 20000;
+    needClose = true;
+    let lockWANCmd = new templateCommand("LockWAN");
+    let lockWANCmdOptions = {
+      from: '1',
+      storemanGroup: '1',
+      cross: getEthAccounts(1),
+      amount: '0.001',
+      gasPrice: '200',
+      gas: '100000',
+      password: password
+    };
+
+    await testcore.init();
+
+    let beforeETHBalance = new BigNumber((await testcore.getEthAccountsInfo(lockWANCmdOptions.cross)).balance);
+    let beforeWanAccountInfo = await testcore.getWanAccountsInfo(getWanAccounts(lockWANCmdOptions.from));
+    let beforeWETHBalance = new BigNumber(beforeWanAccountInfo.wethBalance);
+    let beforeWANBalance = new BigNumber(beforeWanAccountInfo.balance);
+
+    testcore.close();
+
+    let lockTxHash = await lockWANCmd.runProc(lockWANCmdOptions);
+    console.log("LockWAN successfully get result-lockTxHash", lockTxHash);
+
+    let isHash = checkHash(lockTxHash);
+    assert.equal(isHash, true, lockTxHash);
+
+    await testcore.init();
+
+    lockTxHash = lockTxHash.replace(/[\r\n]/g, "");
+    option = {
+      'lockTxHash': lockTxHash
+    };
+
+    record = await testcore.getRecord(option);
+    assert.equal(record.lockTxHash, lockTxHash);
+    assert.equal(record.status, 'sentHashPending', "record.status is wrong");
+
+    while (stateDict[record.status] < stateDict['waitingCross']) {
+      record = await testcore.sleepAndUpdateStatus(sleepTime, option);
+    }
+
+    let receipt = await testcore.getTxReceipt('WAN', lockTxHash);
+    assert.equal(receipt.status, "0x0");
+
+    let gasUsed = new BigNumber(receipt.gasUsed);
+    let gasPrice = new BigNumber(lockWANCmdOptions.gasPrice);
+
+    let afterStep1ETHBalance = new BigNumber((await testcore.getEthAccountsInfo(lockWANCmdOptions.cross)).balance);
+    let afterStep1WanAccountInfo = await testcore.getWanAccountsInfo(getWanAccounts(lockWANCmdOptions.from));
+    let afterStep1WETHBalance = new BigNumber(afterStep1WanAccountInfo.wethBalance);
+    let afterStep1WANBalance = new BigNumber(afterStep1WanAccountInfo.balance);
+
+    assert.equal(afterStep1ETHBalance.toString(), beforeETHBalance.toString());
+    assert.equal(afterStep1WETHBalance.toString(), beforeWETHBalance.toString());
+    assert.equal(afterStep1WANBalance.toString(), beforeWANBalance.sub(gasPrice.mul(gasUsed).mul(gWei)).toString());
+
+    assert.equal(record.status, 'sentHashFailed', "record.status is wrong");
+
+    testcore.close();
+  });
+
+  it('TC0010: WETH-ETH RevokeWANTrans normal case.', async () => {
     sleepTime = 40000;
     needClose = true;
     option = {
