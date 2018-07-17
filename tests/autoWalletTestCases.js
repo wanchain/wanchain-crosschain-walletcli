@@ -124,23 +124,23 @@ function getWanAccounts(index) {
 }
 
 describe("Command Wallet Auto Test", function() {
-  // let testcore;
+  let testcore;
 
   before(function() {
     console.log(testCaseFile);
     listAccounts();
-    // testcore = new testCore(config);
+    testcore = new testCore(config);
   });
 
   after(function() {
-    // if (!testcore.isClose) {
-    //   testcore.close();
-    // }
+    if (!testcore.isClose) {
+      testcore.close();
+    }
   });
 
   for (let i = 1; i < testData.length; i++) {
     if (testData[i].length !== 0 &&
-      //testData[i][xlsxHeaderPos.tcId] === 'TC1023' &&
+      // testData[i][xlsxHeaderPos.tcId] === 'TC2024' &&
       // testData[i][xlsxHeaderPos.type] === 'Sunny' &&
       testData[i][xlsxHeaderPos.flag] !== skipKeyword) {
       let tcid = testData[i][xlsxHeaderPos.tcId];
@@ -174,7 +174,7 @@ describe("Command Wallet Auto Test", function() {
           if ((flag === 1 && type === 'Rainy') || result === null || (!checkHash(result))) {
             assert.equal(result, output);
           } else {
-            let testcore = new testCore(config);
+            // let testcore = new testCore(config);
             let testcoreInit = await testcore.init();
             assert.equal(testcoreInit, true);
 
@@ -207,7 +207,7 @@ describe("Command Wallet Auto Test", function() {
               let secondCmd = new templateCommand(command2);
               result = await secondCmd.runProc(option2);
 
-              if (type === 'Sunny' || result === null || (!checkHash(result))) {
+              if (type === 'Sunny' && result !== null && checkHash(result)) {
                 let resultTxHash = result.replace(/[\r\n]/g, "");
                 let isHash = checkHash(resultTxHash);
                 assert.equal(isHash, true, resultTxHash);

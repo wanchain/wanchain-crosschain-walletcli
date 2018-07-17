@@ -113,7 +113,7 @@ describe.only('New Command Wallet test cases', () => {
       from: '1',
       storemanGroup: '1',
       cross: getWanAccounts(1),
-      amount: '0.001',
+      amount: '0.001234567891234567',
       gasPrice: '10',
       gas: '2000000',
       password: password
@@ -465,7 +465,7 @@ describe.only('New Command Wallet test cases', () => {
       from: '1',
       storemanGroup: '1',
       cross: getEthAccounts(1),
-      amount: '0.001',
+      amount: '0.001234567891234567',
       gasPrice: '200',
       gas: '2000000',
       password: password
