@@ -553,7 +553,7 @@ describe.only('New Command Wallet test cases', () => {
     assert.equal(record.status, 'refundFinished', "record.status is wrong");
 
     assert.equal(result.status, "0x1");
-    assert.equal(result.from, lockWANCmdOptions.cross.toLowerCase());
+    // assert.equal(result.from, lockWANCmdOptions.cross.toLowerCase());
     let gasUsed2 = new BigNumber(result.gasUsed);
     let gasPrice2 = new BigNumber(refundETHCmdOptions.gasPrice);
     let afterStep2ETHBalance = new BigNumber((await testcore.getEthAccountsInfo(lockWANCmdOptions.cross)).balance);
