@@ -73,7 +73,7 @@ class templateDetailCommand {
     //   this.proc.stdin.write('q\n');
     // });
     this.proc.on('close', (code) => {
-      log.debug(`Chile process quit code：${code}`);
+      log.debug(`Child process quit code：${code}`);
     });
   };
 
@@ -279,7 +279,7 @@ class templateScriptCommand {
       }
     });
     this.proc.on('close', (code) => {
-      log.debug(`Chile process quit code：${code}`);
+      log.debug(`Child process quit code：${code}`);
     });
   };
 
