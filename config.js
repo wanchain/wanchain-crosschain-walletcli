@@ -1,5 +1,5 @@
 const config = {};
-config.socketUrl = 'wss://apitest.wanchain.info';
+config.socketUrl = 'ws://18.237.186.227:8080/';
 var wanchainNet = 'testnet';
 var ethereumNet = 'testnet';
 const path=require('path');
@@ -26,6 +26,7 @@ if (process.platform === 'freebsd' ||
     process.platform === 'sunos') {
     config.rpcIpcPath += '/.wanchain/'+'gwan.ipc';
     config.keyStorePath = path.join(config.keyStorePath, '.wanchain',wanchainNet,'keystore/');
+    //config.btckeyStorePath = path.join(config.keyStorePath, '.bitcoin',wanchainNet,'keystore/');
     config.ethkeyStorePath = path.join(config.ethkeyStorePath, '.ethereum',ethereumNet,'keystore/');
 }
 
