@@ -6,18 +6,34 @@ const wif = require('wif');
 const bip38 = require('bip38');
 const loki = require('lokijs');
 const path = require('path');
+const fs = require('fs');
 
 let bitcoinNetwork = bitcoin.networks.testnet;
 let version = 0xef;
 
-let btcDbPath = process.env.HOME;
+function mkdirsSync(dirname) {
+    if (fs.existsSync(dirname)) {
+        return true;
+    } else {
+        if (mkdirsSync(path.dirname(dirname))) {
+            fs.mkdirSync(dirname);
+            return true;
+        }
+    }
+}
+
+let btcDbPath;
 if (process.platform === 'darwin') {
-    btcDbPath = path.join(btcDbPath, '/Library/bitcoin/testnet/db/');
+    mkdirsSync(path.join(process.env.HOME, '/Library/bitcoin/testnet/db/'));
+    btcDbPath = path.join(process.env.HOME, '/Library/bitcoin/testnet/db/');
 }else if (process.platform === 'win32') {
+    mkdirsSync(path.join(process.env.APPDATA, 'bitcoin/testnet/db\\'));
     btcDbPath = path.join(process.env.APPDATA, 'bitcoin/testnet/db\\');
 } else {
-    btcDbPath = path.join(btcDbPath, '.bitcoin/testnet/db/');
+    mkdirsSync(path.join(process.env.HOME, '.bitcoin/testnet/db/'));
+    btcDbPath = path.join(process.env.HOME, '.bitcoin/testnet/db/');
 }
+console.log(btcDbPath);
 
 let db = new loki(path.join(btcDbPath, 'btc.db'),{
     autoload: true,
