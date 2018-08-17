@@ -1,5 +1,5 @@
 const winston = require("winston");
-require('winston-daily-rotate-file');
+//require('winston-daily-rotate-file');
 const moment = require('moment');
 const util = require('util');
 const MESSAGE = Symbol.for('message');
@@ -51,14 +51,14 @@ class Logger {
         //   maxSize: '20m',
         //   maxFiles: '5d'
         // }),
-        new(winston.transports.DailyRotateFile)({
-          filename: file,
-          level: level,
-          datePattern: 'YYYY-MM-DD',
-          zippedArchive: false,
-          maxSize: '50m',
-          maxFiles: '5d'
-        })
+        // new(winston.transports.DailyRotateFile)({
+        //   filename: file,
+        //   level: level,
+        //   datePattern: 'YYYY-MM-DD',
+        //   zippedArchive: false,
+        //   maxSize: '50m',
+        //   maxFiles: '5d'
+        // })
       ]
     });
   }

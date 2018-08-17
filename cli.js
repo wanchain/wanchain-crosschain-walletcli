@@ -12,6 +12,7 @@ const assert = require('chai').assert;
 const Web3 = require("web3");
 var web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 const client = new Client(config.btcServer.regtest);
+const feeRate = 55;
 
 const vorpal = require('vorpal')();
 // setInterval(function(){
@@ -52,6 +53,7 @@ var alice = bitcoin.ECPair.fromWIF(
 );
 const userWanAddr = "0xbd100cf8286136659a7d63a38a154e28dbf3e0fd";
 const aliceAddr = getAddress(alice);
+const aliceHash160Addr = bitcoin.crypto.hash160(storeman.publicKey).toString('hex');
 const storemanAddr = getAddress(storeman);
 
 function selectUtxoTest(utxos, value) {
@@ -87,8 +89,14 @@ async function fundHtlcTest(){
     let blocknum = await ccUtil.getBlockNumber(ccUtil.btcSender);
     const lockTime = 1000;
     let redeemLockTimeStamp = blocknum + lockTime;
-    let contract = await btcUtil.hashtimelockcontract(storemanHash160,  redeemLockTimeStamp);
+    let x = btcUtil.generatePrivateKey().slice(2); // hex string without 0x
+    let hashx = bitcoin.crypto.sha256(Buffer.from(x, 'hex')).toString('hex');
+    console.log("############### x:",x);
+    console.log("############### hashx:",hashx);
+
+    let contract = await btcUtil.hashtimelockcontract(hashx, redeemLockTimeStamp, storemanHash160,aliceHash160Addr);
     lastContract = contract;
+    lastContract.x = x;
     const txb = new bitcoin.TransactionBuilder(bitcoin.networks.testnet);
     txb.setVersion(1);
     txb.addInput(utxo.txid, utxo.vout);
@@ -102,33 +110,88 @@ async function fundHtlcTest(){
     console.log("result hash:", result);
     return result;
 }
+vorpal
+    .command('lockWbtcTest', "lock  wbtc")
+    .action(async function(args,callback) {
+        let wdTx = {};
+        wdTx.storemanGroup = storemanHash160Addr;
+        tx.hashx = lastContract.hashx;
+        tx.txhash = lastTxid;
+        tx.lockedTimestamp = lastContract.redeemblocknum;
+        tx.gas = '1000000';
+        tx.gasPrice = '200000000000'; //200G;
+        tx.passwd='wanglu';
+        wdTx.from = "0xbd100cf8286136659a7d63a38a154e28dbf3e0fd";
+        wdTx.amount = 1;
+        //newTrans.createTransaction(tx.from, config.wanchainHtlcAddr, tx.amount.toString(),tx.storemanGroup,tx.cross,tx.gas,this.toGweiString(tx.gasPrice.toString()),'WETH2ETH',tx.nonce);
+        let wdHash = await ccUtil.sendWanHash(ccUtil.wanSender, wdTx);
+        console.log("wdHash: ",wdHash);
+    });
+function XXXsendDepositX(wanSender, userWanAddr,gas,gasPrice,x, passwd){
 
+}
+vorpal
+    .command('ttt', "lock  wbtc")
+    .action(async function(args,callback) {
+        const tx = {};
+        tx.storeman = storemanHash160Addr;
+        tx.userWanAddr = "0xbd100cf8286136659a7d63a38a154e28dbf3e0fd";
+        let x = "45212e642c133049fc4377dfc84938fc6d1bd9a3bb6921ea96464d7e26352ee5";
+        let vHashx = bitcoin.crypto.sha256(Buffer.from(x,'hex')).toString('hex');
+        tx.hashx = vHashx;
+        tx.gas = '1000000';
+        tx.gasPrice = '200000000000'; //200G;
+        tx.passwd='wanglu';
+
+        console.log("x:",x);
+        console.log("vHashx:", vHashx);
+        let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, tx.userWanAddr,tx.gas,tx.gasPrice,x, tx.passwd);
+        console.log("redeemHash: ", redeemHash);
+    });
 vorpal
     .command('lockBtcTest', "lock btc to wbtc")
     .action(async function(args,callback) {
         await client.sendToAddress(aliceAddr, 2);
         await client.generate(1);
         let txhash = await fundHtlcTest();
+        //let btcTx = await btcUtil.btc2wbtcLock(btcUtil.getECPairs(), 2, feeRate, storemanHash160Addr);
         lastTxid = txhash;
-        console.log("htcl lock hash: ", txhash);
         const tx = {};
         tx.storeman = storemanHash160Addr;
         tx.userWanAddr = "0xbd100cf8286136659a7d63a38a154e28dbf3e0fd";
-        tx.hashx=lastContract.hashx;
-        tx.txhash = '0x'+txhash;
-        tx.lockedTimestamp = lastContract.lockedTimestamp;
+        tx.hashx = '0x'+lastContract.hashx;
+        tx.txhash = lastTxid;
+        tx.lockedTimestamp = lastContract.redeemblocknum;
         tx.gas = '1000000';
         tx.gasPrice = '200000000000'; //200G;
         tx.passwd='wanglu';
+        console.log("######## tx.hashx: ", tx.hashx);
         let txHash = await ccUtil.sendWanNotice(ccUtil.wanSender, tx);
         console.log("sendWanNotice txHash:", txHash);
 
+        //wait storeman lock
+        console.log("check storeman lock tx");
+        while(1){
+            let crossEvent = await ccUtil.getDepositCrossLockEvent(ccUtil.wanSender, tx.hashx);
+            console.log(crossEvent);
+            if(crossEvent.length == 0){
+                console.log("wait...");
+                await pu.sleep(10000);
+            }
+            else{
+                break;
+            }
+        }
+        // sendDepositX(sender, from,gas,gasPrice,x, passwd, nonce)
+        console.log("x: ", lastContract.x);
+        let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, tx.userWanAddr,tx.gas,tx.gasPrice,'0x'+lastContract.x, tx.passwd);
+        console.log("redeemHash: ", redeemHash);
         // check the utxo is received.
         // async _verifyBtcUtxo(storemanAddr, txHash, xHash, lockedTimestamp)
-        let amount = await ccUtil._verifyBtcUtxo(storemanHash160, txhash, commitment, lastContract.lockedTlimestamp);
-        console.log("amount:   ", amount);
-        await pu.sleep(20000);
-        console.log( await web3.eth.getTransactionReceipt(txHash));
+        // let amount = await ccUtil._verifyBtcUtxo(storemanHash160, txhash, commitment, lastContract.lockedTlimestamp);
+        // console.log("amount:   ", amount);
+        // await pu.sleep(20000);
+        // console.log( await web3.eth.getTransactionReceipt(txHash));
         callback();
     });
 // vorpal
