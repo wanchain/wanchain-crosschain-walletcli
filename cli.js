@@ -52,23 +52,12 @@ var alice = bitcoin.ECPair.fromWIF(
     'cPbcvQW16faWQyAJD5sJ67acMtniFyodhvCZ4bqUnKyjataXKLd5', bitcoin.networks.testnet
 );
 const userWanAddr = "0xbd100cf8286136659a7d63a38a154e28dbf3e0fd";
-const aliceAddr = getAddress(alice);
+const aliceAddr = btcUtil.getAddressbyKeypair(alice);
 const aliceHash160Addr = bitcoin.crypto.hash160(storeman.publicKey).toString('hex');
-const storemanAddr = getAddress(storeman);
+const storemanAddr = btcUtil.getAddressbyKeypair(storeman);
 
-function selectUtxoTest(utxos, value) {
-    let utxo;
-    for(let i=0; i<utxos.length; i++){
-        if(utxos[i].amount >= value){
-            utxo = utxos[i];
-            console.log("find utxo:", utxo);
-            return utxo;
-        }
-    }
-    console.log("can't find");
-    return null;
-}
-function getAddress(keypair){
+
+function getAddressbyKeypair(keypair){
     const pkh = bitcoin.payments.p2pkh({pubkey: keypair.publicKey, network: bitcoin.networks.testnet});
     return pkh.address;
 }
@@ -78,7 +67,7 @@ async function fundHtlcTest(){
     let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, 0, 10000000, [aliceAddr]);
     console.log("utxos: ", utxos);
 
-    let utxo = selectUtxoTest(utxos, value2);
+    let utxo = btcUtil.selectUtxoTest(utxos, value2);
     if(!utxo){
         console.log("############## no utxo");
         return;
