@@ -21,7 +21,7 @@ async function main(){
 
         console.log(sprintf("%46s %26s %26s", "WAN address", "WAN balance", "WETH balance"));
         wanAddressList.forEach(function(wanAddress){
-            console.log(sprintf("%46s %26s %26s", wanAddress.address, web3.fromWei(wanAddress.balance), web3.fromWei(wanAddress.wethBalance)));
+            console.log(sprintf("%46s %26s %26s", wanAddress.address, web3.fromWei(wanAddress.balance), web3.toBigNumber(wanAddress.wethBalance).div(100000000)));
         });
 
     }catch(err) {
