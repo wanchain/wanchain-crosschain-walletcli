@@ -1,4 +1,4 @@
-module.exports = async function (invoke,chainType) {
+module.exports = async function (invoke,chainType,protocol="",opt="") {
     let config = require('../../config.js');
     let WalletCore = require('wanchain-crosschain');
     let walletCore = new WalletCore(config);
@@ -12,5 +12,5 @@ module.exports = async function (invoke,chainType) {
         console.log("Wallet initiate failed.");
         process.exit(0);
     }
-    invoke(walletCore.createSendTransaction(chainType));
+    invoke(walletCore.createSendTransaction(chainType,protocol,opt));
 }

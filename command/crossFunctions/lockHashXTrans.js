@@ -32,6 +32,10 @@ async function sendTransAndSetValue(self,sendTransaction,transResult){
 let lockHashXSend = function (sendTransaction) {
     let crossType = (sendTransaction.sendServer.chainType === 'ETH') ? 'ETH2WETH' : 'WETH2ETH';
     let crossAccount = (sendTransaction.sendServer.chainType === 'ETH') ? 'WAN' : 'ETH';
+
+    let protocol    = sendTransaction.protocol;
+    let opt         = sendTransaction.opt;
+
     let FeeGroup = SchemaFactory.FeeGroup();
     let submitSendGroup = SchemaFactory.submitSendGroup();
     let sendSchema = [
@@ -45,7 +49,38 @@ let lockHashXSend = function (sendTransaction) {
         //submitSendGroup[0],
         submitSendGroup[1]
     ]
+
+  let sendSchemaApprove = [
+    SchemaFactory.fromKeystoreAccount(sendTransaction.sendServer.chainType),
+    SchemaFactory.Amount(),
+    //FeeGroup[0],
+    FeeGroup[1],
+    FeeGroup[2],
+    //submitSendGroup[0],
+    submitSendGroup[1]
+  ]
+
+  let sendSchemaHardCodeStoreman = [
+    SchemaFactory.fromKeystoreAccount(sendTransaction.sendServer.chainType),
+    SchemaFactory.crossAccount(crossAccount),
+    SchemaFactory.Amount(),
+    //FeeGroup[0],
+    FeeGroup[1],
+    FeeGroup[2],
+    //submitSendGroup[0],
+    submitSendGroup[1]
+  ]
+  console.log("OPT:",opt,"protocol:",protocol);
+  if (opt === 'APPROVE'){
+        console.log("use new schema for Approve");
+       sendSchema =  sendSchemaApprove;
+  }
+  if(protocol = 'E20'){
+    console.log("use new schema for storeman hard code");
+    sendSchema = sendSchemaHardCodeStoreman;
+  }
     prompt.get(sendSchema, function (err, result,self) {
+      console.log("prompt.get OPT:",opt,"protocol:",protocol);
         if(!err)
         {
             DebugLog.debug(result);
@@ -53,19 +88,54 @@ let lockHashXSend = function (sendTransaction) {
             let transResult = result;
 
             if (crossType === 'ETH2WETH') {
-                transResult.tokenAddress = config.originalChainHtlc;
+                //transResult.tokenAddress = config.originalChainHtlc;
+                if (protocol === 'E20' && opt === 'APPROVE'){
+                  transResult.tokenAddress = config.orgChainAddrE20;
+                }else{
+                        if(protocol === 'E20'){
+                          transResult.tokenAddress = config.originalChainHtlcE20;
+                        }else{
+                          transResult.tokenAddress = config.originalChainHtlc;
+                        }
+                }
             } else if (crossType === 'WETH2ETH') {
-                transResult.tokenAddress = config.wanchainHtlcAddr;
+                //transResult.tokenAddress = config.wanchainHtlcAddr;
+                if(protocol === 'E20'){
+                  transResult.tokenAddress = config.wanchainHtlcAddrE20;
+                }else{
+                  transResult.tokenAddress = config.wanchainHtlcAddr;
+                }
             }
-            if(crossType === 'WETH2ETH'){
-                transResult.storemanGroupAdd = transResult.storemanGroup[0].wanAddress;
-            }else{
-                transResult.storemanGroupAdd = transResult.storemanGroup[0].ethAddress;
+          //   // add by Jacob for opc begin
+          // transResult.storemanGroup[0].wanAddress='0xcd5a7fcc744481d75ab3251545befb282e785882';
+          // transResult.storemanGroup[0].ethAddress='0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8';
+          //   // Add by Jacob for opc end
+
+
+            if(opt !== 'APPROVE'){
+              if(crossType === 'WETH2ETH'){
+                //transResult.storemanGroupAdd = transResult.storemanGroup[0].wanAddress;
+                //transResult.storemanGroupAdd = '0xef50b30960d6ddad9b5808092e4a53ca0797fc16';
+                transResult.storemanGroupAdd = config.storemanAddWanE20;
+              }else{
+                //transResult.storemanGroupAdd = transResult.storemanGroup[0].ethAddress;
+                //transResult.storemanGroupAdd = '0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8';
+                transResult.storemanGroupAdd = config.storemanAddEthE20;
+              }
             }
+
+
+
             self.parent.insertChild(index,new FunctionCell(false,function(self){
 
-                sendTransaction.createTransaction(transResult.from,transResult.tokenAddress,transResult.amount,transResult.storemanGroupAdd,
-                    transResult.cross,transResult.gas,transResult.gasPrice,crossType);
+                // sendTransaction.createTransaction(transResult.from,transResult.tokenAddress,transResult.amount,transResult.storemanGroupAdd,
+                //     transResult.cross,transResult.gas,transResult.gasPrice,crossType);
+              console.log("sendTransaction.createTransaction OPT:",opt,"protocol:",protocol);
+              // sendTransaction.createTransaction(transResult.from,transResult.tokenAddress,transResult.amount,transResult.storemanGroupAdd,
+              //   transResult.cross,transResult.gas,transResult.gasPrice,crossType,protocol,opt);
+
+              sendTransaction.createTransaction(transResult.from,transResult.tokenAddress,transResult.amount,transResult.storemanGroupAdd,
+                transResult.cross,transResult.gas,transResult.gasPrice,crossType,0,protocol,opt);
 
                 if (crossType === 'WETH2ETH') {
                     sendTransAndSetValue(self,sendTransaction,transResult);
@@ -75,6 +145,7 @@ let lockHashXSend = function (sendTransaction) {
                             console.log(result);
                         }
                         else {
+                            console.log("sendTransaction.sendLockTrans error: ",err);
                             console.error(err);
                         }
                         self.stepNext();

@@ -7,6 +7,10 @@ module.exports = function (sendTransaction) {
     //first : get transaction from database
     let chainType = (sendTransaction.sendServer.chainType == 'ETH') ?  'ETH':'WAN';
     let crossType = (sendTransaction.sendServer.chainType == 'ETH') ? 'ETH2WETH' : 'WETH2ETH';
+
+      let protocol    = sendTransaction.protocol;
+      let opt         = sendTransaction.opt;
+
     let FeeGroup = SchemaFactory.FeeGroup();
     let submitSendGroup = SchemaFactory.submitSendGroup();
     let sendSchema = [
@@ -23,11 +27,32 @@ module.exports = function (sendTransaction) {
             let index = self.parent.index;
             let transResult = result;
 
-            if (crossType === 'ETH2WETH') {
+            // if (crossType === 'ETH2WETH') {
+            //     transResult.tokenAddress = config.originalChainHtlc;
+            // } else if (crossType === 'WETH2ETH') {
+            //     transResult.tokenAddress = config.wanchainHtlcAddr;
+            // }
+
+          if (crossType === 'ETH2WETH') {
+            //transResult.tokenAddress = config.originalChainHtlc;
+            if (protocol === 'E20' && opt === 'APPROVE'){
+              transResult.tokenAddress = config.orgChainAddrE20;
+            }else{
+              if(protocol === 'E20'){
+                transResult.tokenAddress = config.originalChainHtlcE20;
+              }else{
                 transResult.tokenAddress = config.originalChainHtlc;
-            } else if (crossType === 'WETH2ETH') {
-                transResult.tokenAddress = config.wanchainHtlcAddr;
+              }
             }
+          } else if (crossType === 'WETH2ETH') {
+            //transResult.tokenAddress = config.wanchainHtlcAddr;
+            if(protocol === 'E20'){
+              transResult.tokenAddress = config.wanchainHtlcAddrE20;
+            }else{
+              transResult.tokenAddress = config.wanchainHtlcAddr;
+            }
+          }
+
             DebugLog.debug(transResult);
 
             self.parent.insertChild(index,new FunctionCell(false,function(self) {
