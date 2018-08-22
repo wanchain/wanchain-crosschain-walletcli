@@ -147,7 +147,7 @@ vorpal
 
                 let target = {
                     address: answers.to,
-                    value: Math.round(answers.amount * 100000000)
+                    value: web3.toBigNumber(answers.amount).mul(100000000)
                 };
 
                 let res = await ccUtil.btcTxBuildSendWallet(keyPairArray, target, answers.rate);
