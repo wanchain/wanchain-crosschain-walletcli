@@ -74,7 +74,8 @@ vorpal
             }
 
             let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, 0, 1000, aliceAddr);
-            ccUtil.getUTXOSBalance(utxos);
+            let result = await ccUtil.getUTXOSBalance(utxos);
+            print4log('btc bancale: ', web3.toBigNumber(result).div(100000000).toString());
 
         } catch (e) {
             print4log('get bitcoin address balance error: ', e)
@@ -144,7 +145,12 @@ vorpal
             try {
                 keyPairArray = await btcUtil.getECPairs(answers.password);
 
-                let res = await ccUtil.btcSendTransaction(keyPairArray, answers.amount, answers.to, answers.rate);
+                let target = {
+                    address: answers.to,
+                    value: Math.round(answers.amount * 100000000)
+                };
+
+                let res = await ccUtil.btcTxBuildSendWallet(keyPairArray, target, answers.rate);
 
                 if (res.error !== undefined) {
                     print4log('error send transaction');
