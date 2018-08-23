@@ -33,23 +33,19 @@ module.exports = function (sendTransaction) {
             //     transResult.tokenAddress = config.wanchainHtlcAddr;
             // }
 
-          if (crossType === 'ETH2WETH') {
-            //transResult.tokenAddress = config.originalChainHtlc;
-            if (protocol === 'E20' && opt === 'APPROVE'){
-              transResult.tokenAddress = config.orgChainAddrE20;
-            }else{
+          if (crossType === 'WETH2ETH') {
+            {
               if(protocol === 'E20'){
-                transResult.tokenAddress = config.originalChainHtlcE20;
+                transResult.tokenAddress = config.wanchainHtlcAddrE20;
               }else{
-                transResult.tokenAddress = config.originalChainHtlc;
+                transResult.tokenAddress = config.wanchainHtlcAddr;
               }
             }
-          } else if (crossType === 'WETH2ETH') {
-            //transResult.tokenAddress = config.wanchainHtlcAddr;
+          } else if (crossType === 'ETH2WETH') {
             if(protocol === 'E20'){
-              transResult.tokenAddress = config.wanchainHtlcAddrE20;
+              transResult.tokenAddress = config.originalChainHtlcE20;
             }else{
-              transResult.tokenAddress = config.wanchainHtlcAddr;
+              transResult.tokenAddress = config.originalChainHtlc;
             }
           }
 
@@ -61,26 +57,29 @@ module.exports = function (sendTransaction) {
 
                 let topics = sendTransaction.trans.Contract.getLockEvent();
                 sendTransaction.sendServer.sendMessage('monitorLog',transResult.tokenAddress, topics, function (err, result) {
-                    DebugLog.debug(err);
-                    DebugLog.debug(result);
-                    if (!err) {
-                        self.stepNext();
-                    }else{
-                        console.error(err);
-                        process.exit();
-                    }
+                    // DebugLog.debug(err);
+                    // DebugLog.debug(result);
+                    // if (!err) {
+                    //     self.stepNext();
+                    // }else{
+                    //     console.error(err);
+                    //     process.exit();
+                    // }
+                  self.stepNext();
                 });
                 sendTransaction.sendServer.sendMessage('getScEvent',transResult.tokenAddress, topics, function (err, result) {
-                    if (!err && result.length) {
-                        DebugLog.debug(result);
-                        self.stepNext();
-                        //transResult.tokenAddress = result;
-                    }
-                    else if (err) {
-                        console.error(err);
-                        process.exit();
-                    }
+                    // if (!err && result.length) {
+                    //     DebugLog.debug(result);
+                    //     self.stepNext();
+                    //     //transResult.tokenAddress = result;
+                    // }
+                    // else if (err) {
+                    //     console.error(err);
+                    //     process.exit();
+                    // }
+                  self.stepNext();
                 });
+
             }));
 
             index++;

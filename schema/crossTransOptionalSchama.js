@@ -11,7 +11,8 @@ module.exports = class crossTransOptionalSchama extends OptionalSchemaProperty
 
         let select = new FunctionCell(true,function(self,param){
             let collection = global.getCollection(dbname,'crossTransaction');
-            let Data = collection.find({refundTxHash : '',revokeTxHash : '',chain:param.chainType});
+            //let Data = collection.find({refundTxHash : '',revokeTxHash : '',chain:param.chainType});
+            let Data = collection.find({chain:param.chainType}); // only For OPC
             for(var i=0;i<Data.length;++i){
                 let Item = Data[i];
                 if(param.checkItem(Item)){

@@ -8,17 +8,36 @@ async function sendTransAndSetValue(self,sendTransaction,transResult){
     let coin2WanRatio;
     let fee;
     let txFeeRatio;
-    try{
+    if(sendTransaction.protocol === 'E20'){
+      coin2WanRatio = 3200000; // For POC
+    }else{
+      try{
         //coin2WanRatio = await be.getEthW2cRatio(sendTransaction.sendServer);
         coin2WanRatio   = await be.getEthC2wRatio(sendTransaction.sendServer);
-    }catch(err){
+      }catch(err){
         DebugLog.error("Error in sendTransAndSetValue:",err);
         process.exit();
+      }
     }
-    txFeeRatio    = transResult.storemanGroup[0].txFeeRatio;
+    if(sendTransaction.protocol === 'E20'){
+      txFeeRatio    = 10;     // For poc
+    }else{
+      txFeeRatio    = transResult.storemanGroup[0].txFeeRatio;
+    }
+
     fee = be.calculateLocWanFee(transResult.amount,coin2WanRatio,txFeeRatio);
+    //fee = be.calculateLocWanFee(1,coin2WanRatio,txFeeRatio);
     DebugLog.debug("amount:coin2WanRatio:txFeeRatio:Fee",transResult.amount,coin2WanRatio,txFeeRatio,fee);
-    sendTransaction.trans.setValue(fee);
+    DebugLog.info("amount:coin2WanRatio:txFeeRatio:Fee",transResult.amount,coin2WanRatio,txFeeRatio,fee);
+
+    if(sendTransaction.protocol === 'E20' && sendTransaction.opt === 'APPROVE'){
+      sendTransaction.trans.setValue(0);
+    }else{
+      sendTransaction.trans.setValue(fee);
+    }
+
+    //sendTransaction.trans.setValue(fee);
+
     sendTransaction.sendLockTrans(transResult.password,function (err,result) {
         if(!err){
             console.log(result);
@@ -99,12 +118,21 @@ let lockHashXSend = function (sendTransaction) {
                         }
                 }
             } else if (crossType === 'WETH2ETH') {
-                //transResult.tokenAddress = config.wanchainHtlcAddr;
+                // //transResult.tokenAddress = config.wanchainHtlcAddr;
+                // if(protocol === 'E20'){
+                //   transResult.tokenAddress = config.wanchainHtlcAddrE20;
+                // }else{
+                //   transResult.tokenAddress = config.wanchainHtlcAddr;
+                // }
+              if (protocol === 'E20' && opt === 'APPROVE'){
+                transResult.tokenAddress = config.wanchainAddrE20;
+              }else{
                 if(protocol === 'E20'){
                   transResult.tokenAddress = config.wanchainHtlcAddrE20;
                 }else{
                   transResult.tokenAddress = config.wanchainHtlcAddr;
                 }
+              }
             }
           //   // add by Jacob for opc begin
           // transResult.storemanGroup[0].wanAddress='0xcd5a7fcc744481d75ab3251545befb282e785882';

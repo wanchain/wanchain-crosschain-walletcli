@@ -55,20 +55,21 @@ module.exports = function (sendTransaction) {
             self.parent.insertChild(index,new FunctionCell(false,function(self) {
                 sendTransaction.createRefundFromLockTransaction(transResult.lockTxHash,transResult.tokenAddress,null,null,
                     null,transResult.gas,transResult.gasPrice,crossType);
-                // cancel by Jacob for POC begin
-           //      let topics = sendTransaction.trans.Contract.getLockEvent();
-           //      sendTransaction.sendServer.sendMessage('monitorLog',transResult.tokenAddress, topics, function (err, result) {
-           //          DebugLog.debug(err);
-           //          DebugLog.debug(result);
-           //          if (!err) {
-           //              self.stepNext();
-           //          }else{
-           //              console.error(err);
-           //              process.exit();
-           //          }
-           //      });
-           //      sendTransaction.sendServer.sendMessage('getScEvent',transResult.tokenAddress, topics, function (err, result) {
-					// // console.log(result);
+                //cancel by Jacob for POC begin
+                let topics = sendTransaction.trans.Contract.getLockEvent();
+                sendTransaction.sendServer.sendMessage('monitorLog',transResult.tokenAddress, topics, function (err, result) {
+                    // DebugLog.debug(err);
+                    // DebugLog.debug(result);
+                    // if (!err) {
+                    //     self.stepNext();
+                    // }else{
+                    //     console.error(err);
+                    //     process.exit();
+                    // }
+                  self.stepNext();
+                });
+                sendTransaction.sendServer.sendMessage('getScEvent',transResult.tokenAddress, topics, function (err, result) {
+					// console.log(result);
            //          if (!err && result.length) {
            //              DebugLog.debug(result);
            //              self.stepNext();
@@ -78,12 +79,9 @@ module.exports = function (sendTransaction) {
            //              console.error(err);
            //              process.exit();
            //          }
-          //
-           //      });
-                // add by Jacob for POC begin
-               // cancel by Jacob for POC end
-                self.stepNext();
-                // add by Jacob for POC end
+                  self.stepNext();
+                });
+
             }));
 
             index++;

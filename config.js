@@ -3,8 +3,8 @@ const config = {};
 config.port = 8545;
 
 config.useLocalNode = false;
-//config.loglevel = 'info';
-config.loglevel = 'debug';
+config.loglevel = 'info';
+//config.loglevel = 'debug';
 
 config.listOption = true;
 
@@ -30,13 +30,26 @@ if (network === 'test') {
     // config.wanchainHtlcAddrE20      = "0xe2f299d623d67fa1b5a395805f4173fd7ce26c5d";
     // config.orgChainAddrE20          = "0xb4f9d9aea2c53d37c96daad218c4b0edc5cfb136";    // the Approve contract
 
-    config.originalChainHtlcE20     = "0x28edd768b88c7c5ced685d9cee3fc205aa2e225c";
-    config.wanchainHtlcAddrE20      = "0x71593a2e28ca404622a19338b7028632fe36a93d";
-    config.orgChainAddrE20          = "0x6206f9a29845c79878b659013b074b1f9831d475";    // the Approve contract
+    // config.originalChainHtlcE20     = "0x28edd768b88c7c5ced685d9cee3fc205aa2e225c";
+    // config.wanchainHtlcAddrE20      = "0x71593a2e28ca404622a19338b7028632fe36a93d";
+    //
+    // config.orgChainAddrE20          = "0x6206f9a29845c79878b659013b074b1f9831d475";    // the Approve contract
+    // config.wanchainAddrE20          = "0x6fa6f8292dca2f67af6925dc1943e3028da19f70";    //  the Approve wan contract.
+    //
+    // config.storemanAddEthE20        = "0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8";
+    // config.storemanAddWanE20        = "0x127c8b9077416ed58424774f89b673f3af798019";
 
-    config.storemanAddEthE20        = "0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8";
-    config.storemanAddWanE20        = "0x127c8b9077416ed58424774f89b673f3af798019";
+  config.originalChainHtlcE20     = "0xcdc96fea7e2a6ce584df5dc22d9211e53a5b18b1";
+  config.wanchainHtlcAddrE20      = "0x5d1dd99ebaa6ee3289d9cd3369948e4ce96736c2";
 
+  config.orgChainAddrE20          = "0xc5bc855056d99ef4bda0a4ae937065315e2ae11a";    // the Approve contract
+  config.wanchainAddrE20          = "0x46e4df4b9c3044f12543adaa8ad0609d553041f9";    //  the Approve wan contract.
+
+  config.qutoE20                  = "0x4f73a4e2a6e11ea30fbca48012660eada20fe598";    // Approve quotaLedger
+
+
+  config.storemanAddEthE20        = "0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8";
+  config.storemanAddWanE20        = "0x55ccc7a38f900a1e00f0a4c1e466ec36e7592024";
 
     // Abi not be used in CLI package, used in CRC package
     //config.HTLCETHInstAbiE20=[{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"mapXHashShadow","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes32"}],"name":"mapXHashHTLCTxs","outputs":[{"name":"source","type":"address"},{"name":"destination","type":"address"},{"name":"value","type":"uint256"},{"name":"status","type":"uint8"},{"name":"lockedTime","type":"uint256"},{"name":"beginLockedTime","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"acceptOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"DEF_LOCKED_TIME","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"xHash","type":"bytes32"}],"name":"xHashExist","outputs":[{"name":"exist","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"lockedTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"xHash","type":"bytes32"}],"name":"getHTLCLeftLockedTime","outputs":[{"name":"time","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"halted","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"DEF_MAX_TIME","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"newOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"time","type":"uint256"}],"name":"setLockedTime","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"halt","type":"bool"}],"name":"setHalt","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"user","type":"address"},{"indexed":true,"name":"storeman","type":"address"},{"indexed":true,"name":"xHash","type":"bytes32"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"wanAddr","type":"address"}],"name":"ETH2WETHLock","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"storeman","type":"address"},{"indexed":true,"name":"user","type":"address"},{"indexed":true,"name":"xHash","type":"bytes32"},{"indexed":false,"name":"x","type":"bytes32"}],"name":"ETH2WETHRefund","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"user","type":"address"},{"indexed":true,"name":"xHash","type":"bytes32"}],"name":"ETH2WETHRevoke","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"storeman","type":"address"},{"indexed":true,"name":"user","type":"address"},{"indexed":true,"name":"xHash","type":"bytes32"},{"indexed":false,"name":"value","type":"uint256"}],"name":"WETH2ETHLock","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"user","type":"address"},{"indexed":true,"name":"storeman","type":"address"},{"indexed":true,"name":"xHash","type":"bytes32"},{"indexed":false,"name":"x","type":"bytes32"}],"name":"WETH2ETHRefund","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"storeman","type":"address"},{"indexed":true,"name":"xHash","type":"bytes32"}],"name":"WETH2ETHRevoke","type":"event"},{"constant":false,"inputs":[{"name":"xHash","type":"bytes32"},{"name":"storeman","type":"address"},{"name":"wanAddr","type":"address"}],"name":"eth2wethLock","outputs":[{"name":"","type":"bool"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"x","type":"bytes32"}],"name":"eth2wethRefund","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"xHash","type":"bytes32"}],"name":"eth2wethRevoke","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"xHash","type":"bytes32"},{"name":"user","type":"address"}],"name":"weth2ethLock","outputs":[{"name":"","type":"bool"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"x","type":"bytes32"}],"name":"weth2ethRefund","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"xHash","type":"bytes32"}],"name":"weth2ethRevoke","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}];
