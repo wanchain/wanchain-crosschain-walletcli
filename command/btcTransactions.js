@@ -107,6 +107,29 @@ vorpal
         callback();
     });
 
+// getWanBalance
+vorpal
+    .command('wanBalance', "get wan address balance")
+    .action(async function(args,callback) {
+
+        // wan address list
+        let wanAddressList = [];
+        try {
+            wanAddressList = await ccUtil.getWanAccountsInfo(ccUtil.wanSender);
+
+            print4log(sprintf("%46s %26s", "WAN address", "balance"));
+            wanAddressList.forEach(function(wanAddress){
+                // web3.fromWei(wanAddress.balance),
+                print4log(sprintf("%46s %26s", wanAddress.address,  web3.fromWei(wanAddress.balance)));
+            });
+
+        }catch(err) {
+            print4log("listWanAddr error: ", err);
+        }
+
+        callback();
+    });
+
 // bitcoin normal transaction
 vorpal
 	.command('normalTransaction', "bitcoin normal transaction")
@@ -164,6 +187,106 @@ vorpal
             callback();
 		});
 	});
+
+// list all transactions
+vorpal
+    .command('listTransaction', "get all transasction")
+    .action(async function(args,callback) {
+        let addressList;
+
+        try{
+            addressList = await btcUtil.getAddressList();
+
+            print4log("transactions");
+            addressList.forEach(function(Array){
+                print4log(Array.address);
+            });
+
+        } catch (e) {
+            print4log('get bitcoin transaction list error: ', e)
+        }
+
+        callback();
+    });
+
+// list all storeman
+vorpal
+    .command('listStoreman', "get all storeman")
+    .action(async function(args,callback) {
+        let addressList;
+
+        try{
+            addressList = await btcUtil.getAddressList();
+
+            print4log("transactions");
+            addressList.forEach(function(Array){
+                print4log(Array.address);
+            });
+
+        } catch (e) {
+            print4log('get bitcoin transaction list error: ', e)
+        }
+
+        callback();
+    });
+
+// lockBtc
+vorpal
+    .command('lockBtc', "crosschain lockBtc")
+    .action(function(args,callback){
+        let self = this;
+
+        let promise = this.prompt([
+            {
+                type: 'input',
+                name: 'btcAddress',
+                message: 'btcAddress: '
+            },
+            {
+                type: 'input',
+                name: 'wanAddress',
+                message: 'wanAddress: '
+            },
+            {
+                type: 'input',
+                name: 'amount',
+                message: 'amount: '
+            },
+            {
+                type: 'input',
+                name: 'rate',
+                message: 'Fee Rate: '
+            },
+            {
+                type: 'password',
+                name: 'password',
+                message: 'Btc wallet Password: '
+            }
+        ], function (answers) {
+            // You can use callbacks...
+        });
+
+        promise.then(async function(answers) {
+            // Or promises!
+            print4log('btcAddress', answers.btcAddress);
+            print4log('wanAddress', answers.wanAddress);
+            print4log('amount', answers.amount);
+            print4log('rate', answers.rate);
+            print4log('password', answers.password);
+
+            callback();
+        });
+    });
+
+// redeemBtc
+
+// revokeBtc
+
+// lockwbtc
+
+// redeemWbtc
+
+// revokeWbtc
 
 async function main(){
     wanchainCore = new WanchainCore(config);
