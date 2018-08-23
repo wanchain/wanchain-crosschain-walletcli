@@ -347,28 +347,33 @@ vorpal
         let promise = this.prompt([
             {
                 type: 'input',
-                name: 'wanAddress',
-                message: 'wanAddress: '
+                name: 'smIndex',
+                message: 'Input the index of storeman group.1:{1}\n 2:{2}: '
             },
             {
                 type: 'input',
-                name: 'btcAddress',
-                message: 'btcAddress: '
+                name: 'wanAddress',
+                message: 'Input the btc address you want to receive BitCoin: '
             },
             {
                 type: 'input',
                 name: 'amount',
-                message: 'amount: '
+                message: 'input the BTC amount: '
             },
             {
                 type: 'input',
-                name: 'rate',
-                message: 'Fee Rate: '
+                name: 'gasPrice',
+                message: 'Input gas price (Price limit is between 180Gwin-600Gwin):'
+            },
+            {
+                type: 'input',
+                name: 'gasLimit',
+                message: 'Input gas limit: '
             },
             {
                 type: 'password',
                 name: 'password',
-                message: 'wan address Password: '
+                message: 'Input wan address Password: '
             }
         ], function (answers) {
             // You can use callbacks...
