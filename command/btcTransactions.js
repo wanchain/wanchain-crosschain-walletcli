@@ -279,14 +279,172 @@ vorpal
     });
 
 // redeemBtc
+vorpal
+    .command('redeemBtc', "crosschain redeemBtc")
+    .action(function(args,callback){
+        let self = this;
+
+        let promise = this.prompt([
+            {
+                type: 'input',
+                name: 'redeemHash',
+                message: 'redeem hash: '
+            },
+            {
+                type: 'password',
+                name: 'password',
+                message: 'wan account password: '
+            }
+        ], function (answers) {
+            // You can use callbacks...
+        });
+
+        promise.then(async function(answers) {
+            // Or promises!
+            print4log('redeemHash', answers.redeemHash);
+            print4log('password', answers.password);
+
+            callback();
+        });
+    });
 
 // revokeBtc
+vorpal
+    .command('revokeBtc', "crosschain revokeBtc")
+    .action(function(args,callback){
+        let self = this;
+
+        let promise = this.prompt([
+            {
+                type: 'input',
+                name: 'revokeHash',
+                message: 'revoke hash: '
+            },
+            {
+                type: 'password',
+                name: 'password',
+                message: 'btc account password: '
+            }
+        ], function (answers) {
+            // You can use callbacks...
+        });
+
+        promise.then(async function(answers) {
+            // Or promises!
+            print4log('revokeHash', answers.revokeHash);
+            print4log('password', answers.password);
+
+            callback();
+        });
+    });
 
 // lockwbtc
+vorpal
+    .command('lockWbtc', "crosschain lockWbtc")
+    .action(function(args,callback){
+        let self = this;
+
+        let promise = this.prompt([
+            {
+                type: 'input',
+                name: 'wanAddress',
+                message: 'wanAddress: '
+            },
+            {
+                type: 'input',
+                name: 'btcAddress',
+                message: 'btcAddress: '
+            },
+            {
+                type: 'input',
+                name: 'amount',
+                message: 'amount: '
+            },
+            {
+                type: 'input',
+                name: 'rate',
+                message: 'Fee Rate: '
+            },
+            {
+                type: 'password',
+                name: 'password',
+                message: 'wan address Password: '
+            }
+        ], function (answers) {
+            // You can use callbacks...
+        });
+
+        promise.then(async function(answers) {
+            // Or promises!
+            print4log('wanAddress', answers.wanAddress);
+            print4log('btcAddress', answers.btcAddress);
+            print4log('amount', answers.amount);
+            print4log('rate', answers.rate);
+            print4log('password', answers.password);
+
+            callback();
+        });
+    });
 
 // redeemWbtc
+vorpal
+    .command('redeemWbtc', "crosschain redeemWbtc")
+    .action(function(args,callback){
+        let self = this;
+
+        let promise = this.prompt([
+            {
+                type: 'input',
+                name: 'redeemHash',
+                message: 'redeem hash: '
+            },
+            {
+                type: 'password',
+                name: 'password',
+                message: 'wan account password: '
+            }
+        ], function (answers) {
+            // You can use callbacks...
+        });
+
+        promise.then(async function(answers) {
+            // Or promises!
+            print4log('redeemHash', answers.redeemHash);
+            print4log('password', answers.password);
+
+            callback();
+        });
+    });
 
 // revokeWbtc
+vorpal
+    .command('revokeWbtc', "crosschain revokeWbtc")
+    .action(function(args,callback){
+        let self = this;
+
+        let promise = this.prompt([
+            {
+                type: 'input',
+                name: 'revokeHash',
+                message: 'revoke hash: '
+            },
+            {
+                type: 'password',
+                name: 'password',
+                message: 'btc account password: '
+            }
+        ], function (answers) {
+            // You can use callbacks...
+        });
+
+        promise.then(async function(answers) {
+            // Or promises!
+            print4log('revokeHash', answers.revokeHash);
+            print4log('password', answers.password);
+
+            callback();
+        });
+    });
 
 async function main(){
     wanchainCore = new WanchainCore(config);
