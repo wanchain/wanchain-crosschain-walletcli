@@ -192,16 +192,10 @@ vorpal
 vorpal
     .command('listTransaction', "get all transasction")
     .action(async function(args,callback) {
-        let addressList;
-
         try{
-            addressList = await btcUtil.getAddressList();
-
-            print4log("transactions");
-            addressList.forEach(function(Array){
-                print4log(Array.address);
-            });
-
+            let records = ccUtil.getBtcWanTxHistory({});
+            console.log(records);
+            
         } catch (e) {
             print4log('get bitcoin transaction list error: ', e)
         }
