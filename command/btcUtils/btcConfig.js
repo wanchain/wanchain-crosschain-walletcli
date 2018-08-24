@@ -1,9 +1,9 @@
 module.exports = {
-    'help': '====== 键入 help 查看所有命令  ====== ',
+    'help': '====== Type help for more information.  ====== ',
     'passwd': {
         type: 'password',
         name: 'password',
-        message: 'Btc wallet Password: '
+        message: 'Input the BTC wallet Password(minimum 8 characters: '
     },
     'wanPasswd': {
         type: 'password',
@@ -13,7 +13,7 @@ module.exports = {
     'amount': {
         type: 'input',
         name: 'amount',
-        message: 'amount: '
+        message: 'input transaction bitcoin amount: '
     },
     'rate': {
         type: 'input',
@@ -34,9 +34,9 @@ module.exports = {
     'to': {
         type: 'input',
         name: 'to',
-        message: 'to: '
+        message: 'Input bitcoin recipient address: '
     },
-    'storeman': {
+    'listStoremanGroup': {
         type: 'input',
         name: 'storeman',
         message: 'storeman(input index or address): '
@@ -80,8 +80,26 @@ module.exports = {
         desc: 'bitcoin normal transaction',
         error: 'bitcoin normal transaction error'
     },
-    'listTransaction': {
-        desc: 'get all transasction',
+    'listBtcAddress': {
+        desc: 'list bitcoin addresses list.'
+    },
+    'getBtcBalance': {
+        desc: 'get bitcoin address total balance'
+    },
+    'listWbtcBalance': {
+        desc: 'list wbtc balances'
+    },
+    'listWanBalance': {
+        desc: 'list wanchain address balances'
+    },
+    'listStoremanGroups': {
+        desc: 'list storemanGroups'
+    },
+    'sendBtcToAddress': {
+        desc: 'bitcoin normal transaction. send bitcoin to an address.'
+    },
+    'listTransactions': {
+        desc: 'list all transasctions',
         error: 'get bitcoin transaction list error'
     },
     'lockBtc': {

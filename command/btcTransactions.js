@@ -17,7 +17,7 @@ let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
  * @return btcAddress
  */
 vorpal
-    .command('createNewAddress', btcConfig.createNewAddress.desc)
+    .command('createBtcAddress', btcConfig.createNewAddress.desc)
     .cancel(() => {
         process.exit(0)
     })
@@ -26,9 +26,7 @@ vorpal
 
         let promise = this.prompt([
             { type: btcConfig.passwd.type, name: btcConfig.passwd.name, message: btcConfig.passwd.message}
-        ], function (answers) {
-            // You can use callbacks...
-        });
+        ]);
 
         promise.then(async function(answers) {
             // Or promises!
@@ -51,17 +49,15 @@ vorpal
  * @return list
  */
 vorpal
-    .command('addressList', btcConfig.addressList.desc)
+    .command('listBtcAddress', btcConfig.listBtcAddress.desc)
     .action(async function(args,callback) {
         let addressList;
-
         try{
             addressList = await btcUtil.getAddressList();
 
             addressList.forEach(function(Array){
                 print4log(config.consoleColor.COLOR_FgYellow, Array.address, '\x1b[0m');
             });
-
         } catch (e) {
             print4log(btcConfig.addressList.error)
         }
@@ -74,7 +70,7 @@ vorpal
  * @return balance
  */
 vorpal
-    .command('btcBalance', btcConfig.btcBalance.desc)
+    .command('getBtcBalance', btcConfig.getBtcBalance.desc)
     .action(async function(args,callback) {
         let addressList;
 
@@ -102,7 +98,7 @@ vorpal
  * @return balance
  */
 vorpal
-    .command('wbtcBalance', btcConfig.wbtcBalance.desc)
+    .command('listWbtcBalance', btcConfig.listWbtcBalance.desc)
     .action(async function(args,callback) {
 
         // wan address list
@@ -126,7 +122,7 @@ vorpal
  * @return balance
  */
 vorpal
-    .command('wanBalance', btcConfig.wanBalance.desc)
+    .command('listWanBalance', btcConfig.listWanBalance.desc)
     .action(async function(args,callback) {
 
         // wan address list
@@ -151,7 +147,7 @@ vorpal
  * @return list
  */
 vorpal
-    .command('listStoreman', btcConfig.listStoreman.desc)
+    .command('listStoremanGroups', btcConfig.listStoremanGroups.desc)
     .action(async function(args,callback) {
 
         try{
@@ -177,7 +173,7 @@ vorpal
  * @return txid
  */
 vorpal
-	.command('normalTransaction', btcConfig.normalTransaction.desc)
+	.command('sendBtcToAddress', btcConfig.sendBtcToAddress.desc)
     .cancel(() => {
         process.exit(0)
     })
@@ -195,13 +191,14 @@ vorpal
                 let addressList;
                 try{
                     addressList = await btcUtil.getAddressList();
-
+                    console.log("addressList:", addressList);
                     let aliceAddr = [];
                     for (let i=0;i<addressList.length; i++) {
                         aliceAddr.push(addressList[i].address)
                     }
+	                console.log("aliceAddr:", aliceAddr);
 
-                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, 0, 1000, aliceAddr);
+                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceAddr);
                     let result = await ccUtil.getUTXOSBalance(utxos);
 
                     btcBalance = web3.toBigNumber(result).div(100000000);
@@ -250,14 +247,14 @@ vorpal
  * @return list
  */
 vorpal
-    .command('listTransaction', btcConfig.listTransaction.desc)
+    .command('listTransactions', btcConfig.listTransactions.desc)
     .action(async function(args,callback) {
         try{
             let records = ccUtil.getBtcWanTxHistory({});
             console.log(records);
 
         } catch (e) {
-            print4log(btcConfig.listTransaction.error)
+            print4log(btcConfig.listTransactions.error)
         }
 
         callback();
@@ -395,11 +392,11 @@ vorpal
                 console.log(records);
 
             } catch (e) {
-                print4log(btcConfig.listTransaction.error);
+                print4log(btcConfig.listTransactions.error);
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransaction.error);
+                print4log(btcConfig.listTransactions.error);
 
                 callback();
                 return;
@@ -441,11 +438,11 @@ vorpal
                 console.log(records);
 
             } catch (e) {
-                print4log(btcConfig.listTransaction.error);
+                print4log(btcConfig.listTransactions.error);
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransaction.error);
+                print4log(btcConfig.listTransactions.error);
 
                 callback();
                 return;
@@ -596,7 +593,6 @@ vorpal
 
                 callback();
             });
-
         });
     });
 
@@ -621,11 +617,11 @@ vorpal
                 console.log(records);
 
             } catch (e) {
-                print4log(btcConfig.listTransaction.error);
+                print4log(btcConfig.listTransactions.error);
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransaction.error);
+                print4log(btcConfig.listTransactions.error);
 
                 callback();
                 return;
@@ -668,11 +664,11 @@ vorpal
                 console.log(records);
 
             } catch (e) {
-                print4log(btcConfig.listTransaction.error);
+                print4log(btcConfig.listTransactions.error);
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransaction.error);
+                print4log(btcConfig.listTransactions.error);
 
                 callback();
                 return;
