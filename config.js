@@ -12,6 +12,8 @@ config.getLogger = function(name){
     return new Logger(name,config.ccLog, config.ccErr,config.loglevel);
 }
 
+config.gasLimit = 1000000;
+config.gasPrice = 200000000000;
 config.dataName = wanchainNet;
 config.rpcIpcPath = process.env.HOME;
 config.keyStorePath = process.env.HOME;
@@ -39,8 +41,8 @@ if (process.platform === 'win32') {
 
 config.port = 8545;
 config.useLocalNode = false;
-//config.loglevel = 'info';
-config.loglevel = 'debug';
+config.loglevel = 'info';
+//config.loglevel = 'debug';
 
 
 config.listOption = true;

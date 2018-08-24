@@ -4,6 +4,7 @@ let vorpal = require('vorpal')();
 let sprintf=require("sprintf-js").sprintf;
 let btcConfig = require('./btcUtils/btcConfig');
 let btcScripts = require('./btcUtils/btcScripts');
+const bitcoin  = require('bitcoinjs-lib');
 
 let print4log = console.log;
 
@@ -393,7 +394,13 @@ vorpal
     .action(async function(args,callback){
         let self = this;
         let smgs = await ccUtil.getBtcSmgList(ccUtil.btcSender);
-        console.log(smgs);
+        console.log("smgs:", smgs);
+
+        let wanAddrs = await ccUtil.getWanAccountsInfo(ccUtil.wanSender);
+        console.log("wanAddrs:", wanAddrs);
+
+        let btcAddrs = await btcUtil.getAddressList();
+        console.log("btcAddrs: ", btcAddrs);
         let promise = this.prompt([
             {
                 type: 'input',
@@ -402,7 +409,7 @@ vorpal
             },
             {
                 type: 'input',
-                name: 'wanAddress',
+                name: 'wanIndex',
                 message: 'select the wan address you want to send wanchain transaction: '
             },
             {
@@ -416,16 +423,6 @@ vorpal
                 message: 'input the BTC amount: '
             },
             {
-                type: 'input',
-                name: 'gasPrice',
-                message: 'Input gas price (Price limit is between 180Gwin-600Gwin):'
-            },
-            {
-                type: 'input',
-                name: 'gasLimit',
-                message: 'Input gas limit: '
-            },
-            {
                 type: 'password',
                 name: 'password',
                 message: 'Input wan address Password: '
@@ -437,17 +434,18 @@ vorpal
         promise.then(async function(answers) {
             // Or promises!
             print4log('answers:', answers);
-            print4log('typeof answers.gasLimit:', answers.gasLimit);
 
             let wdTx = {};
-            wdTx.storemanGroup = storemanWanAddr;
-            wdTx.gas = Number(answers.gasLimit);
-            wdTx.gasPrice = Number(answers.gasPrice);
+
+            wdTx.storemanGroup = smgs[Number(answers.smIndex)-1].wanAddress;
+            wdTx.gas = config.gasLimit;
+            wdTx.gasPrice = config.gasPrice;
             wdTx.passwd=answers.password;
-            wdTx.cross = '0x'+aliceHash160Addr;
-            wdTx.from = "0xbd100cf8286136659a7d63a38a154e28dbf3e0fd";
-            wdTx.amount = '0x'+wdValue.toString(16);
-            const txFeeRatio = 3;
+            wdTx.cross = '0x'+btcUtil.btcAddrToH160(answers.btcAddress);
+            wdTx.from = wanAddrs[Number(answers.wanIndex)-1].address;
+            wdTx.amount = Number(answers.amount)*100000000;
+            const txFeeRatio = smgs[Number(answers.smIndex)-1].txFeeRatio;
+            console.log("txFeeRatio:", txFeeRatio);
             wdTx.value = ccUtil.calculateLocWanFee(wdTx.amount,ccUtil.c2wRatio,  txFeeRatio);
             console.log("wdTx.value: ",wdTx.value);
             let x = btcUtil.generatePrivateKey().slice(2); // hex string without 0x
@@ -459,7 +457,7 @@ vorpal
             console.log("wdHash: ",wdHash);
 
             // wait wallet tx confirm
-            await waitEventbyHashx('WBTC2BTCLock', config.HTLCWBTCInstAbi, '0x'+hashx);
+            // await waitEventbyHashx('WBTC2BTCLock', config.HTLCWBTCInstAbi, '0x'+hashx);
 
 
 
