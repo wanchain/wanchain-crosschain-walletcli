@@ -151,7 +151,7 @@ vorpal
 
 // bitcoin normal transaction
 vorpal
-	.command('sendBtcToAddress', btcConfig.normalTransaction.desc)
+	.command('sendBtcToAddress', btcConfig.sendBtcToAddress.desc)
     .cancel(() => {
         process.exit(0)
     })
