@@ -2,7 +2,7 @@ module.exports = {
     'passwd': {
         type: 'password',
         name: 'password',
-        message: 'Btc wallet Password: '
+        message: 'Input the BTC wallet Password(minimum 8 characters: '
     },
     'wanPasswd': {
         type: 'password',
@@ -12,7 +12,7 @@ module.exports = {
     'amount': {
         type: 'input',
         name: 'amount',
-        message: 'amount: '
+        message: 'input transaction bitcoin amount: '
     },
     'rate': {
         type: 'input',
@@ -33,12 +33,12 @@ module.exports = {
     'to': {
         type: 'input',
         name: 'to',
-        message: 'to: '
+        message: 'Input bitcoin recipient address: '
     },
-    'storeman': {
+    'listStoremanGroup': {
         type: 'input',
         name: 'storeman',
-        message: 'storeman: '
+        message: 'list storemanGroups: '
     },
     'btcRedeemHash':  {
         type: 'input',
@@ -53,26 +53,26 @@ module.exports = {
     'createNewAddress': {
         desc: 'create new bitcoin address',
     },
-    'addressList': {
-        desc: 'get bitcoin address list'
+    'listBtcAddress': {
+        desc: 'list bitcoin addresses list.'
     },
-    'btcBalance': {
-        desc: 'get bitcoin address balance'
+    'getBtcBalance': {
+        desc: 'get bitcoin address total balance'
     },
-    'wbtcBalance': {
-        desc: 'get wbtc address balance'
+    'listWbtcBalance': {
+        desc: 'list wbtc balances'
     },
-    'wanBalance': {
-        desc: 'get wan address balance'
+    'listWanBalance': {
+        desc: 'list wanchain address balances'
     },
-    'listStoreman': {
-        desc: 'get all storeman'
+    'listStoremanGroups': {
+        desc: 'list storemanGroups'
     },
-    'normalTransaction': {
-        desc: 'bitcoin normal transaction'
+    'sendBtcToAddress': {
+        desc: 'bitcoin normal transaction. send bitcoin to an address.'
     },
-    'listTransaction': {
-        desc: 'get all transasction'
+    'listTransactions': {
+        desc: 'list all transasctions'
     },
     'lockBtc': {
         desc: 'crosschain lockBtc'

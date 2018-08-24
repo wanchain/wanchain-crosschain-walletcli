@@ -44,7 +44,8 @@ config.useLocalNode = false;
 config.loglevel = 'info';
 //config.loglevel = 'debug';
 
-
+config.MAX_CONFIRM_BLKS = 100000000;
+config.MIN_CONFIRM_BLKS = 0;
 config.listOption = true;
 
 

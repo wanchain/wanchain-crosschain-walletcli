@@ -13,12 +13,12 @@ let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
 // create bitcoin address
 vorpal
-    .command('createNewAddress', btcConfig.createNewAddress.desc)
+    .command('createBtcAddress', btcConfig.createNewAddress.desc)
     .cancel(() => {
         process.exit(0)
     })
     .action(function(args,callback) {
-        print4log(config.consoleColor.COLOR_FgRed, '====== notice: 创建多个address时，密码必须与第一个address相同  ====== ', '\x1b[0m');
+        //print4log(config.consoleColor.COLOR_FgRed, '====== notice: 创建多个address时，密码必须与第一个address相同  ====== ', '\x1b[0m');
 
         let promise = this.prompt([
             { type: btcConfig.passwd.type, name: btcConfig.passwd.name, message: btcConfig.passwd.message}
@@ -42,20 +42,16 @@ vorpal
         })
     });
 
-// addressList
+
 vorpal
-    .command('addressList', btcConfig.addressList.desc)
+    .command('listBtcAddress', btcConfig.listBtcAddress.desc)
     .action(async function(args,callback) {
         let addressList;
-
         try{
             addressList = await btcUtil.getAddressList();
-
-            print4log("address");
             addressList.forEach(function(Array){
                 print4log(Array.address);
             });
-
         } catch (e) {
             print4log('get bitcoin address list error')
         }
@@ -65,7 +61,7 @@ vorpal
 
 // getBalance
 vorpal
-    .command('btcBalance', btcConfig.btcBalance.desc)
+    .command('getBtcBalance', btcConfig.getBtcBalance.desc)
     .action(async function(args,callback) {
         let addressList;
 
@@ -90,7 +86,7 @@ vorpal
 
 // getWbtcBalance
 vorpal
-    .command('wbtcBalance', btcConfig.wbtcBalance.desc)
+    .command('listWbtcBalance', btcConfig.listWbtcBalance.desc)
     .action(async function(args,callback) {
 
         // wan address list
@@ -111,7 +107,7 @@ vorpal
 
 // getWanBalance
 vorpal
-    .command('wanBalance', btcConfig.wanBalance.desc)
+    .command('listWanBalance', btcConfig.listWanBalance.desc)
     .action(async function(args,callback) {
 
         // wan address list
@@ -133,7 +129,7 @@ vorpal
 
 // list all storeman
 vorpal
-    .command('listStoreman', btcConfig.listStoreman.desc)
+    .command('listStoremanGroups', btcConfig.listStoremanGroups.desc)
     .action(async function(args,callback) {
 
         try{
@@ -155,7 +151,7 @@ vorpal
 
 // bitcoin normal transaction
 vorpal
-	.command('normalTransaction', btcConfig.normalTransaction.desc)
+	.command('sendBtcToAddress', btcConfig.normalTransaction.desc)
     .cancel(() => {
         process.exit(0)
     })
@@ -173,13 +169,14 @@ vorpal
                 let addressList;
                 try{
                     addressList = await btcUtil.getAddressList();
-
+                    console.log("addressList:", addressList);
                     let aliceAddr = [];
                     for (let i=0;i<addressList.length; i++) {
                         aliceAddr.push(addressList[i].address)
                     }
+	                console.log("aliceAddr:", aliceAddr);
 
-                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, 0, 1000, aliceAddr);
+                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceAddr);
                     let result = await ccUtil.getUTXOSBalance(utxos);
 
                     btcBalance = web3.toBigNumber(result).div(100000000);
@@ -233,7 +230,7 @@ vorpal
 
 // list all transactions
 vorpal
-    .command('listTransaction', btcConfig.listTransaction.desc)
+    .command('listTransactions', btcConfig.listTransactions.desc)
     .action(async function(args,callback) {
         try{
             let records = ccUtil.getBtcWanTxHistory({});
@@ -546,7 +543,6 @@ vorpal
 
 				        // wait wallet tx confirm
 				        // await waitEventbyHashx('WBTC2BTCLock', config.HTLCWBTCInstAbi, '0x'+hashx);
-
 			        }
 
 			        callback();
@@ -643,7 +639,7 @@ async function main(){
     btcUtil = wanchainCore.btcUtil;
     await wanchainCore.init(config);
 
-    print4log(config.consoleColor.COLOR_FgGreen, '====== 键入 help 查看所有命令  ====== ', '\x1b[0m');
+    print4log(config.consoleColor.COLOR_FgGreen, 'Type help for more information.', '\x1b[0m');
 
     vorpal
         .delimiter('wanWallet$')
