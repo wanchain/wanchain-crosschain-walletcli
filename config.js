@@ -40,7 +40,7 @@ if (process.platform === 'win32') {
 config.port = 8545;
 config.useLocalNode = false;
 //config.loglevel = 'info';
-config.loglevel = 'debug';
+// config.loglevel = 'debug';
 
 
 config.listOption = true;
