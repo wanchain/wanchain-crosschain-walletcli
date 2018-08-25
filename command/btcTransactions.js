@@ -169,17 +169,54 @@ vorpal
                 let addressList;
                 try{
                     addressList = await btcUtil.getAddressList();
-                    console.log("addressList:", addressList);
                     let aliceAddr = [];
                     for (let i=0;i<addressList.length; i++) {
                         aliceAddr.push(addressList[i].address)
                     }
-	                console.log("aliceAddr:", aliceAddr);
 
                     let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceAddr);
                     let result = await ccUtil.getUTXOSBalance(utxos);
 
                     btcBalance = web3.toBigNumber(result).div(100000000);
+
+                    console.log("btcBalance:",btcBalance);
+	                if (btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) &&
+		                answers[btcConfig.to.name].length >0 &&
+		                btcScripts.checkPasswd(answers[btcConfig.passwd.name])
+	                ) {
+		                let keyPairArray;
+
+		                try {
+			                keyPairArray = await btcUtil.getECPairs(answers[btcConfig.passwd.type]);
+			                console.log("keyPairArray:",keyPairArray);
+			                if (keyPairArray.length >0) {
+				                let target = {
+					                address: answers.to,
+					                value: web3.toBigNumber(answers.amount).mul(100000000)
+				                };
+
+
+				                const {rawTx, fee} = await this.btcBuildTransaction(utxos, keyPairArray, target, config.feeRate);
+				                if (!rawTx) {
+					                callback();
+					                return;
+				                }
+				                console.log("###############rawTx: ", rawTx);
+				                let result = await this.sendRawTransaction(this.btcSender, rawTx);
+				                console.log('result hash:', result);
+				                callback();
+				                return;
+			                } else {
+				                print4log('no bitcoin keyPairs!')
+			                }
+
+
+		                } catch (e) {
+			                print4log("bitcoin normal transaction error: ", err);
+		                }
+	                }
+
+
                 } catch (e) {
                     print4log('get bitcoin address balance error');
 
@@ -191,37 +228,6 @@ vorpal
                 return;
             }
 
-            if (btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) &&
-                answers[btcConfig.to.name].length >0 &&
-                btcScripts.checkPasswd(answers[btcConfig.passwd.name])
-            ) {
-                let keyPairArray;
-
-                try {
-                    keyPairArray = await btcUtil.getECPairs(answers[btcConfig.passwd.type]);
-
-                    if (keyPairArray.length >0) {
-                        let target = {
-                            address: answers.to,
-                            value: web3.toBigNumber(answers.amount).mul(100000000)
-                        };
-
-                        let res = await ccUtil.btcTxBuildSendWallet(keyPairArray, target, btcConfig.rate.value);
-
-                        if (res.error !== undefined) {
-                            print4log('error send transaction');
-                        }
-
-                        print4log('txid: ' + res.result);
-                    } else {
-                        print4log('no keyPairs!')
-                    }
-
-
-                } catch (e) {
-                    print4log("bitcoin normal transaction error: ", err);
-                }
-            }
 
 
             callback();

@@ -47,7 +47,7 @@ config.loglevel = 'info';
 config.MAX_CONFIRM_BLKS = 100000000;
 config.MIN_CONFIRM_BLKS = 0;
 config.listOption = true;
-
+config.feeRate = 55;
 
 config.databasePath = process.env.HOME;
 if (process.platform === 'win32') {
