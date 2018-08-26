@@ -321,13 +321,8 @@ vorpal
             // storeman list
             try {
                 smgs = await ccUtil.getBtcSmgList(ccUtil.btcSender);
-<<<<<<< HEAD
-                console.log("smgs:", smgs);
-                print4log(config.consoleColor.COLOR_FgRed, '====== stroman address list ====== ', '\x1b[0m');
-=======
 
                 SsmgsArray += sprintf("%2s\r\n", "stroeman address");
->>>>>>> aef49c621e1d70c649c0ba15c3d2ac34a40444a4
                 smgs.forEach(function (Array, index) {
                     SsmgsArray += (index + 1) + ': ' + Array.wanAddress +'\n';
                     smgsArray[Array.wanAddress] = [Array.wanAddress, Array.txFeeRatio];
@@ -398,13 +393,7 @@ vorpal
                     return;
                 }
 
-<<<<<<< HEAD
-                if (! btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) ||
-                    ! answers[btcConfig.wanAddress.name].length >0) {
-=======
                 if (! btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) ) {
->>>>>>> aef49c621e1d70c649c0ba15c3d2ac34a40444a4
-
                     callback();
                     return;
                 }
