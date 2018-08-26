@@ -417,6 +417,9 @@ vorpal
 		            return;
 	            }
 
+	            // let checkres = ccUtil.getBtcWanTxHistory({'HashX':record.hashx})
+	            // console.log(checkres);
+
 	            // notice wan.
 	            const tx = {};
 	            tx.storeman = storeman;
@@ -489,6 +492,11 @@ vorpal
                     callback();
                     return;
                 }
+	                let record = records[Number(answers[btcConfig.btcRedeemHash.name])-1];
+	                console.log(record);
+	                let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, '0x'+record.crossAdress,
+                        config.gasLimit, config.gasPrice,'0x'+record.x, answers[btcConfig.wanPasswd.name]);
+	                console.log("redeemHash: ", redeemHash);
 
                 print4log('redeemBtc func here!');
 
@@ -639,7 +647,6 @@ vorpal
                 { type: btcConfig.btcAddress.type, name: btcConfig.btcAddress.name, message: SbtcAddress+btcConfig.btcAddress.message },
                 { type: btcConfig.amount.type, name: btcConfig.amount.name, message: btcConfig.amount.message },
                 { type: btcConfig.wanPasswd.type, name: btcConfig.wanPasswd.name, message: btcConfig.wanPasswd.message },
-		        { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message },
 	        ], async function (answers) {
 
                 let [wanBalance, wbtcBalance, wanAddress] = wanAddressArray[answers[btcConfig.wanAddress.name]];
