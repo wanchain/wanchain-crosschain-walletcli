@@ -431,7 +431,6 @@ vorpal
 	            tx.gas = config.gasLimit;
 	            tx.gasPrice = config.gasPrice;
 	            tx.passwd=answers[btcConfig.wanPasswd.name];
-	            print4log("######## tx: ", tx);
 
 	            let txHash;
 	            try {
@@ -465,11 +464,13 @@ vorpal
         let self = this;
 
         return new Promise(async function(resolve, reject) {
+
             // listTransaction
-            let records;
+            let records = [];
+            let showArray = [];
             try{
-                records = ccUtil.getBtcWanTxHistory({});
-                console.log(records);
+                records = await ccUtil.getBtcWanTxHistory({status: 'waitingX', chain: 'BTC'});
+                showArray = btcScripts.checkTransaction(records, web3);
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error);
@@ -486,18 +487,23 @@ vorpal
                 { type: btcConfig.btcRedeemHash.type, name: btcConfig.btcRedeemHash.name, message: btcConfig.btcRedeemHash.message},
                 { type: btcConfig.wanPasswd.type, name: btcConfig.wanPasswd.name, message: btcConfig.wanPasswd.message},
             ], async function (answers) {
-                if (! answers[btcConfig.btcRedeemHash.name].length >0 ||
-                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+                let patten = /^\d+$/ ;
+
+                if (! patten.test(answers[btcConfig.btcRedeemHash.name]) ||
+                    answers[btcConfig.btcRedeemHash.name] > showArray.length ||
+                    !showArray[answers[btcConfig.btcRedeemHash.name] -1]) {
 
                     callback();
                     return;
                 }
-	                let record = records[Number(answers[btcConfig.btcRedeemHash.name])-1];
-	                console.log(record);
-	                let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, '0x'+record.crossAdress,
-                        config.gasLimit, config.gasPrice,'0x'+record.x, answers[btcConfig.wanPasswd.name]);
-	                console.log("redeemHash: ", redeemHash);
 
+                let record = showArray[answers[btcConfig.btcRedeemHash.name] -1];
+                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
+                let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, '0x'+record.crossAdress,
+                    config.gasLimit, config.gasPrice,'0x'+record.x, answers[btcConfig.wanPasswd.name]);
+
+                print4log("redeemHash: ", redeemHash);
 
                 callback();
             })
@@ -554,7 +560,7 @@ vorpal
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
                 print4log('redeemBtc func here!');
-	            let record = records[Number(answers[btcConfig.revokeBtcHash.name])-1];
+	            let record = showArray[Number(answers[btcConfig.revokeBtcHash.name])-1];
 	            console.log(record);
 	            let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], record.from);
 	            let walletRevoke = await ccUtil.revokeWithHashX(record.HashX,alice); //record.from
@@ -666,10 +672,6 @@ vorpal
 
                 }
 
-
-
-
-
                 let wdTx = {};
                 let txFeeRatio;
 
@@ -719,10 +721,11 @@ vorpal
 
         return new Promise(async function(resolve, reject) {
             // listTransaction
-            let records;
+            let records = [];
+            let showArray = [];
             try{
-                records = ccUtil.getBtcWanTxHistory({});
-                console.log(records);
+                records = await ccUtil.getBtcWanTxHistory({status: 'waitingX', chain: 'WAN'});
+                showArray = btcScripts.checkTransaction(records, web3);
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error);
@@ -739,15 +742,18 @@ vorpal
                 { type: btcConfig.btcRedeemHash.type, name: btcConfig.btcRedeemHash.name, message: btcConfig.btcRedeemHash.message},
                 { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message},
             ], async function (answers) {
-                if (! answers[btcConfig.btcRedeemHash.name].length >0 ||
-                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+                let patten = /^\d+$/ ;
+
+                if (! patten.test(answers[btcConfig.btcRedeemHash.name]) ||
+                    answers[btcConfig.btcRedeemHash.name] > showArray.length ||
+                    !showArray[answers[btcConfig.btcRedeemHash.name] -1]) {
 
                     callback();
                     return;
                 }
 
                 print4log('redeemWbtc func here!');
-	            let record = records[Number(answers[btcConfig.revokeBtcHash.name])-1];
+	            let record = showArray[Number(answers[btcConfig.btcRedeemHash.name])-1];
 	            console.log(record);
 	            let filterResult = await waitEventbyHashx('WBTC2BTCLockNotice', config.HTLCWBTCInstAbi, '0x'+record.HashX);
 	            console.log("filterResult:", filterResult);
@@ -777,11 +783,11 @@ vorpal
         let self = this;
 
         return new Promise(async function(resolve, reject) {
-            // listTransaction
-            let records;
+            let records = [];
+            let showArray = [];
             try{
-                records = ccUtil.getBtcWanTxHistory({});
-                console.log(records);
+                records = await ccUtil.getBtcWanTxHistory({status: 'waitingRevoke', chain: 'WAN'});
+                showArray = btcScripts.checkTransaction(records, web3);
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error);
@@ -798,21 +804,24 @@ vorpal
                 { type: btcConfig.revokeBtcHash.type, name: btcConfig.revokeBtcHash.name, message: btcConfig.revokeBtcHash.message},
                 { type: btcConfig.wanPasswd.type, name: btcConfig.wanPasswd.name, message: btcConfig.wanPasswd.message},
             ], async function (answers) {
-                if (! answers[btcConfig.btcRedeemHash.name].length >0 ||
-                    ! btcScripts.checkPasswd(answers[btcConfig.wanPasswd.name])) {
+                let patten = /^\d+$/ ;
+
+                if (! patten.test(answers[btcConfig.revokeBtcHash.name]) ||
+                    answers[btcConfig.revokeBtcHash.name] > showArray.length ||
+                    !showArray[answers[btcConfig.revokeBtcHash.name] -1]) {
 
                     callback();
                     return;
                 }
 
-                print4log('revokeW func here!');
-                console.log(answers);
-                let record = records[Number(answers[btcConfig.revokeBtcHash.name])-1];
-                console.log(record);
+                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+                let record = showArray[answers[btcConfig.revokeBtcHash.name] -1];
 
                 //sendWanCancel(sender, from, gas, gasPrice, hashx, passwd, nonce)
-                let revokeWbtcHash = ccUtil.sendWanCancel(ccUtil.wanSender, record.from,
+                let revokeWbtcHash = await ccUtil.sendWanCancel(ccUtil.wanSender, record.from,
                     config.gasLimit, config.gasPrice, record.HashX, answers[btcConfig.wanPasswd.name]);
+
+                print4log('revokeWbtcHash: ', revokeWbtcHash);
 
 
                 callback();

@@ -72,6 +72,7 @@ let checkTransaction = (records, web3) => {
         if (array.crossAdress === '') {
             return;
         }
+
         showArray.push(array);
     });
 
