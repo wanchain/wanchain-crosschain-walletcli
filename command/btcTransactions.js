@@ -29,17 +29,20 @@ vorpal
         ]);
 
         promise.then(async function(answers) {
-            // Or promises!
-            if (btcScripts.checkPasswd(answers[btcConfig.btcPasswd.type])) {
-                let newAddress;
-                try{
-                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+            if (! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.type])) {
 
-                    newAddress = await btcUtil.createAddress(answers[btcConfig.btcPasswd.name]);
-                    print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
-                } catch (e) {
-                    print4log(btcConfig.createNewAddress.error)
-                }
+                callback();
+                return;
+            }
+
+            let newAddress;
+            try{
+                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
+                newAddress = await btcUtil.createAddress(answers[btcConfig.btcPasswd.name]);
+                print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
+            } catch (e) {
+                print4log(btcConfig.createNewAddress.error)
             }
 
             callback();
@@ -47,7 +50,7 @@ vorpal
     });
 
 /**
- * @method addressList
+ * @method listBtcAddress
  * @return list
  */
 vorpal
@@ -97,7 +100,7 @@ vorpal
     });
 
 /**
- * @method wbtcBalance
+ * @method listWbtcBalance
  * @return balance
  */
 vorpal
@@ -277,7 +280,7 @@ vorpal
 	});
 
 /**
- * @method listTransaction
+ * @method listTransactions
  * @return list
  */
 vorpal
@@ -445,11 +448,14 @@ vorpal
                 { type: btcConfig.btcRedeemHash.type, name: btcConfig.btcRedeemHash.name, message: btcConfig.btcRedeemHash.message},
                 { type: btcConfig.wanPasswd.type, name: btcConfig.wanPasswd.name, message: btcConfig.wanPasswd.message},
             ], async function (answers) {
-                if (answers[btcConfig.btcRedeemHash.name].length >0 &&
-                    btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+                if (! answers[btcConfig.btcRedeemHash.name].length >0 ||
+                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
 
-                    print4log('redeemBtc func here!');
+                    callback();
+                    return;
                 }
+
+                print4log('redeemBtc func here!');
 
                 callback();
             })
@@ -491,12 +497,14 @@ vorpal
                 { type: btcConfig.revokeBtcHash.type, name: btcConfig.revokeBtcHash.name, message: btcConfig.revokeBtcHash.message},
                 { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message},
             ], async function (answers) {
-                if (answers[btcConfig.btcRedeemHash.name].length >0 &&
-                    btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+                if (! answers[btcConfig.btcRedeemHash.name].length >0 ||
+                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
 
-                    print4log('redeemBtc func here!');
-
+                    callback();
+                    return;
                 }
+
+                print4log('redeemBtc func here!');
 
                 callback();
             })
@@ -676,12 +684,14 @@ vorpal
                 { type: btcConfig.btcRedeemHash.type, name: btcConfig.btcRedeemHash.name, message: btcConfig.btcRedeemHash.message},
                 { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message},
             ], async function (answers) {
-                if (answers[btcConfig.btcRedeemHash.name].length >0 &&
-                    btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+                if (! answers[btcConfig.btcRedeemHash.name].length >0 ||
+                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
 
-                    print4log('redeemWbtc func here!');
-
+                    callback();
+                    return;
                 }
+
+                print4log('redeemWbtc func here!');
 
                 callback();
             })
@@ -723,12 +733,14 @@ vorpal
                 { type: btcConfig.revokeBtcHash.type, name: btcConfig.revokeBtcHash.name, message: btcConfig.revokeBtcHash.message},
                 { type: btcConfig.wanPasswd.type, name: btcConfig.wanPasswd.name, message: btcConfig.wanPasswd.message},
             ], async function (answers) {
-                if (answers[btcConfig.btcRedeemHash.name].length >0 &&
-                    btcScripts.checkPasswd(answers[btcConfig.wanPasswd.name])) {
+                if (! answers[btcConfig.btcRedeemHash.name].length >0 ||
+                    ! btcScripts.checkPasswd(answers[btcConfig.wanPasswd.name])) {
 
-                    print4log('redeemBtc func here!');
-
+                    callback();
+                    return;
                 }
+
+                print4log('redeemBtc func here!');
 
                 callback();
             })
