@@ -1,4 +1,5 @@
 module.exports = {
+    'help': '====== Type help for more information.  ====== ',
     'passwd': {
         type: 'password',
         name: 'password',
@@ -23,12 +24,12 @@ module.exports = {
     'wanAddress':  {
         type: 'input',
         name: 'wanAddress',
-        message: 'wanAddress: '
+        message: 'wanAddress(input index or address): '
     },
     'btcAddress':  {
         type: 'input',
         name: 'btcAddress',
-        message: 'btcAddress: '
+        message: 'btcAddress(input index or address): '
     },
     'to': {
         type: 'input',
@@ -38,7 +39,7 @@ module.exports = {
     'listStoremanGroup': {
         type: 'input',
         name: 'storeman',
-        message: 'list storemanGroups: '
+        message: 'storeman(input index or address): '
     },
     'btcRedeemHash':  {
         type: 'input',
@@ -52,6 +53,32 @@ module.exports = {
     },
     'createNewAddress': {
         desc: 'create new bitcoin address',
+        notice: '====== notice: 创建多个address时，密码必须与第一个address相同  ====== ',
+        error: 'create btc address error'
+    },
+    'addressList': {
+        desc: 'get bitcoin address list',
+        error: 'get bitcoin address list error'
+    },
+    'btcBalance': {
+        desc: 'get bitcoin address balance',
+        error: 'get bitcoin address balance error'
+    },
+    'wbtcBalance': {
+        desc: 'get wbtc address balance',
+        error: 'listWanAddr error'
+    },
+    'wanBalance': {
+        desc: 'get wan address balance',
+        error: 'listWanAddr error'
+    },
+    'listStoreman': {
+        desc: 'get all storeman',
+        error: 'get storemanGroup list error'
+    },
+    'normalTransaction': {
+        desc: 'bitcoin normal transaction',
+        error: 'bitcoin normal transaction error'
     },
     'listBtcAddress': {
         desc: 'list bitcoin addresses list.'
@@ -72,7 +99,8 @@ module.exports = {
         desc: 'bitcoin normal transaction. send bitcoin to an address.'
     },
     'listTransactions': {
-        desc: 'list all transasctions'
+        desc: 'list all transasctions',
+        error: 'get bitcoin transaction list error'
     },
     'lockBtc': {
         desc: 'crosschain lockBtc'
@@ -92,9 +120,5 @@ module.exports = {
     'revokeWbtc': {
         desc: 'crosschain revokeWbtc'
     },
-
-
-
-
 
 };
