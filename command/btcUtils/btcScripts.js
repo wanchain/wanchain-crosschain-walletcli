@@ -73,29 +73,25 @@ let checkTransaction = (records, web3) => {
             return;
         }
 
-        try {
-            web3.toBigNumber(array.value)
-        } catch (e) {
-            return;
-        }
-
         showArray.push(array);
     });
 
     showArray.forEach(function(Array, index){
 
         // print4log(config.consoleColor.COLOR_FgRed, '====== Transactions ' + (index + 1) + ' ======', '\x1b[0m');
-        print4log(config.consoleColor.COLOR_FgRed, sprintf("%26s %36s %26s %26s %26s", "from", "to", "value", "status", "chain"), '\x1b[0m');
+        print4log(config.consoleColor.COLOR_FgRed, sprintf("%40s %40s %26s %26s %26s", "from", "to", "value", "status", "chain"), '\x1b[0m');
 
         if (Array.chain.toLowerCase() === 'btc') {
 
             Array.valueStr = web3.toBigNumber(Array.value).div(100000000) + ' BTC';
+        }else{
+	        Array.valueStr = web3.toBigNumber(Array.value).div(100000000) + ' WBTC';
         }
 
         Array.timeStr = timeStamp2String(Array.time);
         Array.HTLCtimeStr = timeStamp2String(Array.HTLCtime);
 
-        print4log(config.consoleColor.COLOR_FgYellow, sprintf("%26s %36s %26s %26s %26s", (index +1) +': ' + Array.from, Array.to, Array.valueStr, Array.status, Array.chain), '\x1b[0m');
+        print4log(config.consoleColor.COLOR_FgYellow, sprintf("%40s %40s %26s %26s %26s", (index +1) +': ' + Array.from, Array.to, Array.valueStr, Array.status, Array.chain), '\x1b[0m');
         // for(let name in Array){
         //     if (name === 'meta' || name === '$loki') {
         //         break;
