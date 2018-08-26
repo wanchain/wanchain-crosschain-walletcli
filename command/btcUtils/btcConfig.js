@@ -1,6 +1,6 @@
 module.exports = {
     'help': '====== Type help for more information.  ====== ',
-    'passwd': {
+    'btcPasswd': {
         type: 'password',
         name: 'password',
         message: 'Input the BTC wallet Password(minimum 8 characters: '
@@ -36,10 +36,10 @@ module.exports = {
         name: 'to',
         message: 'Input bitcoin recipient address: '
     },
-    'listStoremanGroup': {
+    'StoremanGroup': {
         type: 'input',
         name: 'storeman',
-        message: 'storeman(input index or address): '
+        message: 'StoremanGroup(input index or StoremanGroup): '
     },
     'btcRedeemHash':  {
         type: 'input',
