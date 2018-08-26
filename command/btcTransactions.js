@@ -500,10 +500,17 @@ vorpal
                 let record = showArray[answers[btcConfig.btcRedeemHash.name] -1];
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
-                let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, '0x'+record.crossAdress,
-                    config.gasLimit, config.gasPrice,'0x'+record.x, answers[btcConfig.wanPasswd.name]);
+                try {
+                    let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, '0x'+record.crossAdress,
+                        config.gasLimit, config.gasPrice,'0x'+record.x, answers[btcConfig.wanPasswd.name]);
 
-                print4log("redeemHash: ", redeemHash);
+                    print4log("redeemHash: ", redeemHash);
+                } catch (e) {
+                    print4log('redeemBtc error: ', e);
+
+                    callback();
+                    return;
+                }
 
                 callback();
             })
@@ -559,12 +566,20 @@ vorpal
 
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
-                print4log('redeemBtc func here!');
-	            let record = showArray[Number(answers[btcConfig.revokeBtcHash.name])-1];
-	            console.log(record);
-	            let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], record.from);
-	            let walletRevoke = await ccUtil.revokeWithHashX(record.HashX,alice); //record.from
-	            console.log("revokeBtc:", walletRevoke);
+	            let record = showArray[answers[btcConfig.revokeBtcHash.name] -1];
+
+	            let walletRevoke;
+	            try {
+                    let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], record.from);
+                    walletRevoke = await ccUtil.revokeWithHashX(record.HashX,alice);
+
+                    print4log("revokeBtc:", walletRevoke);
+                } catch (e) {
+                    print4log('revokeBtc error: ', e);
+
+                    callback();
+                    return;
+                }
 
 	            callback();
             })
@@ -688,15 +703,23 @@ vorpal
                 wdTx.value = ccUtil.calculateLocWanFee(wdTx.amount, ccUtil.c2wRatio, txFeeRatio);
                 console.log("wdTx.value: ", wdTx.value);
 
-                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+                try {
+                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
-                let x = btcUtil.generatePrivateKey().slice(2); // hex string without 0x
-                let hashx = bitcoin.crypto.sha256(Buffer.from(x, 'hex')).toString('hex');
-                wdTx.x = x;
-                console.log("wdTx:", wdTx);
-                console.log("wdtx hashx:", hashx);
-                let wdHash = await ccUtil.sendWanHash(ccUtil.wanSender, wdTx);
-                console.log("wdHash: ", wdHash);
+                    let x = btcUtil.generatePrivateKey().slice(2); // hex string without 0x
+                    let hashx = bitcoin.crypto.sha256(Buffer.from(x, 'hex')).toString('hex');
+                    wdTx.x = x;
+                    console.log("wdTx:", wdTx);
+                    console.log("wdtx hashx:", hashx);
+                    let wdHash = await ccUtil.sendWanHash(ccUtil.wanSender, wdTx);
+                    console.log("wdHash: ", wdHash);
+
+                } catch (e) {
+                    print4log('lockWbtc error: ', e);
+
+                    callback();
+                    return;
+                }
 
                 // wait wallet tx confirm
                 // await waitEventbyHashx('WBTC2BTCLock', config.HTLCWBTCInstAbi, '0x'+hashx);
@@ -752,18 +775,25 @@ vorpal
                     return;
                 }
 
-                print4log('redeemWbtc func here!');
-	            let record = showArray[Number(answers[btcConfig.btcRedeemHash.name])-1];
-	            console.log(record);
-	            let filterResult = await waitEventbyHashx('WBTC2BTCLockNotice', config.HTLCWBTCInstAbi, '0x'+record.HashX);
-	            console.log("filterResult:", filterResult);
-	            let info = {}; // storeman info
-	            let redeemLockTimeStamp = Number('0x'+filterResult[0].data.slice(66));
-	            let txid = filterResult[0].data.slice(2,66);
-	            console.log("redeemLockTimeStamp: ", redeemLockTimeStamp);
-	            console.log("txid: ", txid);
-	            let walletRedeem = await ccUtil.redeem(x,hashx, redeemLockTimeStamp, storemanHash160Addr,alice, wdValue, txid);
-	            console.log(walletRedeem);
+	            let record = showArray[answers[btcConfig.btcRedeemHash.name] -1];
+
+	            try {
+                    let filterResult = await waitEventbyHashx('WBTC2BTCLockNotice', config.HTLCWBTCInstAbi, '0x'+record.HashX);
+                    console.log("filterResult:", filterResult);
+                    let info = {}; // storeman info
+                    let redeemLockTimeStamp = Number('0x'+filterResult[0].data.slice(66));
+                    let txid = filterResult[0].data.slice(2,66);
+                    console.log("redeemLockTimeStamp: ", redeemLockTimeStamp);
+                    console.log("txid: ", txid);
+                    let walletRedeem = await ccUtil.redeem(x,hashx, redeemLockTimeStamp, storemanHash160Addr,alice, wdValue, txid);
+                    console.log(walletRedeem);
+                } catch (e) {
+                    print4log('redeemWbtc error: ', e);
+
+                    callback();
+                    return;
+                }
+
                 callback();
             })
         });
@@ -814,15 +844,21 @@ vorpal
                     return;
                 }
 
-                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
                 let record = showArray[answers[btcConfig.revokeBtcHash.name] -1];
 
-                //sendWanCancel(sender, from, gas, gasPrice, hashx, passwd, nonce)
-                let revokeWbtcHash = await ccUtil.sendWanCancel(ccUtil.wanSender, record.from,
-                    config.gasLimit, config.gasPrice, record.HashX, answers[btcConfig.wanPasswd.name]);
+                try {
+                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
-                print4log('revokeWbtcHash: ', revokeWbtcHash);
+                    let revokeWbtcHash = await ccUtil.sendWanCancel(ccUtil.wanSender, record.from,
+                        config.gasLimit, config.gasPrice, record.HashX, answers[btcConfig.wanPasswd.name]);
 
+                    print4log('revokeWbtcHash: ', revokeWbtcHash);
+                } catch (e) {
+                    print4log('revokeWbtc error: ', e);
+
+                    callback();
+                    return;
+                }
 
                 callback();
             })

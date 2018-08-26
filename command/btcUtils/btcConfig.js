@@ -14,7 +14,7 @@ module.exports = {
     'amount': {
         type: 'input',
         name: 'amount',
-        message: 'input transaction bitcoin amount: '
+        message: 'input transaction amount: '
     },
     'rate': {
         type: 'input',
