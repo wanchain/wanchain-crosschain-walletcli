@@ -12,7 +12,7 @@ let Web3 = require("web3");
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
 /**
- * @method createNewAddress
+ * @method createBtcAddress
  * @param passwd
  * @return btcAddress
  */
@@ -33,6 +33,8 @@ vorpal
             if (btcScripts.checkPasswd(answers[btcConfig.btcPasswd.type])) {
                 let newAddress;
                 try{
+                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
                     newAddress = await btcUtil.createAddress(answers[btcConfig.btcPasswd.name]);
                     print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
                 } catch (e) {
@@ -49,7 +51,7 @@ vorpal
  * @return list
  */
 vorpal
-    .command('listBtcAddress', btcConfig.listBtcAddress.desc)
+    .command('listBtcAddress', btcConfig.addressList.desc)
     .action(async function(args,callback) {
         let addressList;
         try{
@@ -66,15 +68,16 @@ vorpal
     });
 
 /**
- * @method btcBalance
+ * @method getBtcBalance
  * @return balance
  */
 vorpal
-    .command('getBtcBalance', btcConfig.getBtcBalance.desc)
+    .command('getBtcBalance', btcConfig.btcBalance.desc)
     .action(async function(args,callback) {
         let addressList;
 
         try{
+            print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
             addressList = await btcUtil.getAddressList();
 
             let aliceAddr = [];
@@ -98,12 +101,14 @@ vorpal
  * @return balance
  */
 vorpal
-    .command('listWbtcBalance', btcConfig.listWbtcBalance.desc)
+    .command('listWbtcBalance', btcConfig.wbtcBalance.desc)
     .action(async function(args,callback) {
 
         // wan address list
         let wanAddressList = [];
         try {
+            print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
             wanAddressList = await ccUtil.getWanAccountsInfo(ccUtil.wanSender);
             print4log(sprintf("%46s %26s", "WAN address", "WBTC balance"));
             wanAddressList.forEach(function(wanAddress){
@@ -118,16 +123,18 @@ vorpal
     });
 
 /**
- * @method wanBalance
+ * @method listWanBalance
  * @return balance
  */
 vorpal
-    .command('listWanBalance', btcConfig.listWanBalance.desc)
+    .command('listWanBalance', btcConfig.wanBalance.desc)
     .action(async function(args,callback) {
 
         // wan address list
         let wanAddressList = [];
         try {
+            print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
             wanAddressList = await ccUtil.getWanAccountsInfo(ccUtil.wanSender);
 
             print4log(sprintf("%46s %26s", "WAN address", "balance"));
@@ -143,17 +150,19 @@ vorpal
     });
 
 /**
- * @method listStoreman
+ * @method listStoremanGroups
  * @return list
  */
 vorpal
-    .command('listStoremanGroups', btcConfig.listStoremanGroups.desc)
+    .command('listStoremanGroups', btcConfig.listStoreman.desc)
     .action(async function(args,callback) {
 
         try{
+            print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
             let smgs = await ccUtil.getBtcSmgList(ccUtil.btcSender);
             smgs.forEach(function(Array, index){
-                print4log(config.consoleColor.COLOR_FgRed, '====== storeman ' + (index + 1) + ' ====== ', '\x1b[0m');
+                print4log(config.consoleColor.COLOR_FgRed, '====== storeman ' + (index + 1) + ' ======', '\x1b[0m');
                 for(let name in Array){
                     print4log(config.consoleColor.COLOR_FgYellow, name + ': ' + Array[name], '\x1b[0m');
                 }
@@ -168,12 +177,12 @@ vorpal
 
 
 /**
- * @method normalTransaction
+ * @method sendBtcToAddress
  * @param amount, to, passwd
  * @return txid
  */
 vorpal
-	.command('sendBtcToAddress', btcConfig.sendBtcToAddress.desc)
+	.command('sendBtcToAddress', btcConfig.normalTransaction.desc)
     .cancel(() => {
         process.exit(0)
     })
@@ -186,92 +195,80 @@ vorpal
             ]);
 
 		promise.then(async function(answers) {
-            let btcBalance;
-		    if (btcScripts.checkBalance(answers[btcConfig.amount.name], null)) {
-                let addressList;
-                try{
-                    addressList = await btcUtil.getAddressList();
-                    let aliceAddr = [];
-                    for (let i=0;i<addressList.length; i++) {
-                        aliceAddr.push(addressList[i].address)
-                    }
+		    if (! btcScripts.checkBalance(answers[btcConfig.amount.name], null) ||
+                ! answers[btcConfig.to.name].length >0 ||
+                ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
 
-                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceAddr);
-                    let result = await ccUtil.getUTXOSBalance(utxos);
-
-                    btcBalance = web3.toBigNumber(result).div(100000000);
-
-                    console.log("btcBalance:",btcBalance);
-	                if (btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) &&
-		                answers[btcConfig.to.name].length >0 &&
-		                btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])
-	                ) {
-		                let keyPairArray;
-
-		                try {
-			                keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.type]);
-			                console.log("keyPairArray:",keyPairArray);
-			                if (keyPairArray.length >0) {
-				                let target = {
-					                address: answers.to,
-					                value: web3.toBigNumber(answers.amount).mul(100000000)
-				                };
-
-
-				                const {rawTx, fee} = await this.btcBuildTransaction(utxos, keyPairArray, target, config.feeRate);
-				                if (!rawTx) {
-					                callback();
-					                return;
-				                }
-				                console.log("###############rawTx: ", rawTx);
-				                let result = await this.sendRawTransaction(this.btcSender, rawTx);
-				                console.log('result hash:', result);
-				                callback();
-				                return;
-			                } else {
-				                print4log('no bitcoin keyPairs!')
-			                }
-
-
-		                } catch (e) {
-			                print4log("bitcoin normal transaction error: ", err);
-		                }
-	                }
-
-
-                } catch (e) {
-                    print4log(btcConfig.btcBalance.error);
-
-                    callback();
-                    return;
-                }
-            } else {
 		        callback();
                 return;
             }
 
-			if (btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) &&
-                answers[btcConfig.to.name].length >0 &&
-                btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])
-            ) {
-                let keyPairArray;
-
-                try {
-                    keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.type]);
-
-                    if (keyPairArray.length >0) {
-                        let target = {
-                            address: answers.to,
-                            value: web3.toBigNumber(answers.amount).mul(100000000)
-                        };
-
-                        let res = await ccUtil.btcTxBuildSendWallet(keyPairArray, target, btcConfig.rate.value);
-
-                        print4log(config.consoleColor.COLOR_FgYellow, res.result, '\x1b[0m');
-                    }
-                } catch (e) {
-                    print4log(btcConfig.normalTransaction.error);
+            let btcBalance = 0;
+            let addressList;
+            let utxos;
+            // btc balance
+            try{
+                addressList = await btcUtil.getAddressList();
+                let aliceAddr = [];
+                for (let i=0;i<addressList.length; i++) {
+                    aliceAddr.push(addressList[i].address)
                 }
+
+                utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceAddr);
+                let result = await ccUtil.getUTXOSBalance(utxos);
+
+                btcBalance = web3.toBigNumber(result).div(100000000);
+
+            } catch (e) {
+                print4log(btcConfig.btcBalance.error);
+
+                callback();
+                return;
+            }
+
+            if (! btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) ) {
+
+                callback();
+                return;
+            }
+
+            let keyPairArray = [];
+
+            try {
+                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
+                keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.type]);
+
+                if (keyPairArray.length === 0) {
+                    print4log('no bitcoin keyPairs!');
+
+                    callback();
+                    return;
+                }
+
+                let target = {
+                    address: answers.to,
+                    value: web3.toBigNumber(answers.amount).mul(100000000)
+                };
+
+
+                const {rawTx, fee} = await ccUtil.btcBuildTransaction(utxos, keyPairArray, target, config.feeRate);
+                if (!rawTx) {
+
+                    callback();
+                    return;
+                }
+                print4log("###############rawTx: ", rawTx);
+
+                let result = await ccUtil.sendRawTransaction(ccUtil.btcSender, rawTx);
+                print4log('result hash:', result);
+
+
+            } catch (e) {
+                print4log(btcConfig.normalTransaction.error, e);
+
+                callback();
+                return;
             }
 
 
@@ -317,12 +314,22 @@ vorpal
             let wanAddressArray = {};
             let smgsArray = {};
 
+            let SsmgsArray = "";
+            let SwanAddressList="";
+
+
+            // storeman list
             try {
                 smgs = await ccUtil.getBtcSmgList(ccUtil.btcSender);
+<<<<<<< HEAD
                 console.log("smgs:", smgs);
                 print4log(config.consoleColor.COLOR_FgRed, '====== stroman address list ====== ', '\x1b[0m');
+=======
+
+                SsmgsArray += sprintf("%2s\r\n", "stroeman address");
+>>>>>>> aef49c621e1d70c649c0ba15c3d2ac34a40444a4
                 smgs.forEach(function (Array, index) {
-                    print4log((index + 1) + ': ' + Array.wanAddress);
+                    SsmgsArray += (index + 1) + ': ' + Array.wanAddress +'\n';
                     smgsArray[Array.wanAddress] = [Array.wanAddress, Array.txFeeRatio];
                     smgsArray[index + 1] = [Array.wanAddress, Array.txFeeRatio];
                 });
@@ -335,18 +342,16 @@ vorpal
             // wan address list
             try {
                 wanAddressList = await ccUtil.getWanAccountsInfo(ccUtil.wanSender);
-
-                print4log(config.consoleColor.COLOR_FgRed, '====== wan address list ====== ', '\x1b[0m');
-                print4log(sprintf("%2s %56s %26s", "WAN address", "balance", "wbtc balance"));
-
+                SwanAddressList += sprintf("%2s %56s %26s\r\n", "WAN address", "balance", "wbtc balance");
                 wanAddressList.forEach(function(wanAddress, index){
                     let wanBalance = web3.fromWei(wanAddress.balance);
                     let wbtcBalance = web3.toBigNumber(wanAddress.wethBalance).div(100000000);
                     wanAddressArray[wanAddress.address] = [wanBalance, wbtcBalance,  wanAddress.address];
                     wanAddressArray[index +1] = [wanBalance, wbtcBalance, wanAddress.address];
 
-                    print4log(sprintf("%2s %26s %26s",(index + 1) + ': ' + wanAddress.address,  wanBalance, wbtcBalance));
+                    SwanAddressList += sprintf("%2s %26s %26s\r\n",(index + 1) + ': ' + wanAddress.address,  wanBalance, wbtcBalance);
                 });
+
                 print4log('\n');
 
             }catch(err) {
@@ -355,45 +360,50 @@ vorpal
 
 
             self.prompt([
-                { type: btcConfig.StoremanGroup.type, name: btcConfig.StoremanGroup.name, message: btcConfig.StoremanGroup.message},
-                { type: btcConfig.wanAddress.type, name: btcConfig.wanAddress.name, message: btcConfig.wanAddress.message},
+                { type: btcConfig.StoremanGroup.type, name: btcConfig.StoremanGroup.name, message: SsmgsArray+btcConfig.StoremanGroup.message },
+                { type: btcConfig.wanAddress.type, name: btcConfig.wanAddress.name, message: SwanAddressList+btcConfig.wanAddress.message },
                 { type: btcConfig.amount.type, name: btcConfig.amount.name, message: btcConfig.amount.message},
 	            { type: btcConfig.wanPasswd.type, name: btcConfig.wanPasswd.name, message: btcConfig.wanPasswd.message},
 	            { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message},
             ], async function (answers) {
-                // Or promises!
-                let btcBalance;
 
-                if (btcScripts.checkBalance(answers[btcConfig.amount.name], null)) {
-                    let addressList;
-
-                    try {
-                        addressList = await btcUtil.getAddressList();
-
-                        let aliceAddr = [];
-                        for (let i=0;i<addressList.length; i++) {
-                            aliceAddr.push(addressList[i].address)
-                        }
-
-                        let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, 0, 1000, aliceAddr);
-                        let result = await ccUtil.getUTXOSBalance(utxos);
-
-                        btcBalance = web3.toBigNumber(result).div(100000000);
-
-                    } catch (e) {
-                        print4log(btcConfig.btcBalance.error);
-
-                        callback();
-                        return;
-                    }
-                } else {
+                if (! btcScripts.checkBalance(answers[btcConfig.amount.name], null) ||
+                    ! answers[btcConfig.wanAddress.name].length >0 ||
+                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
 
                     callback();
                     return;
                 }
 
+                let addressList;
+                let btcBalance;
+
+                try {
+                    addressList = await btcUtil.getAddressList();
+
+                    let aliceAddr = [];
+                    for (let i=0;i<addressList.length; i++) {
+                        aliceAddr.push(addressList[i].address)
+                    }
+
+                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, 0, 1000, aliceAddr);
+                    let result = await ccUtil.getUTXOSBalance(utxos);
+
+                    btcBalance = web3.toBigNumber(result).div(100000000);
+
+                } catch (e) {
+                    print4log(btcConfig.btcBalance.error);
+
+                    callback();
+                    return;
+                }
+
+<<<<<<< HEAD
                 if (! btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) ||
                     ! answers[btcConfig.wanAddress.name].length >0) {
+=======
+                if (! btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) ) {
+>>>>>>> aef49c621e1d70c649c0ba15c3d2ac34a40444a4
 
                     callback();
                     return;
@@ -401,6 +411,8 @@ vorpal
 
                 let [storeman, txRadio] = smgsArray[answers[btcConfig.StoremanGroup.name]];
                 let [wanBalance, wbtcBalance, wanAddress] = wanAddressArray[answers[btcConfig.wanAddress.name]];
+
+                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
                 print4log('lockBtc func here!');
 	            let record;
@@ -545,6 +557,7 @@ vorpal
         let self = this;
 
         return new Promise(async function(resolve, reject) {
+
 	        // storeman
             let smgs = [];
             let btcAddressList = [];
@@ -553,15 +566,15 @@ vorpal
             let smgsArray = {};
             let btcAddressArray = {};
 
-            let SsmgsArray = "\n";
-	        let SwanAddressList="\n";
-	        let SbtcAddress = "\n";
+            let SsmgsArray = "";
+	        let SwanAddressList="";
+	        let SbtcAddress = "";
             try {
 		        smgs = await ccUtil.getBtcSmgList(ccUtil.btcSender);
-                print4log(config.consoleColor.COLOR_FgRed, '====== stroman address list ====== ', '\x1b[0m');
+
+                SsmgsArray += sprintf("%2s\r\n", "stroeman address");
 		        smgs.forEach(function (Array, index) {
-			        print4log((index + 1) + ': ' + Array.wanAddress);
-			        SsmgsArray += (index + 1) + ': ' + Array.wanAddress +'\n'
+			        SsmgsArray += (index + 1) + ': ' + Array.wanAddress +'\n';
 			        smgsArray[Array.wanAddress] = [Array.wanAddress, Array.txFeeRatio];
                     smgsArray[index + 1] = [Array.wanAddress, Array.txFeeRatio];
 		        });
@@ -570,20 +583,17 @@ vorpal
             } catch (e) {
 		        print4log(btcConfig.listStoreman.error);
             }
+
             // wan address list
             try {
                 wanAddressList = await ccUtil.getWanAccountsInfo(ccUtil.wanSender);
-
-                print4log(config.consoleColor.COLOR_FgRed, '====== wan address list ====== ', '\x1b[0m');
-                print4log(sprintf("%2s %56s %26s", "WAN address", "balance", "wbtc balance"));
-				SwanAddressList = sprintf("%2s %56s %26s\r\n", "WAN address", "balance", "wbtc balance");
+				SwanAddressList += sprintf("%2s %56s %26s\r\n", "WAN address", "balance", "wbtc balance");
                 wanAddressList.forEach(function(wanAddress, index){
                     let wanBalance = web3.fromWei(wanAddress.balance);
                     let wbtcBalance = web3.toBigNumber(wanAddress.wethBalance).div(100000000);
                     wanAddressArray[wanAddress.address] = [wanBalance, wbtcBalance,  wanAddress.address];
                     wanAddressArray[index +1] = [wanBalance, wbtcBalance, wanAddress.address];
 
-                    print4log(sprintf("%2s %26s %26s",(index + 1) + ': ' + wanAddress.address,  wanBalance, wbtcBalance));
 	                SwanAddressList += sprintf("%2s %26s %26s\r\n",(index + 1) + ': ' + wanAddress.address,  wanBalance, wbtcBalance)
                 });
                 print4log('\n');
@@ -592,17 +602,14 @@ vorpal
                 print4log(btcConfig.wanBalance.error);
             }
 
-	        console.log("##################2")
-
             // btc address list
             try {
                 btcAddressList = await btcUtil.getAddressList();
 
-                print4log(config.consoleColor.COLOR_FgRed, '====== btc address list ====== ', '\x1b[0m');
+                SbtcAddress += sprintf("%2s\r\n", "btc address");
                 btcAddressList.forEach(function (Array, index) {
                     btcAddressArray[Array.address] = Array.address;
                     btcAddressArray[index + 1] = Array.address;
-                    print4log( (index + 1) + ': ' + Array.address);
 	                SbtcAddress += (index + 1) + ': ' + Array.address+'\n'
                 });
                 print4log('\n');
@@ -610,14 +617,12 @@ vorpal
             } catch (e) {
                 print4log(btcConfig.addressList.error)
             }
-	        console.log("##################3")
 
             if (smgs.length === 0 || btcAddressList.length ===0 || wanAddressList.length ===0) {
 	            callback();
 	            return;
             }
 
-	        console.log("##################4");
 	        self.prompt([
                 { type: btcConfig.StoremanGroup.type, name: btcConfig.StoremanGroup.name, message: SsmgsArray+btcConfig.StoremanGroup.message },
                 { type: btcConfig.wanAddress.type, name: btcConfig.wanAddress.name, message: SwanAddressList+btcConfig.wanAddress.message },
@@ -627,8 +632,7 @@ vorpal
 		        { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message },
 	        ], async function (answers) {
 
-		        console.log("##################5")
-		        let [wanBalance, wbtcBalance, wanAddress] = wanAddressArray[answers[btcConfig.wanAddress.name]];
+                let [wanBalance, wbtcBalance, wanAddress] = wanAddressArray[answers[btcConfig.wanAddress.name]];
 
                 if (wanBalance === 0 || wbtcBalance === 0 ||
                     ! btcScripts.checkBalance(answers[btcConfig.amount.name], wbtcBalance) ||
@@ -656,11 +660,13 @@ vorpal
                 wdTx.amount = Number(answers[btcConfig.amount.name]) * 100000000;
                 [wdTx.storemanGroup, txFeeRatio] = smgsArray[answers[btcConfig.StoremanGroup.name]];
 
-                // console.log("wdTx:", wdTx);
-                // console.log("txFeeRatio:", txFeeRatio);
+                // print4log("wdTx:", wdTx);
 
                 wdTx.value = ccUtil.calculateLocWanFee(wdTx.amount, ccUtil.c2wRatio, txFeeRatio);
                 console.log("wdTx.value: ", wdTx.value);
+
+                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
                 let x = btcUtil.generatePrivateKey().slice(2); // hex string without 0x
                 let hashx = bitcoin.crypto.sha256(Buffer.from(x, 'hex')).toString('hex');
                 wdTx.x = x;
