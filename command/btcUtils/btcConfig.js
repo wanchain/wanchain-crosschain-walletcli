@@ -1,9 +1,10 @@
 module.exports = {
     'help': '====== Type help for more information.  ====== ',
+    'waiting': 'waiting for a moment...',
     'btcPasswd': {
         type: 'password',
         name: 'password',
-        message: 'Input the BTC wallet Password(minimum 8 characters: '
+        message: 'Input the BTC wallet Password(minimum 8 characters): '
     },
     'wanPasswd': {
         type: 'password',
@@ -69,7 +70,7 @@ module.exports = {
         error: 'listWanAddr error'
     },
     'wanBalance': {
-        desc: 'get wan address balance',
+        desc: 'list wanchain address balances',
         error: 'listWanAddr error'
     },
     'listStoreman': {
@@ -79,24 +80,6 @@ module.exports = {
     'normalTransaction': {
         desc: 'bitcoin normal transaction',
         error: 'bitcoin normal transaction error'
-    },
-    'listBtcAddress': {
-        desc: 'list bitcoin addresses list.'
-    },
-    'getBtcBalance': {
-        desc: 'get bitcoin address total balance'
-    },
-    'listWbtcBalance': {
-        desc: 'list wbtc balances'
-    },
-    'listWanBalance': {
-        desc: 'list wanchain address balances'
-    },
-    'listStoremanGroups': {
-        desc: 'list storemanGroups'
-    },
-    'sendBtcToAddress': {
-        desc: 'bitcoin normal transaction. send bitcoin to an address.'
     },
     'listTransactions': {
         desc: 'list all transasctions',
