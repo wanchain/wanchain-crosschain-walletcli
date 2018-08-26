@@ -178,6 +178,23 @@ vorpal
         callback();
     });
 
+/**
+ * @method listTransactions
+ * @return list
+ */
+vorpal
+    .command('listTransactions', btcConfig.listTransactions.desc)
+    .action(async function(args,callback) {
+        try{
+            let records = ccUtil.getBtcWanTxHistory({});
+            btcScripts.checkTransaction(records, web3);
+
+        } catch (e) {
+            print4log(btcConfig.listTransactions.error, e);
+        }
+
+        callback();
+    });
 
 /**
  * @method sendBtcToAddress
@@ -280,24 +297,6 @@ vorpal
 	});
 
 /**
- * @method listTransactions
- * @return list
- */
-vorpal
-    .command('listTransactions', btcConfig.listTransactions.desc)
-    .action(async function(args,callback) {
-        try{
-            let records = ccUtil.getBtcWanTxHistory({});
-            console.log(records);
-
-        } catch (e) {
-            print4log(btcConfig.listTransactions.error)
-        }
-
-        callback();
-    });
-
-/**
  * @method lockBtc
  * @param stroman, wanAddress, amount, passwd
  * @return txid
@@ -328,8 +327,8 @@ vorpal
                 SsmgsArray += sprintf("%2s\r\n", "stroeman address");
                 smgs.forEach(function (Array, index) {
                     SsmgsArray += (index + 1) + ': ' + Array.wanAddress +'\n';
-                    smgsArray[Array.wanAddress] = [Array.wanAddress, Array.txFeeRatio];
-                    smgsArray[index + 1] = [Array.wanAddress, Array.txFeeRatio];
+                    smgsArray[Array.wanAddress] = [Array.wanAddress, Array.ethAddress];
+                    smgsArray[index + 1] = [Array.wanAddress, Array.ethAddress];
                 });
                 print4log('\n');
 
@@ -361,7 +360,8 @@ vorpal
                 { type: btcConfig.StoremanGroup.type, name: btcConfig.StoremanGroup.name, message: SsmgsArray+btcConfig.StoremanGroup.message },
                 { type: btcConfig.wanAddress.type, name: btcConfig.wanAddress.name, message: SwanAddressList+btcConfig.wanAddress.message },
                 { type: btcConfig.amount.type, name: btcConfig.amount.name, message: btcConfig.amount.message},
-                { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message},
+	            { type: btcConfig.wanPasswd.type, name: btcConfig.wanPasswd.name, message: btcConfig.wanPasswd.message},
+	            { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message},
             ], async function (answers) {
 
                 if (! btcScripts.checkBalance(answers[btcConfig.amount.name], null) ||
@@ -396,17 +396,52 @@ vorpal
                 }
 
                 if (! btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) ) {
-
                     callback();
                     return;
                 }
 
-                let [storeman, txRadio] = smgsArray[answers[btcConfig.StoremanGroup.name]];
+                let [storeman, smgBtcAddr] = smgsArray[answers[btcConfig.StoremanGroup.name]];
                 let [wanBalance, wbtcBalance, wanAddress] = wanAddressArray[answers[btcConfig.wanAddress.name]];
 
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
-                print4log('lockBtc func here!');
+	            let record;
+	            let keyPairArray;
+	            try{
+		            keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
+		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, answers[btcConfig.amount.name]*100000000);
+	            }catch(err){
+		            console.log("lockBtc error");
+
+		            callback();
+		            return;
+	            }
+
+	            // notice wan.
+	            const tx = {};
+	            tx.storeman = storeman;
+	            tx.from = wanAddress;
+	            tx.userH160 = '0x'+bitcoin.crypto.hash160(keyPairArray[0].publicKey).toString('hex');
+	            tx.hashx = '0x'+record.hashx;
+	            tx.txHash = '0x'+record.txhash;
+	            tx.lockedTimestamp = record.redeemLockTimeStamp;
+	            tx.gas = config.gasLimit;
+	            tx.gasPrice = config.gasPrice;
+	            tx.passwd=answers[btcConfig.wanPasswd.name];
+	            print4log("######## tx: ", tx);
+
+	            let txHash;
+	            try {
+                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+                    txHash = await ccUtil.sendWanNotice(ccUtil.wanSender, tx);
+
+                    print4log("sendWanNotice txHash:", txHash);
+                } catch (e) {
+                    console.log("get sendWanNotice error");
+
+                    callback();
+                    return;
+                }
 
                 callback();
             });
@@ -476,11 +511,13 @@ vorpal
         let self = this;
 
         return new Promise(async function(resolve, reject) {
+
             // listTransaction
-            let records;
+            let records = [];
+            let showArray = [];
             try{
-                records = ccUtil.getBtcWanTxHistory({});
-                console.log(records);
+                records = await ccUtil.getBtcWanTxHistory({status: 'waitingRevoke', chain: 'BTC'});
+                showArray = btcScripts.checkTransaction(records, web3);
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error);
@@ -497,12 +534,17 @@ vorpal
                 { type: btcConfig.revokeBtcHash.type, name: btcConfig.revokeBtcHash.name, message: btcConfig.revokeBtcHash.message},
                 { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message},
             ], async function (answers) {
-                if (! answers[btcConfig.btcRedeemHash.name].length >0 ||
-                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+                let patten = /^\d+$/ ;
+
+                if (! patten.test(answers[btcConfig.revokeBtcHash.name]) ||
+                    answers[btcConfig.revokeBtcHash.name] > showArray.length ||
+                    !showArray[answers[btcConfig.revokeBtcHash.name] -1]) {
 
                     callback();
                     return;
                 }
+
+                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
                 print4log('redeemBtc func here!');
 
@@ -606,14 +648,16 @@ vorpal
                     ! btcScripts.checkBalance(answers[btcConfig.amount.name], wbtcBalance) ||
                     ! answers[btcConfig.StoremanGroup.name].length > 0 ||
                     ! answers[btcConfig.wanAddress.name].length > 0 ||
-                    ! answers[btcConfig.btcAddress.name].length > 0 ||
-	                ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name]) ||
-                    ! btcScripts.checkPasswd(answers[btcConfig.wanPasswd.name])) {
+                    ! answers[btcConfig.btcAddress.name].length > 0 ) {
 
                     callback();
                     return;
 
                 }
+
+
+
+
 
                 let wdTx = {};
                 let txFeeRatio;
@@ -739,6 +783,15 @@ vorpal
                     callback();
                     return;
                 }
+
+                print4log('revokeW func here!');
+                console.log(answers);
+                let record = records[Number(answers[btcConfig.revokeBtcHash.name])-1];
+                console.log(record);
+
+                //sendWanCancel(sender, from, gas, gasPrice, hashx, passwd, nonce)
+                let revokeWbtcHash = ccUtil.sendWanCancel(ccUtil.wanSender, record.from,
+                    config.gasLimit, config.gasPrice, record.HashX, answers[btcConfig.wanPasswd.name]);
 
                 print4log('redeemBtc func here!');
 

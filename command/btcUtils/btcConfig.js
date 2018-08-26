@@ -3,13 +3,13 @@ module.exports = {
     'waiting': 'waiting for a moment...',
     'btcPasswd': {
         type: 'password',
-        name: 'password',
+        name: 'btcPassword',
         message: 'Input the BTC wallet Password(minimum 8 characters): '
     },
     'wanPasswd': {
         type: 'password',
-        name: 'password',
-        message: 'wan address Password: '
+        name: 'wanPassword',
+        message: 'Input the wanchain address Password: '
     },
     'amount': {
         type: 'input',
@@ -50,7 +50,7 @@ module.exports = {
     'revokeBtcHash':  {
         type: 'input',
         name: 'revokeHash',
-        message: 'revoke hash: '
+        message: 'Input the index of transaction you want to revoke: '
     },
     'createNewAddress': {
         desc: 'create new bitcoin address',
