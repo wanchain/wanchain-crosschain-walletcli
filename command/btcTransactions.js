@@ -556,8 +556,8 @@ vorpal
                 print4log('redeemBtc func here!');
 	            let record = records[Number(answers[btcConfig.revokeBtcHash.name])-1];
 	            console.log(record);
-	            let alice = btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], record.from);
-	            let walletRevoke = await ccUtil.revokeWithHashX(record.hashx,alice); //record.from
+	            let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], record.from);
+	            let walletRevoke = await ccUtil.revokeWithHashX(record.HashX,alice); //record.from
 	            console.log("revokeBtc:", walletRevoke);
 
 	            callback();
@@ -747,7 +747,17 @@ vorpal
                 }
 
                 print4log('redeemWbtc func here!');
-
+	            let record = records[Number(answers[btcConfig.revokeBtcHash.name])-1];
+	            console.log(record);
+	            let filterResult = await waitEventbyHashx('WBTC2BTCLockNotice', config.HTLCWBTCInstAbi, '0x'+record.HashX);
+	            console.log("filterResult:", filterResult);
+	            let info = {}; // storeman info
+	            let redeemLockTimeStamp = Number('0x'+filterResult[0].data.slice(66));
+	            let txid = filterResult[0].data.slice(2,66);
+	            console.log("redeemLockTimeStamp: ", redeemLockTimeStamp);
+	            console.log("txid: ", txid);
+	            let walletRedeem = await ccUtil.redeem(x,hashx, redeemLockTimeStamp, storemanHash160Addr,alice, wdValue, txid);
+	            console.log(walletRedeem);
                 callback();
             })
         });
