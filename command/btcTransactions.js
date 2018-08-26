@@ -66,6 +66,14 @@ vorpal
         } catch (e) {
             print4log(btcConfig.addressList.error)
         }
+	    console.log("========================")
+	    let taddr = "myjXdwN4WM5X2ER8bY5s6nP1AZoVmx7VtU";
+	    let t160 = btcUtil.addressToHash160(taddr, 'pubkeyhash','testnet');
+	    let taddr2 = btcUtil.hash160ToAddress(t160, 'pubkeyhash','testnet');
+	    console.log("taddr: ", taddr);
+	    console.log("t160: ", t160);
+	    console.log("taddr2: ", taddr2);
+	    console.log("========================")
 
         callback();
     });
@@ -187,6 +195,7 @@ vorpal
     .action(async function(args,callback) {
         try{
             let records = ccUtil.getBtcWanTxHistory({});
+            console.log("listTransactions: \n", records);
             btcScripts.checkTransaction(records, web3);
 
         } catch (e) {
@@ -693,7 +702,10 @@ vorpal
                 wdTx.gas = config.gasLimit;
                 wdTx.gasPrice = config.gasPrice;
                 wdTx.passwd = answers[btcConfig.wanPasswd.name];
-                wdTx.cross = '0x' + btcUtil.btcAddrToH160(btcAddressArray[answers[btcConfig.btcAddress.name]]);
+                let btcAddr = btcAddressArray[answers[btcConfig.btcAddress.name]];
+                wdTx.cross = '0x' + btcUtil.addressToHash160(btcAddr, 'pubkeyhash','testnet');
+                console.log("cross: ",wdTx.cross);
+		        console.log("btcAddr: ",btcAddr);
                 wdTx.from = wanAddress;
                 wdTx.amount = Number(answers[btcConfig.amount.name]) * 100000000;
                 [wdTx.storemanGroup, txFeeRatio] = smgsArray[answers[btcConfig.StoremanGroup.name]];
@@ -776,16 +788,20 @@ vorpal
                 }
 
 	            let record = showArray[answers[btcConfig.btcRedeemHash.name] -1];
-
+                console.log("record: ", record);
 	            try {
-                    let filterResult = await waitEventbyHashx('WBTC2BTCLockNotice', config.HTLCWBTCInstAbi, '0x'+record.HashX);
+                    let filterResult = await ccUtil.getBtcWithdrawStoremanNoticeEvent(ccUtil.wanSender, '0x'+record.HashX);
                     console.log("filterResult:", filterResult);
                     let info = {}; // storeman info
                     let redeemLockTimeStamp = Number('0x'+filterResult[0].data.slice(66));
                     let txid = filterResult[0].data.slice(2,66);
                     console.log("redeemLockTimeStamp: ", redeemLockTimeStamp);
                     console.log("txid: ", txid);
-                    let walletRedeem = await ccUtil.redeem(x,hashx, redeemLockTimeStamp, storemanHash160Addr,alice, wdValue, txid);
+
+		            let aliceAddr = btcUtil.hash160ToAddress(record.crossAdress,'pubkeyhash','testnet');
+		            let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name],  aliceAddr);
+                    //let walletRedeem = await ccUtil.redeem(record.x,record.HashX, redeemLockTimeStamp, storemanHash160Addr,alice, record.value, txid);
+                    let walletRedeem = await ccUtil.redeemWithHashX(record.HashX, alice);
                     console.log(walletRedeem);
                 } catch (e) {
                     print4log('redeemWbtc error: ', e);
@@ -850,7 +866,7 @@ vorpal
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
                     let revokeWbtcHash = await ccUtil.sendWanCancel(ccUtil.wanSender, record.from,
-                        config.gasLimit, config.gasPrice, record.HashX, answers[btcConfig.wanPasswd.name]);
+                        config.gasLimit, config.gasPrice, '0x'+record.HashX, answers[btcConfig.wanPasswd.name]);
 
                     print4log('revokeWbtcHash: ', revokeWbtcHash);
                 } catch (e) {
