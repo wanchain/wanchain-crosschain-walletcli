@@ -498,7 +498,6 @@ vorpal
                         config.gasLimit, config.gasPrice,'0x'+record.x, answers[btcConfig.wanPasswd.name]);
 	                console.log("redeemHash: ", redeemHash);
 
-                print4log('redeemBtc func here!');
 
                 callback();
             })
@@ -555,8 +554,13 @@ vorpal
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
                 print4log('redeemBtc func here!');
+	            let record = records[Number(answers[btcConfig.revokeBtcHash.name])-1];
+	            console.log(record);
+	            let alice = btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], record.from);
+	            let walletRevoke = await ccUtil.revokeWithHashX(record.hashx,alice); //record.from
+	            console.log("revokeBtc:", walletRevoke);
 
-                callback();
+	            callback();
             })
         });
     });
@@ -800,7 +804,6 @@ vorpal
                 let revokeWbtcHash = ccUtil.sendWanCancel(ccUtil.wanSender, record.from,
                     config.gasLimit, config.gasPrice, record.HashX, answers[btcConfig.wanPasswd.name]);
 
-                print4log('redeemBtc func here!');
 
                 callback();
             })
