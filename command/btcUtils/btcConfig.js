@@ -45,7 +45,7 @@ module.exports = {
     'btcRedeemHash':  {
         type: 'input',
         name: 'redeemHash',
-        message: 'redeem hash: '
+        message: 'Input the index of transaction you want to redeem: '
     },
     'revokeBtcHash':  {
         type: 'input',

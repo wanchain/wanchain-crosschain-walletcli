@@ -465,11 +465,13 @@ vorpal
         let self = this;
 
         return new Promise(async function(resolve, reject) {
+
             // listTransaction
-            let records;
+            let records = [];
+            let showArray = [];
             try{
-                records = ccUtil.getBtcWanTxHistory({});
-                console.log(records);
+                records = await ccUtil.getBtcWanTxHistory({status: 'waitingX', chain: 'BTC'});
+                showArray = btcScripts.checkTransaction(records, web3);
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error);
@@ -486,19 +488,23 @@ vorpal
                 { type: btcConfig.btcRedeemHash.type, name: btcConfig.btcRedeemHash.name, message: btcConfig.btcRedeemHash.message},
                 { type: btcConfig.wanPasswd.type, name: btcConfig.wanPasswd.name, message: btcConfig.wanPasswd.message},
             ], async function (answers) {
-                if (! answers[btcConfig.btcRedeemHash.name].length >0 ||
-                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+                let patten = /^\d+$/ ;
+
+                if (! patten.test(answers[btcConfig.btcRedeemHash.name]) ||
+                    answers[btcConfig.btcRedeemHash.name] > showArray.length ||
+                    !showArray[answers[btcConfig.btcRedeemHash.name] -1]) {
 
                     callback();
                     return;
                 }
-	                let record = records[Number(answers[btcConfig.btcRedeemHash.name])-1];
-	                console.log(record);
-	                let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, '0x'+record.crossAdress,
-                        config.gasLimit, config.gasPrice,'0x'+record.x, answers[btcConfig.wanPasswd.name]);
-	                console.log("redeemHash: ", redeemHash);
 
-                print4log('redeemBtc func here!');
+                let record = showArray[answers[btcConfig.btcRedeemHash.name] -1];
+                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
+                let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, '0x'+record.crossAdress,
+                    config.gasLimit, config.gasPrice,'0x'+record.x, answers[btcConfig.wanPasswd.name]);
+
+                print4log("redeemHash: ", redeemHash);
 
                 callback();
             })
