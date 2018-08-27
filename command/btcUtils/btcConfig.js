@@ -54,35 +54,35 @@ module.exports = {
     },
     'createNewAddress': {
         desc: 'create new bitcoin address',
-        error: 'create btc address error'
+        error: 'create btc address error: '
     },
     'addressList': {
         desc: 'get bitcoin address list',
-        error: 'get bitcoin address list error'
+        error: 'get bitcoin address list error: '
     },
     'btcBalance': {
         desc: 'get bitcoin address balance',
-        error: 'get bitcoin address balance error'
+        error: 'get bitcoin address balance error: '
     },
     'wbtcBalance': {
         desc: 'get wbtc address balance',
-        error: 'listWanAddr error'
+        error: 'listWanAddr error: '
     },
     'wanBalance': {
         desc: 'list wanchain address balances',
-        error: 'listWanAddr error'
+        error: 'listWanAddr error: '
     },
     'listStoreman': {
         desc: 'get all storeman',
-        error: 'get storemanGroup list error'
+        error: 'get storemanGroup list error: '
     },
     'normalTransaction': {
         desc: 'bitcoin normal transaction',
-        error: 'bitcoin normal transaction error'
+        error: 'bitcoin normal transaction error: '
     },
     'listTransactions': {
         desc: 'list all transasctions',
-        error: 'get bitcoin transaction list error'
+        error: 'get bitcoin transaction list error: '
     },
     'lockBtc': {
         desc: 'crosschain lockBtc'
