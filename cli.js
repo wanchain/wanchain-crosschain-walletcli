@@ -22,14 +22,13 @@ vorpal
         process.exit(0)
     })
     .action(function(args,callback) {
-        print4log(config.consoleColor.COLOR_FgRed, btcConfig.createNewAddress.notice, '\x1b[0m');
 
         let promise = this.prompt([
             { type: btcConfig.btcPasswd.type, name: btcConfig.btcPasswd.name, message: btcConfig.btcPasswd.message}
         ]);
 
         promise.then(async function(answers) {
-            if (! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.type])) {
+            if (! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
 
                 callback();
                 return;
@@ -38,11 +37,10 @@ vorpal
             let newAddress;
             try{
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
-
                 newAddress = await btcUtil.createAddress(answers[btcConfig.btcPasswd.name]);
                 print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
             } catch (e) {
-                print4log(btcConfig.createNewAddress.error)
+                print4log(btcConfig.createNewAddress.error, e.message)
             }
 
             callback();
@@ -64,7 +62,7 @@ vorpal
                 print4log(config.consoleColor.COLOR_FgYellow, Array.address, '\x1b[0m');
             });
         } catch (e) {
-            print4log(btcConfig.addressList.error)
+            print4log(btcConfig.addressList.error, e.message)
         }
 
         callback();
@@ -93,7 +91,7 @@ vorpal
 
             print4log(config.consoleColor.COLOR_FgYellow, web3.toBigNumber(result).div(100000000).toString(), '\x1b[0m');
         } catch (e) {
-            print4log(btcConfig.btcBalance.error)
+            print4log(btcConfig.btcBalance.error, e.message)
         }
 
         callback();
@@ -119,7 +117,7 @@ vorpal
             });
 
         }catch(err) {
-            print4log(btcConfig.wbtcBalance.error);
+            print4log(btcConfig.wbtcBalance.error, e.message);
         }
 
         callback();
@@ -146,7 +144,7 @@ vorpal
             });
 
         }catch(err) {
-            print4log(btcConfig.wanBalance.error);
+            print4log(btcConfig.wanBalance.error, e.message);
         }
 
         callback();
@@ -172,7 +170,7 @@ vorpal
             });
 
         } catch (e) {
-            print4log(btcConfig.listStoreman.error)
+            print4log(btcConfig.listStoreman.error, e.message)
         }
 
         callback();
@@ -187,11 +185,9 @@ vorpal
     .action(async function(args,callback) {
         try{
             let records = ccUtil.getBtcWanTxHistory({});
-            console.log("listTransactions: \n", records);
             btcScripts.checkTransaction(records, web3);
-
         } catch (e) {
-            print4log(btcConfig.listTransactions.error, e);
+            print4log(btcConfig.listTransactions.error, e.message);
         }
 
         callback();
@@ -241,7 +237,7 @@ vorpal
                 btcBalance = web3.toBigNumber(result).div(100000000);
 
             } catch (e) {
-                print4log(btcConfig.btcBalance.error);
+                print4log(btcConfig.btcBalance.error, e.message);
 
                 callback();
                 return;
@@ -286,7 +282,7 @@ vorpal
 
 
             } catch (e) {
-                print4log(btcConfig.normalTransaction.error, e);
+                print4log(btcConfig.normalTransaction.error, e.message);
 
                 callback();
                 return;
@@ -334,7 +330,7 @@ vorpal
                 print4log('\n');
 
             } catch (e) {
-                print4log(btcConfig.listStoreman.error);
+                print4log(btcConfig.listStoreman.error, e.message);
             }
 
             // wan address list
@@ -353,7 +349,7 @@ vorpal
                 print4log('\n');
 
             }catch(err) {
-                print4log(btcConfig.wanBalance.error);
+                print4log(btcConfig.wanBalance.error, e.message);
             }
 
 
@@ -390,7 +386,7 @@ vorpal
                     btcBalance = web3.toBigNumber(result).div(100000000);
 
                 } catch (e) {
-                    print4log(btcConfig.btcBalance.error);
+                    print4log(btcConfig.btcBalance.error, e.message);
 
                     callback();
                     return;
@@ -412,7 +408,7 @@ vorpal
 		            keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
 		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, answers[btcConfig.amount.name]*100000000);
 	            }catch(err){
-		            console.log("lockBtc error");
+		            console.log("lockBtc error: ", e.message);
 
 		            callback();
 		            return;
@@ -440,7 +436,7 @@ vorpal
 
                     print4log("sendWanNotice txHash:", txHash);
                 } catch (e) {
-                    console.log("get sendWanNotice error");
+                    console.log("get sendWanNotice error: ", e.message);
 
                     callback();
                     return;
@@ -474,11 +470,11 @@ vorpal
                 showArray = btcScripts.checkTransaction(records, web3);
 
             } catch (e) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, e.message);
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, e.message);
 
                 callback();
                 return;
@@ -507,7 +503,7 @@ vorpal
 
                     print4log("redeemHash: ", redeemHash);
                 } catch (e) {
-                    print4log('redeemBtc error: ', e);
+                    print4log('redeemBtc error: ', e.message);
 
                     callback();
                     return;
@@ -541,11 +537,11 @@ vorpal
                 showArray = btcScripts.checkTransaction(records, web3);
 
             } catch (e) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, e.message);
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, e.message);
 
                 callback();
                 return;
@@ -576,7 +572,7 @@ vorpal
 
                     print4log("revokeBtc:", walletRevoke);
                 } catch (e) {
-                    print4log('revokeBtc error: ', e);
+                    print4log('revokeBtc error: ', e.message);
 
                     callback();
                     return;
@@ -625,7 +621,7 @@ vorpal
 		        print4log('\n');
 
             } catch (e) {
-		        print4log(btcConfig.listStoreman.error);
+		        print4log(btcConfig.listStoreman.error, e.message);
             }
 
             // wan address list
@@ -643,7 +639,7 @@ vorpal
                 print4log('\n');
 
             }catch(err) {
-                print4log(btcConfig.wanBalance.error);
+                print4log(btcConfig.wanBalance.error, e.message);
             }
 
             // btc address list
@@ -659,7 +655,7 @@ vorpal
                 print4log('\n');
 
             } catch (e) {
-                print4log(btcConfig.addressList.error)
+                print4log(btcConfig.addressList.error, e.message)
             }
 
             if (smgs.length === 0 || btcAddressList.length ===0 || wanAddressList.length ===0) {
@@ -696,37 +692,27 @@ vorpal
                 wdTx.passwd = answers[btcConfig.wanPasswd.name];
                 let btcAddr = btcAddressArray[answers[btcConfig.btcAddress.name]];
                 wdTx.cross = '0x' + btcUtil.addressToHash160(btcAddr, 'pubkeyhash','testnet');
-                console.log("cross: ",wdTx.cross);
-		        console.log("btcAddr: ",btcAddr);
                 wdTx.from = wanAddress;
                 wdTx.amount = Number(answers[btcConfig.amount.name]) * 100000000;
                 [wdTx.storemanGroup, txFeeRatio] = smgsArray[answers[btcConfig.StoremanGroup.name]];
 
-                // print4log("wdTx:", wdTx);
-
                 wdTx.value = ccUtil.calculateLocWanFee(wdTx.amount, ccUtil.c2wRatio, txFeeRatio);
-                console.log("wdTx.value: ", wdTx.value);
 
                 try {
-                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
-
                     let x = btcUtil.generatePrivateKey().slice(2); // hex string without 0x
-                    let hashx = bitcoin.crypto.sha256(Buffer.from(x, 'hex')).toString('hex');
+                    // let hashx = bitcoin.crypto.sha256(Buffer.from(x, 'hex')).toString('hex');
                     wdTx.x = x;
-                    console.log("wdTx:", wdTx);
-                    console.log("wdtx hashx:", hashx);
+
+                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
                     let wdHash = await ccUtil.sendWanHash(ccUtil.wanSender, wdTx);
                     console.log("wdHash: ", wdHash);
 
                 } catch (e) {
-                    print4log('lockWbtc error: ', e);
+                    print4log('lockWbtc error: ', e.message);
 
                     callback();
                     return;
                 }
-
-                // wait wallet tx confirm
-                // await waitEventbyHashx('WBTC2BTCLock', config.HTLCWBTCInstAbi, '0x'+hashx);
 
                 callback();
             });
@@ -755,11 +741,11 @@ vorpal
                 showArray = btcScripts.checkTransaction(records, web3);
 
             } catch (e) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, e.message);
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, e.message);
 
                 callback();
                 return;
@@ -782,21 +768,21 @@ vorpal
 	            let record = showArray[answers[btcConfig.btcRedeemHash.name] -1];
                 console.log("record: ", record);
 	            try {
-                    let filterResult = await ccUtil.getBtcWithdrawStoremanNoticeEvent(ccUtil.wanSender, '0x'+record.HashX);
-                    console.log("filterResult:", filterResult);
-                    let info = {}; // storeman info
-                    let redeemLockTimeStamp = Number('0x'+filterResult[0].data.slice(66));
-                    let txid = filterResult[0].data.slice(2,66);
-                    console.log("redeemLockTimeStamp: ", redeemLockTimeStamp);
-                    console.log("txid: ", txid);
+                    // let filterResult = await ccUtil.getBtcWithdrawStoremanNoticeEvent(ccUtil.wanSender, '0x'+record.HashX);
+                    // console.log("filterResult:", filterResult);
+                    // let redeemLockTimeStamp = Number('0x'+filterResult[0].data.slice(66));
+                    // let txid = filterResult[0].data.slice(2,66);
+                    // console.log("redeemLockTimeStamp: ", redeemLockTimeStamp);
+                    // console.log("txid: ", txid);
 
+                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 		            let aliceAddr = btcUtil.hash160ToAddress(record.crossAdress,'pubkeyhash','testnet');
 		            let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name],  aliceAddr);
-                    //let walletRedeem = await ccUtil.redeem(record.x,record.HashX, redeemLockTimeStamp, storemanHash160Addr,alice, record.value, txid);
+                    // let walletRedeem = await ccUtil.redeem(record.x,record.HashX, redeemLockTimeStamp, storemanHash160Addr,alice, record.value, txid);
                     let walletRedeem = await ccUtil.redeemWithHashX(record.HashX, alice);
-                    console.log(walletRedeem);
+                    console.log('walletRedeem: ', walletRedeem);
                 } catch (e) {
-                    print4log('redeemWbtc error: ', e);
+                    print4log('redeemWbtc error: ', e.message);
 
                     callback();
                     return;
@@ -828,11 +814,11 @@ vorpal
                 showArray = btcScripts.checkTransaction(records, web3);
 
             } catch (e) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, e.message);
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, e.message);
 
                 callback();
                 return;
@@ -862,7 +848,7 @@ vorpal
 
                     print4log('revokeWbtcHash: ', revokeWbtcHash);
                 } catch (e) {
-                    print4log('revokeWbtc error: ', e);
+                    print4log('revokeWbtc error: ', e.message);
 
                     callback();
                     return;
