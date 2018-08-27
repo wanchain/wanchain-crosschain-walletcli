@@ -257,7 +257,7 @@ vorpal
             try {
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
-                keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.type]);
+                keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
 
                 if (keyPairArray.length === 0) {
                     print4log('no bitcoin keyPairs!');
