@@ -341,6 +341,9 @@ vorpal
 
             } catch (e) {
                 print4log(btcConfig.listStoreman.error, e.message);
+
+                callback();
+                return;
             }
 
             // wan address list
@@ -360,6 +363,9 @@ vorpal
 
             }catch(e) {
                 print4log(btcConfig.wanBalance.error, e.message);
+
+                callback();
+                return;
             }
 
 
@@ -403,6 +409,7 @@ vorpal
                 }
 
                 if (! btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) ) {
+
                     callback();
                     return;
                 }
@@ -416,7 +423,9 @@ vorpal
 	            let keyPairArray;
 	            try{
 		            keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
-		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, answers[btcConfig.amount.name]*100000000);
+		            let value = web3.toBigNumber(answers[btcConfig.amount.name]).mul(100000000);
+
+		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, value);
 	            }catch(err){
 		            console.log("lockBtc error: ", e.message);
 
@@ -481,6 +490,9 @@ vorpal
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error, e.message);
+
+                callback();
+                return;
             }
 
             if (records.length === 0) {
@@ -548,6 +560,9 @@ vorpal
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error, e.message);
+
+                callback();
+                return;
             }
 
             if (records.length === 0) {
@@ -632,6 +647,9 @@ vorpal
 
             } catch (e) {
 		        print4log(btcConfig.listStoreman.error, e.message);
+
+                callback();
+                return;
             }
 
             // wan address list
@@ -650,6 +668,9 @@ vorpal
 
             }catch(e) {
                 print4log(btcConfig.wanBalance.error, e.message);
+
+                callback();
+                return;
             }
 
             // btc address list
@@ -665,10 +686,14 @@ vorpal
                 print4log('\n');
 
             } catch (e) {
-                print4log(btcConfig.addressList.error, e.message)
+                print4log(btcConfig.addressList.error, e.message);
+
+                callback();
+                return;
             }
 
             if (smgs.length === 0 || btcAddressList.length ===0 || wanAddressList.length ===0) {
+
 	            callback();
 	            return;
             }
@@ -703,7 +728,7 @@ vorpal
                 let btcAddr = btcAddressArray[answers[btcConfig.btcAddress.name]];
                 wdTx.cross = '0x' + btcUtil.addressToHash160(btcAddr, 'pubkeyhash','testnet');
                 wdTx.from = wanAddress;
-                wdTx.amount = Number(answers[btcConfig.amount.name]) * 100000000;
+                wdTx.amount = web3.toBigNumber(answers[btcConfig.amount.name]).mul(100000000);
                 [wdTx.storemanGroup, txFeeRatio] = smgsArray[answers[btcConfig.StoremanGroup.name]];
 
                 wdTx.value = ccUtil.calculateLocWanFee(wdTx.amount, ccUtil.c2wRatio, txFeeRatio);
@@ -752,6 +777,9 @@ vorpal
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error, e.message);
+
+                callback();
+                return;
             }
 
             if (records.length === 0) {
@@ -825,6 +853,9 @@ vorpal
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error, e.message);
+
+                callback();
+                return;
             }
 
             if (records.length === 0) {

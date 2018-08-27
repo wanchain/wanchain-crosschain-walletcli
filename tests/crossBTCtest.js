@@ -32,7 +32,7 @@ describe('btc cli test', ()=>{
         await wanchainCore.init(config);
         client = ccUtil.client;
 
-        //bitcoin address passwd and to btc address, change for yourself
+        //change for yourself
         passwd = '1234567890';
         toBtcAddress = '2N9vyH7SoJrYaLDJUfdaoTRxXZKy2YRPM5G';
         normalSendAmount = 0.01;
@@ -76,21 +76,29 @@ describe('btc cli test', ()=>{
         console.log('========');
         btcBalance = web3.toBigNumber(result).div(100000000);
 
-        keyPairArray = await btcUtil.getECPairs(passwd);
+        if (btcBalance > normalSendAmount) {
+            keyPairArray = await btcUtil.getECPairs(passwd);
 
-        let target = {
-            address: toBtcAddress,
-            value: web3.toBigNumber(normalSendAmount).mul(100000000)
-        };
+            let target = {
+                address: toBtcAddress,
+                value: web3.toBigNumber(normalSendAmount).mul(100000000)
+            };
 
 
-        let {rawTx, fee} = await ccUtil.btcBuildTransaction(utxos, keyPairArray, target, config.feeRate);
-        if (!rawTx) {
-            assert.equal(0, 1);
+            let {rawTx, fee} = await ccUtil.btcBuildTransaction(utxos, keyPairArray, target, config.feeRate);
+            if (!rawTx) {
+                assert.equal(0, 1);
+            }
+
+            let hash = await ccUtil.sendRawTransaction(ccUtil.btcSender, rawTx);
+            console.log('result hash:', hash);
+        } else {
+            console.log('btcBalance <= normalSendAmount');
         }
+    });
 
-        let hash = await ccUtil.sendRawTransaction(ccUtil.btcSender, rawTx);
-        console.log('result hash:', hash);
+    it('TC003: lockBtc', async () => {
+
     });
 
     after('end', async ()=>{
