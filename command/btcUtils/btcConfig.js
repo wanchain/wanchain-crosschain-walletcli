@@ -1,6 +1,6 @@
 module.exports = {
     'help': '====== Type help for more information.  ====== ',
-    'waiting': 'waiting for a moment...',
+    'waiting': 'wait a moment...',
     'btcPasswd': {
         type: 'password',
         name: 'btcPassword',
@@ -14,23 +14,23 @@ module.exports = {
     'amount': {
         type: 'input',
         name: 'amount',
-        message: 'input transaction amount: '
+        message: 'Input transaction amount(>=0.002): '
     },
     'rate': {
         type: 'input',
         name: 'rate',
-        message: 'Fee Rate(55cong): ',
+        message: 'Fee Rate(55): ',
         value: 55
     },
     'wanAddress':  {
         type: 'input',
         name: 'wanAddress',
-        message: 'wanAddress(input index or address): '
+        message: 'Input the index of wanchain address: '
     },
     'btcAddress':  {
         type: 'input',
         name: 'btcAddress',
-        message: 'btcAddress(input index or address): '
+        message: 'Input the index or bitcoin address: '
     },
     'to': {
         type: 'input',
@@ -40,7 +40,7 @@ module.exports = {
     'StoremanGroup': {
         type: 'input',
         name: 'storeman',
-        message: 'StoremanGroup(input index or StoremanGroup): '
+        message: 'Input the index or StoremanGroup: '
     },
     'btcRedeemHash':  {
         type: 'input',
@@ -54,7 +54,6 @@ module.exports = {
     },
     'createNewAddress': {
         desc: 'create new bitcoin address',
-        notice: '====== notice: 创建多个address时，密码必须与第一个address相同  ====== ',
         error: 'create btc address error'
     },
     'addressList': {

@@ -66,14 +66,6 @@ vorpal
         } catch (e) {
             print4log(btcConfig.addressList.error)
         }
-	    console.log("========================")
-	    let taddr = "myjXdwN4WM5X2ER8bY5s6nP1AZoVmx7VtU";
-	    let t160 = btcUtil.addressToHash160(taddr, 'pubkeyhash','testnet');
-	    let taddr2 = btcUtil.hash160ToAddress(t160, 'pubkeyhash','testnet');
-	    console.log("taddr: ", taddr);
-	    console.log("t160: ", t160);
-	    console.log("taddr2: ", taddr2);
-	    console.log("========================")
 
         callback();
     });
