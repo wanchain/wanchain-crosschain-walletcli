@@ -78,18 +78,24 @@ vorpal
 vorpal
     .command('getBtcBalance', btcConfig.btcBalance.desc)
     .action(async function(args,callback) {
-        let addressList;
+        let addressList = await btcUtil.getAddressList();
+        let aliceList = [];
+
+        if (addressList.length === 0) {
+            print4log("no btc address");
+
+            callback();
+            return;
+        }
 
         try{
             print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
-            addressList = await btcUtil.getAddressList();
 
-            let aliceAddr = [];
             for (let i=0;i<addressList.length; i++) {
-                aliceAddr.push(addressList[i].address)
+                aliceList.push(addressList[i].address)
             }
 
-            let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceAddr);
+            let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceList);
             let result = await ccUtil.getUTXOSBalance(utxos);
 
             print4log(config.consoleColor.COLOR_FgYellow, web3.toBigNumber(result).div(100000000).toString(), '\x1b[0m');
