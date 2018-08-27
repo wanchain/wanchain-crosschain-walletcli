@@ -125,7 +125,7 @@ vorpal
                 print4log(sprintf("%46s %26s", wanAddress.address, web3.toBigNumber(wanAddress.wethBalance).div(100000000)));
             });
 
-        }catch(err) {
+        }catch(e) {
             print4log(btcConfig.wbtcBalance.error, e.message);
         }
 
@@ -152,7 +152,7 @@ vorpal
                 print4log(sprintf("%46s %26s", wanAddress.address,  web3.fromWei(wanAddress.balance)));
             });
 
-        }catch(err) {
+        }catch(e) {
             print4log(btcConfig.wanBalance.error, e.message);
         }
 
@@ -357,7 +357,7 @@ vorpal
 
                 print4log('\n');
 
-            }catch(err) {
+            }catch(e) {
                 print4log(btcConfig.wanBalance.error, e.message);
             }
 
@@ -483,7 +483,7 @@ vorpal
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error, e.message);
+                print4log(btcConfig.listTransactions.error);
 
                 callback();
                 return;
@@ -550,7 +550,7 @@ vorpal
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error, e.message);
+                print4log(btcConfig.listTransactions.error);
 
                 callback();
                 return;
@@ -647,7 +647,7 @@ vorpal
                 });
                 print4log('\n');
 
-            }catch(err) {
+            }catch(e) {
                 print4log(btcConfig.wanBalance.error, e.message);
             }
 
@@ -754,7 +754,7 @@ vorpal
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error, e.message);
+                print4log(btcConfig.listTransactions.error);
 
                 callback();
                 return;
@@ -827,7 +827,7 @@ vorpal
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error, e.message);
+                print4log(btcConfig.listTransactions.error);
 
                 callback();
                 return;
