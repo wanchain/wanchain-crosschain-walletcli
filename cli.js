@@ -597,7 +597,7 @@ vorpal
 
                     print4log("revokeBtc:", walletRevoke);
                 } catch (e) {
-                    print4log('revokeBtc error: ', e.message);
+                    print4log('revokeBtc error: ', e);
 
                     callback();
                     return;
