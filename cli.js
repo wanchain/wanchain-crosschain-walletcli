@@ -423,7 +423,7 @@ vorpal
 	            let keyPairArray;
 	            try{
 		            keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
-		            let value = web3.toBigNumber(answers[btcConfig.amount.name]).mul(100000000);
+		            let value = Number(web3.toBigNumber(answers[btcConfig.amount.name]).mul(100000000));
 
 		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, value);
 	            }catch(err){
@@ -728,7 +728,7 @@ vorpal
                 let btcAddr = btcAddressArray[answers[btcConfig.btcAddress.name]];
                 wdTx.cross = '0x' + btcUtil.addressToHash160(btcAddr, 'pubkeyhash','testnet');
                 wdTx.from = wanAddress;
-                wdTx.amount = web3.toBigNumber(answers[btcConfig.amount.name]).mul(100000000);
+                wdTx.amount = Number(web3.toBigNumber(answers[btcConfig.amount.name]).mul(100000000));
                 [wdTx.storemanGroup, txFeeRatio] = smgsArray[answers[btcConfig.StoremanGroup.name]];
 
                 wdTx.value = ccUtil.calculateLocWanFee(wdTx.amount, ccUtil.c2wRatio, txFeeRatio);
