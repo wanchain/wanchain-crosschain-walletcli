@@ -43,7 +43,7 @@ vorpal
                 ccUtil.client.importAddress(newAddress.address,"",false);
                 print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
             } catch (e) {
-                print4log(btcConfig.createNewAddress.error, e.message)
+                print4log(btcConfig.createNewAddress.error, e)
             }
 
             callback();
