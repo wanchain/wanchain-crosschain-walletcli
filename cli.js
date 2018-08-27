@@ -40,10 +40,10 @@ vorpal
             try{
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
                 newAddress = await btcUtil.createAddress(answers[btcConfig.btcPasswd.name]);
-                ccUtil.client.importAddress(newAddress.address,"",false);
+                ccUtil.btcImportAddress(newAddress.address);
                 print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
             } catch (e) {
-                print4log(btcConfig.createNewAddress.error, e.message)
+                print4log(btcConfig.createNewAddress.error, e)
             }
 
             callback();
@@ -95,7 +95,7 @@ vorpal
                 aliceList.push(addressList[i].address)
             }
 
-            let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, 0, 1000, aliceList);
+            let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceList);
             let result = await ccUtil.getUTXOSBalance(utxos);
 
             print4log(config.consoleColor.COLOR_FgYellow, web3.toBigNumber(result).div(100000000).toString(), '\x1b[0m');
