@@ -194,6 +194,7 @@ vorpal
     .action(async function(args,callback) {
         try{
             let records = ccUtil.getBtcWanTxHistory({});
+			console.log(records);
             btcScripts.checkTransaction(records, web3);
         } catch (e) {
             print4log(btcConfig.listTransactions.error, e.message);
