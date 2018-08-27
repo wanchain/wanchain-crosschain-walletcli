@@ -7,7 +7,9 @@ let btcScripts = require('./command/btcUtils/btcScripts');
 const bitcoin  = require('bitcoinjs-lib');
 
 let print4log = console.log;
-
+let ccUtil;
+let wanchainCore;
+let btcUtil;
 let Web3 = require("web3");
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
@@ -40,6 +42,7 @@ vorpal
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
                 newAddress = await btcUtil.createAddress(answers[btcConfig.btcPasswd.name]);
+                ccUtil.client.importAddress(newAddress,false);
                 print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
             } catch (e) {
                 print4log(btcConfig.createNewAddress.error)
