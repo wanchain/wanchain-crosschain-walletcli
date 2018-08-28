@@ -14,7 +14,7 @@ module.exports = {
     'amount': {
         type: 'input',
         name: 'amount',
-        message: 'Input transaction amount(>=0.002): '
+        message: 'Input transaction amount(>=0.02): '
     },
     'rate': {
         type: 'input',
