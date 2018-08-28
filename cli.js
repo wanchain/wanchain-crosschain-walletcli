@@ -2,8 +2,8 @@ let WanchainCore = require('wanchain-crosschain');
 let config = require('./config.js');
 let vorpal = require('vorpal')();
 let sprintf=require("sprintf-js").sprintf;
-let btcConfig = require('./command/btcUtils/btcConfig');
-let btcScripts = require('./command/btcUtils/btcScripts');
+let btcConfig = require('./btcUtils/btcConfig');
+let btcScripts = require('./btcUtils/btcScripts');
 const bitcoin  = require('bitcoinjs-lib');
 
 let print4log = console.log;
@@ -40,10 +40,13 @@ vorpal
             try{
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
                 newAddress = await btcUtil.createAddress(answers[btcConfig.btcPasswd.name]);
-                ccUtil.btcImportAddress(newAddress.address);
+                await ccUtil.btcImportAddress(ccUtil.btcSender, newAddress.address);
                 print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
             } catch (e) {
-                print4log(btcConfig.createNewAddress.error, e)
+                print4log(btcConfig.createNewAddress.error, e);
+
+                callback();
+                return;
             }
 
             callback();
@@ -65,7 +68,10 @@ vorpal
                 print4log(config.consoleColor.COLOR_FgYellow, Array.address, '\x1b[0m');
             });
         } catch (e) {
-            print4log(btcConfig.addressList.error, e.message)
+            print4log(btcConfig.addressList.error, e.message);
+
+            callback();
+            return;
         }
 
         callback();
@@ -100,7 +106,10 @@ vorpal
 
             print4log(config.consoleColor.COLOR_FgYellow, web3.toBigNumber(result).div(100000000).toString(), '\x1b[0m');
         } catch (e) {
-            print4log(btcConfig.btcBalance.error, e.message)
+            print4log(btcConfig.btcBalance.error, e.message);
+
+            callback();
+            return;
         }
 
         callback();
@@ -127,6 +136,9 @@ vorpal
 
         }catch(e) {
             print4log(btcConfig.wbtcBalance.error, e.message);
+
+            callback();
+            return;
         }
 
         callback();
@@ -154,6 +166,9 @@ vorpal
 
         }catch(e) {
             print4log(btcConfig.wanBalance.error, e.message);
+
+            callback();
+            return;
         }
 
         callback();
@@ -171,15 +186,17 @@ vorpal
             print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
             let smgs = await ccUtil.getBtcSmgList(ccUtil.btcSender);
-            smgs.forEach(function(Array, index){
-                print4log(config.consoleColor.COLOR_FgRed, '====== storeman ' + (index + 1) + ' ======', '\x1b[0m');
-                for(let name in Array){
-                    print4log(config.consoleColor.COLOR_FgYellow, name + ': ' + Array[name], '\x1b[0m');
-                }
+
+            print4log(sprintf("%1s %46s", "wanAddress", "btcAddress"));
+            smgs.forEach(function(array){
+                print4log(sprintf("%26s %46s", array.wanAddress,  array.ethAddress));
             });
 
         } catch (e) {
-            print4log(btcConfig.listStoreman.error, e.message)
+            print4log(btcConfig.listStoreman.error, e.message);
+
+            callback();
+            return;
         }
 
         callback();
@@ -194,10 +211,13 @@ vorpal
     .action(async function(args,callback) {
         try{
             let records = ccUtil.getBtcWanTxHistory({});
-			console.log(records);
-            btcScripts.checkTransaction(records, web3);
+            // print4log('records: ', records);
+            btcScripts.checkTransaction(records, web3, btcUtil.hash160ToAddress);
         } catch (e) {
             print4log(btcConfig.listTransactions.error, e.message);
+
+            callback();
+            return;
         }
 
         callback();
@@ -285,10 +305,9 @@ vorpal
                     callback();
                     return;
                 }
-                print4log("###############rawTx: ", rawTx);
 
                 let result = await ccUtil.sendRawTransaction(ccUtil.btcSender, rawTx);
-                print4log('result hash:', result);
+                print4log('hash: ', result);
 
 
             } catch (e) {
@@ -333,7 +352,7 @@ vorpal
 
                 SsmgsArray += sprintf("%2s\r\n", "stroeman address");
                 smgs.forEach(function (Array, index) {
-                    SsmgsArray += (index + 1) + ': ' + Array.wanAddress +'\n';
+                    SsmgsArray += (index + 1) + ': ' + Array.ethAddress +'\n';
                     smgsArray[Array.wanAddress] = [Array.wanAddress, Array.ethAddress];
                     smgsArray[index + 1] = [Array.wanAddress, Array.ethAddress];
                 });
@@ -433,9 +452,6 @@ vorpal
 		            return;
 	            }
 
-	            // let checkres = ccUtil.getBtcWanTxHistory({'HashX':record.hashx})
-	            // console.log(checkres);
-
 	            // notice wan.
 	            const tx = {};
 	            tx.storeman = storeman;
@@ -450,7 +466,6 @@ vorpal
 
 	            let txHash;
 	            try {
-                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
                     txHash = await ccUtil.sendWanNotice(ccUtil.wanSender, tx);
 
                     print4log("sendWanNotice txHash:", txHash);
@@ -486,7 +501,7 @@ vorpal
             let showArray = [];
             try{
                 records = await ccUtil.getBtcWanTxHistory({status: 'waitingX', chain: 'BTC'});
-                showArray = btcScripts.checkTransaction(records, web3);
+                showArray = btcScripts.checkTransaction(records, web3, btcUtil.hash160ToAddress);
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error, e.message);
@@ -556,7 +571,7 @@ vorpal
             let showArray = [];
             try{
                 records = await ccUtil.getBtcWanTxHistory({status: 'waitingRevoke', chain: 'BTC'});
-                showArray = btcScripts.checkTransaction(records, web3);
+                showArray = btcScripts.checkTransaction(records, web3, btcUtil.hash160ToAddress);
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error, e.message);
@@ -734,8 +749,7 @@ vorpal
                 wdTx.value = ccUtil.calculateLocWanFee(wdTx.amount, ccUtil.c2wRatio, txFeeRatio);
 
                 try {
-                    let x = btcUtil.generatePrivateKey().slice(2); // hex string without 0x
-                    // let hashx = bitcoin.crypto.sha256(Buffer.from(x, 'hex')).toString('hex');
+                    let x = btcUtil.generatePrivateKey().slice(2);
                     wdTx.x = x;
 
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
@@ -773,7 +787,7 @@ vorpal
             let showArray = [];
             try{
                 records = await ccUtil.getBtcWanTxHistory({status: 'waitingX', chain: 'WAN'});
-                showArray = btcScripts.checkTransaction(records, web3);
+                showArray = btcScripts.checkTransaction(records, web3, btcUtil.hash160ToAddress);
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error, e.message);
@@ -804,19 +818,12 @@ vorpal
                 }
 
 	            let record = showArray[answers[btcConfig.btcRedeemHash.name] -1];
-                console.log("record: ", record);
+
 	            try {
-                    // let filterResult = await ccUtil.getBtcWithdrawStoremanNoticeEvent(ccUtil.wanSender, '0x'+record.HashX);
-                    // console.log("filterResult:", filterResult);
-                    // let redeemLockTimeStamp = Number('0x'+filterResult[0].data.slice(66));
-                    // let txid = filterResult[0].data.slice(2,66);
-                    // console.log("redeemLockTimeStamp: ", redeemLockTimeStamp);
-                    // console.log("txid: ", txid);
 
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 		            let aliceAddr = btcUtil.hash160ToAddress(record.crossAdress,'pubkeyhash','testnet');
 		            let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name],  aliceAddr);
-                    // let walletRedeem = await ccUtil.redeem(record.x,record.HashX, redeemLockTimeStamp, storemanHash160Addr,alice, record.value, txid);
                     let walletRedeem = await ccUtil.redeemWithHashX(record.HashX, alice);
                     console.log('walletRedeem: ', walletRedeem);
                 } catch (e) {
@@ -849,7 +856,7 @@ vorpal
             let showArray = [];
             try{
                 records = await ccUtil.getBtcWanTxHistory({status: 'waitingRevoke', chain: 'WAN'});
-                showArray = btcScripts.checkTransaction(records, web3);
+                showArray = btcScripts.checkTransaction(records, web3, btcUtil.hash160ToAddress);
 
             } catch (e) {
                 print4log(btcConfig.listTransactions.error, e.message);

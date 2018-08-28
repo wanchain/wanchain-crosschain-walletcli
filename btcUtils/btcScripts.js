@@ -65,7 +65,7 @@ let timeStamp2String = function (time){
     return year + "-" + month + "-" + date+" "+hour+":"+minute+":"+second;
 };
 
-let checkTransaction = (records, web3) => {
+let checkTransaction = (records, web3, hash160ToAddress) => {
     let showArray = [];
 
     records.forEach(function (array) {
@@ -84,14 +84,18 @@ let checkTransaction = (records, web3) => {
         if (Array.chain.toLowerCase() === 'btc') {
 
             Array.valueStr = web3.toBigNumber(Array.value).div(100000000) + ' BTC';
+            Array.addressHash160 = '0x' + Array.crossAdress;
         }else{
 	        Array.valueStr = web3.toBigNumber(Array.value).div(100000000) + ' WBTC';
+            Array.addressHash160 = hash160ToAddress(Array.crossAdress, 'pubkeyhash','testnet');
         }
+
+
 
         Array.timeStr = timeStamp2String(Array.time);
         Array.HTLCtimeStr = timeStamp2String(Array.HTLCtime);
 
-        print4log(config.consoleColor.COLOR_FgYellow, sprintf("%40s %46s %26s %26s %26s", (index +1) +': ' + Array.from, Array.to, Array.valueStr, Array.status, Array.chain), '\x1b[0m');
+        print4log(config.consoleColor.COLOR_FgYellow, sprintf("%40s %46s %26s %26s %26s", (index +1) +': ' + Array.from, Array.addressHash160, Array.valueStr, Array.status, Array.chain), '\x1b[0m');
         // for(let name in Array){
         //     if (name === 'meta' || name === '$loki') {
         //         break;
