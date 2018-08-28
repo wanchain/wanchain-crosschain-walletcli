@@ -40,7 +40,7 @@ vorpal
             try{
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
                 newAddress = await btcUtil.createAddress(answers[btcConfig.btcPasswd.name]);
-                ccUtil.btcImportAddress(newAddress.address);
+                ccUtil.btcImportAddress(ccUtil.btcSender, newAddress.address);
                 print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
             } catch (e) {
                 print4log(btcConfig.createNewAddress.error, e)
