@@ -54,7 +54,7 @@ module.exports = {
     },
     'createNewAddress': {
         desc: 'create new bitcoin address',
-        error: 'create btc address error: '
+        error: 'create btc address error'
     },
     'addressList': {
         desc: 'get bitcoin address list',

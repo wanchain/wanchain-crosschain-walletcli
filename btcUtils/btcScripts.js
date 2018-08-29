@@ -76,6 +76,7 @@ let checkTransaction = (records, web3, hash160ToAddress) => {
         showArray.push(array);
     });
 
+    let print;
     showArray.forEach(function(Array, index){
 
         print4log(config.consoleColor.COLOR_FgRed, sprintf("%10s %40s %40s %10s %10s", "from", "to", "value", "status", "chain"), '\x1b[0m');
@@ -94,7 +95,8 @@ let checkTransaction = (records, web3, hash160ToAddress) => {
         Array.timeStr = timeStamp2String(Array.time);
         Array.HTLCtimeStr = timeStamp2String(Array.HTLCtime);
 
-        print4log(config.consoleColor.COLOR_FgYellow, sprintf("%2s %10s %10s %10s %10s", (index +1) +': ' + Array.from, Array.addressHash160, Array.valueStr, Array.status, Array.chain), '\x1b[0m');
+        print = sprintf("%2s %10s %10s %10s %10s", (index +1) +': ' + Array.from, Array.addressHash160, Array.valueStr, Array.status, Array.chain);
+        print4log(config.consoleColor.COLOR_FgYellow, print, '\x1b[0m');
 
     });
 
