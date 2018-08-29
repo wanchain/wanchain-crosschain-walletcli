@@ -48,7 +48,7 @@ vorpal
                 await ccUtil.btcImportAddress(ccUtil.btcSender, newAddress.address);
                 print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
             } catch (e) {
-                print4log(btcConfig.createNewAddress.error);
+                print4log(btcConfig.createNewAddress.error, e);
 
                 callback();
                 return;
@@ -522,7 +522,7 @@ vorpal
 
                     print4log("sendWanNotice txHash:", txHash);
                 } catch (e) {
-                    console.log("get sendWanNotice error");
+                    console.log("get sendWanNotice error: ", e.message);
 
                     callback();
                     return;
@@ -600,7 +600,7 @@ vorpal
 
                     print4log("redeemHash: ", redeemHash);
                 } catch (e) {
-                    print4log('redeemBtc error');
+                    print4log('redeemBtc error: ', e.message);
 
                     callback();
                     return;
@@ -663,8 +663,7 @@ vorpal
 
                 if (! patten.test(answers[btcConfig.revokeBtcHash.name]) ||
                     answers[btcConfig.revokeBtcHash.name] > showArray.length ||
-                    !showArray[answers[btcConfig.revokeBtcHash.name] -1] ||
-                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+                    !showArray[answers[btcConfig.revokeBtcHash.name] -1]) {
 
                     callback();
                     return;
@@ -681,7 +680,7 @@ vorpal
 
                     print4log("revokeBtc:", walletRevoke);
                 } catch (e) {
-                    print4log('revokeBtc error');
+                    print4log('revokeBtc error: ', e);
 
                     callback();
                     return;
@@ -849,7 +848,7 @@ vorpal
                     console.log("wdHash: ", wdHash);
 
                 } catch (e) {
-                    print4log('lockWbtc error');
+                    print4log('lockWbtc error: ', e.message);
 
                     callback();
                     return;
@@ -910,8 +909,7 @@ vorpal
 
                 if (! patten.test(answers[btcConfig.btcRedeemHash.name]) ||
                     answers[btcConfig.btcRedeemHash.name] > showArray.length ||
-                    !showArray[answers[btcConfig.btcRedeemHash.name] -1] ||
-                    ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+                    !showArray[answers[btcConfig.btcRedeemHash.name] -1]) {
 
                     callback();
                     return;
@@ -927,7 +925,7 @@ vorpal
                     let walletRedeem = await ccUtil.redeemWithHashX(record.HashX, alice);
                     console.log('walletRedeem: ', walletRedeem);
                 } catch (e) {
-                    print4log('redeemWbtc error');
+                    print4log('redeemWbtc error: ', e.message);
 
                     callback();
                     return;
@@ -1004,7 +1002,7 @@ vorpal
 
                     print4log('revokeWbtcHash: ', revokeWbtcHash);
                 } catch (e) {
-                    print4log('revokeWbtc error');
+                    print4log('revokeWbtc error: ', e.message);
 
                     callback();
                     return;
