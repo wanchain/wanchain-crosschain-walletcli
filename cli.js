@@ -228,7 +228,7 @@ vorpal
             print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
             let records = ccUtil.getBtcWanTxHistory({});
-            // print4log('records: ', records);
+             //print4log('records: ', records);
             btcScripts.checkTransaction(records, web3, btcUtil.hash160ToAddress);
         } catch (e) {
             print4log(btcConfig.listTransactions.error, e.message);
@@ -498,7 +498,7 @@ vorpal
 
 		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, value);
 	            }catch(err){
-		            console.log("lockBtc error: ", e.message);
+		            console.log("lockBtc error: ", err.message);
 
 		            callback();
 		            return;
@@ -874,7 +874,6 @@ vorpal
         let self = this;
 
         return new Promise(async function(resolve, reject) {
-            // listTransaction
             let records = [];
             let showArray = [];
             try{

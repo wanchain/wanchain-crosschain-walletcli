@@ -82,12 +82,11 @@ let checkTransaction = (records, web3, hash160ToAddress) => {
         print4log(config.consoleColor.COLOR_FgRed, sprintf("%10s %40s %40s %10s %10s", "from", "to", "value", "status", "chain"), '\x1b[0m');
 
         if (Array.chain.toLowerCase() === 'btc') {
-
             Array.valueStr = web3.toBigNumber(Array.value).div(100000000) + ' BTC';
-            Array.addressHash160 = '0x' + Array.crossAdress;
+            Array.destAddr = '0x' + Array.crossAdress;
         }else{
 	        Array.valueStr = web3.toBigNumber(Array.value).div(100000000) + ' WBTC';
-            Array.addressHash160 = hash160ToAddress(Array.crossAdress, 'pubkeyhash','testnet');
+            Array.destAddr = hash160ToAddress(Array.crossAdress, 'pubkeyhash','testnet');
         }
 
 
@@ -95,7 +94,7 @@ let checkTransaction = (records, web3, hash160ToAddress) => {
         Array.timeStr = timeStamp2String(Array.time);
         Array.HTLCtimeStr = timeStamp2String(Array.HTLCtime);
 
-        print = sprintf("%2s %10s %10s %10s %10s", (index +1) +': ' + Array.from, Array.addressHash160, Array.valueStr, Array.status, Array.chain);
+        print = sprintf("%2s %10s %10s %10s %10s", (index +1) +': ' + Array.from, Array.destAddr, Array.valueStr, Array.status, Array.chain);
         print4log(config.consoleColor.COLOR_FgYellow, print, '\x1b[0m');
 
     });

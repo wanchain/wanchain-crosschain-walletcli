@@ -47,7 +47,7 @@ config.loglevel = 'info';
 config.MAX_CONFIRM_BLKS = 100000000;
 config.MIN_CONFIRM_BLKS = 0;
 config.listOption = true;
-config.feeRate = 55;
+config.feeRate = 3000;
 
 config.databasePath = process.env.HOME;
 if (process.platform === 'win32') {
@@ -62,7 +62,8 @@ config.ethKeyStorePath = config.ethkeyStorePath;
 
 config.crossDbname = 'crossTransDb';
 config.crossCollection = 'crossTransaction';
-config.confirmBlocks = 1;
+config.confirmBlocks = 3;
+config.btcConfirmBlocks = 1;
 
 config.consoleColor = {
     'COLOR_FgRed': '\x1b[31m',
