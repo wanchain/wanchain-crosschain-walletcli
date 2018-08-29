@@ -78,8 +78,7 @@ let checkTransaction = (records, web3, hash160ToAddress) => {
 
     showArray.forEach(function(Array, index){
 
-        // print4log(config.consoleColor.COLOR_FgRed, '====== Transactions ' + (index + 1) + ' ======', '\x1b[0m');
-        print4log(config.consoleColor.COLOR_FgRed, sprintf("%40s %46s %26s %26s %26s", "from", "to", "value", "status", "chain"), '\x1b[0m');
+        print4log(config.consoleColor.COLOR_FgRed, sprintf("%10s %40s %40s %10s %10s", "from", "to", "value", "status", "chain"), '\x1b[0m');
 
         if (Array.chain.toLowerCase() === 'btc') {
 
@@ -95,13 +94,8 @@ let checkTransaction = (records, web3, hash160ToAddress) => {
         Array.timeStr = timeStamp2String(Array.time);
         Array.HTLCtimeStr = timeStamp2String(Array.HTLCtime);
 
-        print4log(config.consoleColor.COLOR_FgYellow, sprintf("%40s %46s %26s %26s %26s", (index +1) +': ' + Array.from, Array.addressHash160, Array.valueStr, Array.status, Array.chain), '\x1b[0m');
-        // for(let name in Array){
-        //     if (name === 'meta' || name === '$loki') {
-        //         break;
-        //     }
-        //     print4log(config.consoleColor.COLOR_FgYellow, name + ': ' + Array[name], '\x1b[0m');
-        // }
+        print4log(config.consoleColor.COLOR_FgYellow, sprintf("%2s %10s %10s %10s %10s", (index +1) +': ' + Array.from, Array.addressHash160, Array.valueStr, Array.status, Array.chain), '\x1b[0m');
+
     });
 
 

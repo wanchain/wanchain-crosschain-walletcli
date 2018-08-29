@@ -65,8 +65,8 @@ vorpal
         try{
             addressList = await btcUtil.getAddressList();
 
-            addressList.forEach(function(Array){
-                print4log(config.consoleColor.COLOR_FgYellow, Array.address, '\x1b[0m');
+            addressList.forEach(function(Array, index){
+                print4log(config.consoleColor.COLOR_FgYellow, (index +1) + ': ' + Array.address, '\x1b[0m');
             });
         } catch (e) {
             print4log(btcConfig.addressList.error, e.message);
@@ -105,7 +105,7 @@ vorpal
             let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceList);
             let result = await ccUtil.getUTXOSBalance(utxos);
 
-            print4log(config.consoleColor.COLOR_FgYellow, web3.toBigNumber(result).div(100000000).toString(), '\x1b[0m');
+            print4log(config.consoleColor.COLOR_FgYellow, 'btcBalance: ' + web3.toBigNumber(result).div(100000000).toString(), '\x1b[0m');
         } catch (e) {
             print4log(btcConfig.btcBalance.error, e.message);
 
@@ -130,9 +130,9 @@ vorpal
             print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
             wanAddressList = await ccUtil.getWanAccountsInfo(ccUtil.wanSender);
-            print4log(sprintf("%46s %26s", "WAN address", "WBTC balance"));
-            wanAddressList.forEach(function(wanAddress){
-                print4log(sprintf("%46s %26s", wanAddress.address, web3.toBigNumber(wanAddress.wethBalance).div(100000000)));
+            print4log(config.consoleColor.COLOR_FgRed, sprintf("%20s %58s", "WAN address", "WBTC balance"), '\x1b[0m');
+            wanAddressList.forEach(function(wanAddress, index){
+                print4log(config.consoleColor.COLOR_FgYellow, sprintf("%2s %26s",(index +1) + ': ' + wanAddress.address, web3.toBigNumber(wanAddress.wethBalance).div(100000000)), '\x1b[0m');
             });
 
         }catch(e) {
@@ -160,9 +160,9 @@ vorpal
 
             wanAddressList = await ccUtil.getWanAccountsInfo(ccUtil.wanSender);
 
-            print4log(sprintf("%46s %26s", "WAN address", "balance"));
-            wanAddressList.forEach(function(wanAddress){
-                print4log(sprintf("%46s %26s", wanAddress.address,  web3.fromWei(wanAddress.balance)));
+            print4log(config.consoleColor.COLOR_FgRed, sprintf("%20s %50s", "WAN address", "balance"), '\x1b[0m');
+            wanAddressList.forEach(function(wanAddress, index){
+                print4log(config.consoleColor.COLOR_FgYellow, sprintf("%2s %26s",(index +1) + ': ' + wanAddress.address,  web3.fromWei(wanAddress.balance)), '\x1b[0m');
             });
 
         }catch(e) {
@@ -188,9 +188,9 @@ vorpal
 
             let smgs = await ccUtil.getBtcSmgList(ccUtil.btcSender);
 
-            print4log(sprintf("%1s %46s", "wanAddress", "btcAddress"));
-            smgs.forEach(function(array){
-                print4log(sprintf("%26s %46s", array.wanAddress,  array.ethAddress));
+            print4log(config.consoleColor.COLOR_FgRed, sprintf("%10s %46s", "wanAddress", "btcAddress"), '\x1b[0m');
+            smgs.forEach(function(array, index){
+                print4log(config.consoleColor.COLOR_FgYellow, sprintf("%26s %46s", (index + 1) + ': ' + array.wanAddress,  array.ethAddress), '\x1b[0m');
             });
 
         } catch (e) {
@@ -512,7 +512,7 @@ vorpal
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, 'no transaction to redeem.');
 
                 callback();
                 return;
@@ -582,7 +582,7 @@ vorpal
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, 'no transaction to revoke.');
 
                 callback();
                 return;
@@ -798,7 +798,7 @@ vorpal
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, 'no transaction to redeem.');
 
                 callback();
                 return;
@@ -867,7 +867,7 @@ vorpal
             }
 
             if (records.length === 0) {
-                print4log(btcConfig.listTransactions.error);
+                print4log(btcConfig.listTransactions.error, 'no transaction to revoke.');
 
                 callback();
                 return;
