@@ -1,6 +1,6 @@
 const config = {};
-// config.socketUrl = 'ws://192.168.1.77:8080/';
-config.socketUrl = 'wss://18.237.186.227/';
+//config.socketUrl = 'wss://18.237.186.227/';
+config.socketUrl = 'wss://34.210.104.235';
 var wanchainNet = 'testnet';
 var ethereumNet = 'testnet';
 const path=require('path');
