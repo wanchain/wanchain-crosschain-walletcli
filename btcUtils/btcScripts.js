@@ -1,7 +1,8 @@
+'use strict';
 
 let print4log = console.log;
 let sprintf=require("sprintf-js").sprintf;
-
+let config = require('../config.js');
 let checkPasswd = (passwd) => {
     if (!passwd) {
        print4log('password is empty');

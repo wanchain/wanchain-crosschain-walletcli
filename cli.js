@@ -12,7 +12,7 @@ let wanchainCore;
 let btcUtil;
 let Web3 = require("web3");
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-
+const logger = config.getLogger('cli');
 /**
  * @method createBtcAddress
  * @param passwd
@@ -232,7 +232,7 @@ vorpal
             btcScripts.checkTransaction(records, web3, btcUtil.hash160ToAddress);
         } catch (e) {
             print4log(btcConfig.listTransactions.error, e.message);
-
+            logger.debug(e);
             callback();
             return;
         }
@@ -499,7 +499,7 @@ vorpal
 		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, value);
 	            }catch(err){
 		            console.log("lockBtc error: ", err.message);
-
+                    logger.debug(err);
 		            callback();
 		            return;
 	            }
@@ -523,7 +523,7 @@ vorpal
                     print4log("sendWanNotice txHash:", txHash);
                 } catch (e) {
                     console.log("get sendWanNotice error: ", e.message);
-
+                    logger.debug(e);
                     callback();
                     return;
                 }
