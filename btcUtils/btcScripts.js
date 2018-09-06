@@ -29,7 +29,7 @@ let checkBalance = (amount, balance) => {
         if (isNaN(amountNum)) {
             print4log('input the number');
             return false;
-        }else if (amount > balance) {
+        }else if (amountNum > balance) {
             print4log('Not enough balance');
             return false;
         } else {
