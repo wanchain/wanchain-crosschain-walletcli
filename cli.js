@@ -228,7 +228,7 @@ vorpal
             print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
             let records = ccUtil.getBtcWanTxHistory({});
-             //print4log('records: ', records);
+            // print4log('records: ', records);
             btcScripts.checkTransaction(records, web3, btcUtil.hash160ToAddress);
         } catch (e) {
             print4log(btcConfig.listTransactions.error, e.message);
@@ -498,7 +498,7 @@ vorpal
 
 		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, value);
 	            }catch(err){
-		            console.log("lockBtc error: ", err.message);
+		            console.log("lockBtc error: ", err.message||err);
                     logger.debug(err);
 		            callback();
 		            return;
@@ -522,7 +522,7 @@ vorpal
 
                     print4log("sendWanNotice txHash:", txHash);
                 } catch (e) {
-                    console.log("get sendWanNotice error: ", e.message);
+                    console.log("get sendWanNotice error: ", e.message||e);
                     logger.debug(e);
                     callback();
                     return;
@@ -845,6 +845,7 @@ vorpal
 
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
                     let wdHash = await ccUtil.sendWanHash(ccUtil.wanSender, wdTx);
+                    console.log("wdTx:", wdTx);
                     console.log("wdHash: ", wdHash);
 
                 } catch (e) {
@@ -925,7 +926,7 @@ vorpal
                     let walletRedeem = await ccUtil.redeemWithHashX(record.HashX, alice);
                     console.log('walletRedeem: ', walletRedeem);
                 } catch (e) {
-                    print4log('redeemWbtc error: ', e.message);
+                    print4log('redeemWbtc error: ', e);
 
                     callback();
                     return;
