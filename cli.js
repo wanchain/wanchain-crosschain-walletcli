@@ -595,7 +595,7 @@ vorpal
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
                 try {
-                    let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, '0x'+record.crossAdress,
+                    let redeemHash = await ccUtil.sendDepositX(ccUtil.wanSender, '0x'+record.crossAddress,
                         config.gasLimit, config.gasPrice,'0x'+record.x, answers[btcConfig.wanPasswd.name]);
 
                     print4log("redeemHash: ", redeemHash);
@@ -921,7 +921,7 @@ vorpal
 	            try {
 
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
-		            let aliceAddr = btcUtil.hash160ToAddress(record.crossAdress,'pubkeyhash','testnet');
+		            let aliceAddr = btcUtil.hash160ToAddress(record.crossAddress,'pubkeyhash','testnet');
 		            let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name],  aliceAddr);
                     let walletRedeem = await ccUtil.redeemWithHashX(record.HashX, alice);
                     console.log('walletRedeem: ', walletRedeem);
