@@ -503,7 +503,14 @@ vorpal
 	            let record;
 	            let keyPairArray;
 	            try{
-		            keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
+                    keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
+
+                    if(keyPairArray.length === 0) {
+                        print4log("wrong password of btc.");
+                        callback();
+                        return;
+                    }
+
 		            let value = Number(web3.toBigNumber(answers[btcConfig.amount.name]).mul(100000000));
 
 		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, value);
@@ -524,7 +531,13 @@ vorpal
 	            tx.lockedTimestamp = record.redeemLockTimeStamp;
 	            tx.gas = config.gasLimit;
 	            tx.gasPrice = config.gasPrice;
-	            tx.passwd=answers[btcConfig.wanPasswd.name];
+                tx.passwd=answers[btcConfig.wanPasswd.name];
+
+                if(!ccUtil.checkWanPassword(tx.from, tx.passwd)) {
+                    print4log("wrong password of wan.");
+                    callback();
+                    return;
+                }
 
 	            let txHash;
 	            try {
@@ -686,6 +699,13 @@ vorpal
 	            let walletRevoke;
 	            try {
                     let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], record.from);
+
+                    if (alice.length === 0) {
+                        print4log('btc password is wrong.');
+                        callback();
+                        return;
+                    }
+
                     walletRevoke = await ccUtil.revokeWithHashX(record.HashX,alice);
 
                     print4log("revokeBtc:", walletRevoke);
@@ -847,6 +867,12 @@ vorpal
                 wdTx.amount = Number(web3.toBigNumber(answers[btcConfig.amount.name]).mul(100000000));
                 [wdTx.storemanGroup, txFeeRatio] = smgsArray[answers[btcConfig.StoremanGroup.name]];
 
+                if (!ccUtil.checkWanPassword(wdTx.passwd, wdTx.from)) {
+                    print4log('wan password is wrong.');
+                    callback();
+                    return;
+                }
+
                 wdTx.value = ccUtil.calculateLocWanFee(wdTx.amount, ccUtil.c2wRatio, txFeeRatio);
 
                 try {
@@ -932,7 +958,13 @@ vorpal
 
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 		            let aliceAddr = btcUtil.hash160ToAddress(record.crossAddress,'pubkeyhash','testnet');
-		            let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name],  aliceAddr);
+                    let alice = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name],  aliceAddr);
+                    if(alice.length === 0) {
+                        print4log('btc password is wrong.');
+                        callback();
+                        return;
+                    }
+
                     let walletRedeem = await ccUtil.redeemWithHashX(record.HashX, alice);
                     console.log('walletRedeem: ', walletRedeem);
                 } catch (e) {
@@ -1007,6 +1039,12 @@ vorpal
 
                 try {
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
+                    if (!ccUtil.checkWanPassword(record.from, answers[btcConfig.wanPasswd.name])) {
+                        print4log('wan password is wrong.');
+                        callback();
+                        return;
+                    }
 
                     let revokeWbtcHash = await ccUtil.sendWanCancel(ccUtil.wanSender, record.from,
                         config.gasLimit, config.gasPrice, '0x'+record.HashX, answers[btcConfig.wanPasswd.name]);
