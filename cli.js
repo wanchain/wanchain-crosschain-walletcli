@@ -338,7 +338,17 @@ vorpal
                 let result = await ccUtil.sendRawTransaction(ccUtil.btcSender, rawTx);
                 print4log('hash: ', result);
 
+                let txInfo = {
+                    from: 'local btc account',
+                    to: target.address,
+                    value: target.value,
+                    txHash: result,
+                    status: 'SUCCESS',
+                    crossType: 'BTC2WAN'
+                };
 
+                ccUtil.saveNormalBtcTransactionInfo(txInfo);
+                console.log('insert info into db.', txInfo);
             } catch (e) {
                 print4log(btcConfig.normalTransaction.error, e.message);
 
@@ -845,7 +855,7 @@ vorpal
 
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
                     let wdHash = await ccUtil.sendWanHash(ccUtil.wanSender, wdTx);
-                    console.log("wdTx:", wdTx);
+                    // console.log("wdTx:", wdTx);
                     console.log("wdHash: ", wdHash);
 
                 } catch (e) {

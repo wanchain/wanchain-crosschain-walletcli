@@ -84,7 +84,13 @@ let checkTransaction = (records, web3, hash160ToAddress) => {
 
         if (Array.chain.toLowerCase() === 'btc') {
             Array.valueStr = web3.toBigNumber(Array.value).div(100000000) + ' BTC';
-            Array.destAddr = '0x' + Array.crossAddress;
+            if(Array.crossAddress) {
+                Array.destAddr = '0x' + Array.crossAddress;
+            } else {
+                //Add for normal btc tx display.
+                Array.destAddr = Array.to;
+                Array.status = 'success';
+            }
         }else{
 	        Array.valueStr = web3.toBigNumber(Array.value).div(100000000) + ' WBTC';
             Array.destAddr = hash160ToAddress(Array.crossAddress, 'pubkeyhash','testnet');
