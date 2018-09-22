@@ -22,6 +22,9 @@ let checkBalance = (amount, balance) => {
         if (isNaN(amountNum)) {
             print4log('input the number');
             return false;
+        } else if (amountNum <= 0) {
+            print4log('amount must large than zero.');
+            return false;
         } else {
             return true
         }
@@ -32,6 +35,9 @@ let checkBalance = (amount, balance) => {
             return false;
         }else if (amountNum > balance) {
             print4log('Not enough balance');
+            return false;
+        } else if (amountNum <= 0) {
+            print4log('amount must large than zero.');
             return false;
         } else {
             return true
