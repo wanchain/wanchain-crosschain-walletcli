@@ -867,7 +867,7 @@ vorpal
                 wdTx.amount = Number(web3.toBigNumber(answers[btcConfig.amount.name]).mul(100000000));
                 [wdTx.storemanGroup, txFeeRatio] = smgsArray[answers[btcConfig.StoremanGroup.name]];
 
-                if (!ccUtil.checkWanPassword(wdTx.passwd, wdTx.from)) {
+                if (!ccUtil.checkWanPassword(wdTx.from, wdTx.passwd)) {
                     print4log('wan password is wrong.');
                     callback();
                     return;
