@@ -591,10 +591,18 @@ vorpal
 	            let record;
 	            let keyPairArray;
 	            try{
+                    console.time('getECPairs');
                     keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
+                    console.timeEnd('getECPairs');
 
                     if(keyPairArray.length === 0) {
                         print4log("wrong password of btc.");
+                        callback();
+                        return;
+                    }
+
+                    if(!ccUtil.checkWanPassword(wanAddress, answers[btcConfig.wanPasswd.name])) {
+                        print4log("wrong password of wan.");
                         callback();
                         return;
                     }
@@ -621,11 +629,7 @@ vorpal
 	            tx.gasPrice = config.gasPrice;
                 tx.passwd=answers[btcConfig.wanPasswd.name];
 
-                if(!ccUtil.checkWanPassword(tx.from, tx.passwd)) {
-                    print4log("wrong password of wan.");
-                    callback();
-                    return;
-                }
+
 
 	            let txHash;
 	            try {
