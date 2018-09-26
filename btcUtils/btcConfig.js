@@ -1,6 +1,11 @@
 module.exports = {
     'help': '====== Type help for more information.  ====== ',
     'waiting': 'wait a moment...',
+
+    'createWan': {
+        desc: 'create new wan address',
+        error: 'create wan address error'
+    },
     'btcPasswd': {
         type: 'password',
         name: 'btcPassword',

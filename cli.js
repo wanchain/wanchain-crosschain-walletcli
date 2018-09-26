@@ -13,6 +13,24 @@ let btcUtil;
 let Web3 = require("web3");
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 const logger = config.getLogger('cli');
+
+const fs = require('fs');
+const path = require('path');
+const keythereum = require("keythereum");
+keythereum.constants.quiet = true;
+const wanUtil = require('wanchain-util');
+
+function mkdirsSync(dirname) {
+    if (fs.existsSync(dirname)) {
+        return true;
+    } else {
+        if (mkdirsSync(path.dirname(dirname))) {
+            fs.mkdirSync(dirname);
+            return true;
+        }
+    }
+}
+
 /**
  * @method createBtcAddress
  * @param passwd
@@ -57,6 +75,76 @@ vorpal
             callback();
         })
     });
+
+/**
+ * @method create wan keystore
+ * @param passwd
+ */
+
+vorpal
+    .command('createWanAccount', btcConfig.createWan.desc)
+    .cancel(() => {
+    process.exit(0)
+})
+.action(function(args, callback) {
+
+    let promise = this.prompt([
+        {
+            type: btcConfig.wanPasswd.type,
+            name: btcConfig.wanPasswd.name,
+            message: btcConfig.wanPasswd.message
+        },
+    ]);
+
+    promise.then(async function(answers) {
+
+        let keyPassword = answers[btcConfig.wanPasswd.name];
+
+        if (! btcScripts.checkPasswd(keyPassword)) {
+
+            callback();
+            return;
+        }
+
+        try {
+            mkdirsSync(config.wanKeyStorePath);
+
+            let params = { keyBytes: 32, ivBytes: 16 };
+            let options = {
+                kdf: "scrypt",
+                cipher: "aes-128-ctr",
+                kdfparams: {
+                    n: 262144,
+                    dklen: 32,
+                    prf: "hmac-sha256"
+                }
+            };
+
+            print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
+            let dk = keythereum.create(params);
+            let keyObject = keythereum.dump(keyPassword, dk.privateKey, dk.salt, dk.iv, options);
+
+            let dk2 = keythereum.create(params);
+            let keyObject2 = keythereum.dump(keyPassword, dk2.privateKey, dk2.salt, dk2.iv, options);
+            keyObject.crypto2 = keyObject2.crypto;
+
+            keyObject.waddress = wanUtil.generateWaddrFromPriv(dk.privateKey, dk2.privateKey).slice(2);
+            keythereum.exportToFile(keyObject, config.wanKeyStorePath);
+
+            console.log("Your WAN address is: 0x"+keyObject.address);
+
+        } catch (e) {
+            print4log('create WAN account error.', e);
+
+            callback();
+            return;
+        }
+
+
+        callback();
+    })
+});
 
 /**
  * @method listBtcAddress
