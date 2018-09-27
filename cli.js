@@ -436,7 +436,6 @@ vorpal
                 };
 
                 ccUtil.saveNormalBtcTransactionInfo(txInfo);
-                console.log('insert info into db.', txInfo);
             } catch (e) {
                 print4log(btcConfig.normalTransaction.error, e.message);
 
