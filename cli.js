@@ -554,6 +554,12 @@ vorpal
                     return;
                 }
 
+                if(wanAddressArray[answers[btcConfig.wanAddress.name]][0] < 0.4) {
+                    print4log('wan balance must >= 0.4 for gas limit.');
+                    callback();
+                    return;
+                }
+
                 let addressList;
                 let btcBalance;
 
@@ -935,6 +941,12 @@ vorpal
 	        ], async function (answers) {
 
                 let [wanBalance, wbtcBalance, wanAddress] = wanAddressArray[answers[btcConfig.wanAddress.name]];
+
+                if( wanBalance < 0.4) {
+                    print4log('wan balance must >= 0.4 for gas limit.');
+                    callback();
+                    return;
+                }
 
                 if (wanBalance === 0 || wbtcBalance === 0 ||
                     ! btcScripts.checkBalance(answers[btcConfig.amount.name], wbtcBalance) ||
