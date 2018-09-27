@@ -436,7 +436,6 @@ vorpal
                 };
 
                 ccUtil.saveNormalBtcTransactionInfo(txInfo);
-                console.log('insert info into db.', txInfo);
             } catch (e) {
                 print4log(btcConfig.normalTransaction.error, e.message);
 
@@ -550,6 +549,12 @@ vorpal
                     ! answers[btcConfig.wanAddress.name].length >0 ||
                     ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
 
+                    callback();
+                    return;
+                }
+
+                if(wanAddressArray[answers[btcConfig.wanAddress.name]][0] < 0.4) {
+                    print4log('wan balance must >= 0.4 for gas limit.');
                     callback();
                     return;
                 }
@@ -935,6 +940,12 @@ vorpal
 	        ], async function (answers) {
 
                 let [wanBalance, wbtcBalance, wanAddress] = wanAddressArray[answers[btcConfig.wanAddress.name]];
+
+                if( wanBalance < 0.4) {
+                    print4log('wan balance must >= 0.4 for gas limit.');
+                    callback();
+                    return;
+                }
 
                 if (wanBalance === 0 || wbtcBalance === 0 ||
                     ! btcScripts.checkBalance(answers[btcConfig.amount.name], wbtcBalance) ||
