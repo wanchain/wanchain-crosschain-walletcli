@@ -39,7 +39,7 @@ function mkdirsSync(dirname) {
 vorpal
     .command('createBtcAddress', btcConfig.createNewAddress.desc)
     .cancel(() => {
-        process.exit(0)
+        vorpal.ui.cancel();
     })
     .action(function(args,callback) {
 
