@@ -45,7 +45,7 @@ config.loglevel = 'info';
 //config.loglevel = 'debug';
 
 config.MAX_CONFIRM_BLKS = 100000000;
-config.MIN_CONFIRM_BLKS = 1;
+config.MIN_CONFIRM_BLKS = 0;
 config.listOption = true;
 // config.feeRate = 3000;
 
