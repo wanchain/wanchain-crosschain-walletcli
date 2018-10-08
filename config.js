@@ -2,6 +2,7 @@ const config = {};
 //config.socketUrl = 'wss://18.237.186.227/';
 config.socketUrl = 'wss://34.210.104.235';
 var wanchainNet = 'testnet';
+config.network = wanchainNet;
 var ethereumNet = 'testnet';
 const path=require('path');
 const Logger = require('./logger/logger.js');
