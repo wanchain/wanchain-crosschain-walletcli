@@ -290,8 +290,8 @@ vorpal
             let print;
 
             print4log(config.consoleColor.COLOR_FgRed, sprintf("%10s %46s", "wanAddress", "btcAddress"), '\x1b[0m');
-            smgs.forEach(function(array, index){
-                print = sprintf("%26s %46s", (index + 1) + ': ' + array.wanAddress,  array.ethAddress);
+            smgs.forEach(function (array, index) {
+                print = sprintf("%26s %46s", (index + 1) + ': ' + array.wanAddress, array.ethAddress.startsWith('0x') ? btcUtil.hash160ToAddress(array.ethAddress) : array.ethAddress);
                 print4log(config.consoleColor.COLOR_FgYellow, print, '\x1b[0m');
             });
 
