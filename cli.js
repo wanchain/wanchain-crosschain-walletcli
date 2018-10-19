@@ -418,7 +418,6 @@ vorpal
                     callback();
                     return;
                 }
-<<<<<<< HEAD
     
                 if (! btcScripts.checkBalance(amount, btcBalance) ) {
     
@@ -474,25 +473,6 @@ vorpal
                     return;
                 }
     
-=======
-
-                let result = await ccUtil.sendRawTransaction(ccUtil.btcSender, rawTx);
-                print4log('hash: ', result);
-
-                let txInfo = {
-                    from: 'local btc account',
-                    to: target.address,
-                    value: target.value,
-                    txHash: result,
-                    status: 'SUCCESS',
-                    crossType: 'BTC2WAN'
-                };
-
-                ccUtil.saveNormalBtcTransactionInfo(txInfo);
-            } catch (e) {
-                print4log(btcConfig.normalTransaction.error, e.message);
-
->>>>>>> 098645f8411b990e94637884a1293cfe54030264
                 callback();
             });
 
