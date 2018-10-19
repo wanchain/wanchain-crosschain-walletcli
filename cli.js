@@ -39,7 +39,7 @@ function mkdirsSync(dirname) {
 vorpal
     .command('createBtcAddress', btcConfig.createNewAddress.desc)
     .cancel(() => {
-        process.exit(0)
+        vorpal.ui.cancel();
     })
     .action(function(args,callback) {
 
@@ -84,67 +84,67 @@ vorpal
 vorpal
     .command('createWanAccount', btcConfig.createWan.desc)
     .cancel(() => {
-    process.exit(0)
-})
-.action(function(args, callback) {
-
-    let promise = this.prompt([
-        {
-            type: btcConfig.wanPasswd.type,
-            name: btcConfig.wanPasswd.name,
-            message: btcConfig.wanPasswd.message
-        },
-    ]);
-
-    promise.then(async function(answers) {
-
-        let keyPassword = answers[btcConfig.wanPasswd.name];
-
-        if (! btcScripts.checkPasswd(keyPassword)) {
-
-            callback();
-            return;
-        }
-
-        try {
-            mkdirsSync(config.wanKeyStorePath);
-
-            let params = { keyBytes: 32, ivBytes: 16 };
-            let options = {
-                kdf: "scrypt",
-                cipher: "aes-128-ctr",
-                kdfparams: {
-                    n: 262144,
-                    dklen: 32,
-                    prf: "hmac-sha256"
-                }
-            };
-
-            print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
-
-            let dk = keythereum.create(params);
-            let keyObject = keythereum.dump(keyPassword, dk.privateKey, dk.salt, dk.iv, options);
-
-            let dk2 = keythereum.create(params);
-            let keyObject2 = keythereum.dump(keyPassword, dk2.privateKey, dk2.salt, dk2.iv, options);
-            keyObject.crypto2 = keyObject2.crypto;
-
-            keyObject.waddress = wanUtil.generateWaddrFromPriv(dk.privateKey, dk2.privateKey).slice(2);
-            keythereum.exportToFile(keyObject, config.wanKeyStorePath);
-
-            console.log("Your WAN address is: 0x"+keyObject.address);
-
-        } catch (e) {
-            print4log('create WAN account error.', e);
-
-            callback();
-            return;
-        }
-
-
-        callback();
+        vorpal.ui.cancel();
     })
-});
+    .action(function(args, callback) {
+
+        let promise = this.prompt([
+            {
+                type: btcConfig.wanPasswd.type,
+                name: btcConfig.wanPasswd.name,
+                message: btcConfig.wanPasswd.message
+            },
+        ]);
+
+        promise.then(async function(answers) {
+
+            let keyPassword = answers[btcConfig.wanPasswd.name];
+
+            if (! btcScripts.checkPasswd(keyPassword)) {
+
+                callback();
+                return;
+            }
+
+            try {
+                mkdirsSync(config.wanKeyStorePath);
+
+                let params = { keyBytes: 32, ivBytes: 16 };
+                let options = {
+                    kdf: "scrypt",
+                    cipher: "aes-128-ctr",
+                    kdfparams: {
+                        n: 262144,
+                        dklen: 32,
+                        prf: "hmac-sha256"
+                    }
+                };
+
+                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+
+                let dk = keythereum.create(params);
+                let keyObject = keythereum.dump(keyPassword, dk.privateKey, dk.salt, dk.iv, options);
+
+                let dk2 = keythereum.create(params);
+                let keyObject2 = keythereum.dump(keyPassword, dk2.privateKey, dk2.salt, dk2.iv, options);
+                keyObject.crypto2 = keyObject2.crypto;
+
+                keyObject.waddress = wanUtil.generateWaddrFromPriv(dk.privateKey, dk2.privateKey).slice(2);
+                keythereum.exportToFile(keyObject, config.wanKeyStorePath);
+
+                console.log("Your WAN address is: 0x"+keyObject.address);
+
+            } catch (e) {
+                print4log('create WAN account error.', e);
+
+                callback();
+                return;
+            }
+
+
+            callback();
+        })
+    });
 
 /**
  * @method listBtcAddress
@@ -336,117 +336,148 @@ vorpal
 vorpal
 	.command('sendBtcToAddress', btcConfig.normalTransaction.desc)
     .cancel(() => {
-        process.exit(0)
+        vorpal.ui.cancel();
     })
 	.action(function(args,callback){
 
-		let promise = this.prompt([
+        const self = this;
+
+        let promiseAmount = self.prompt([
 		    {
                 type: btcConfig.amount.type,
                 name: btcConfig.amount.name,
                 message: btcConfig.amount.message
-            },
-            {
-                type: btcConfig.to.type,
-                name: btcConfig.to.name,
-                message: btcConfig.to.message
-            },
-            {
-                type: btcConfig.btcPasswd.type,
-                name: btcConfig.btcPasswd.name,
-                message: btcConfig.btcPasswd.message
-            },
+            }
         ]);
 
-		promise.then(async function(answers) {
-		    if (! btcScripts.checkBalance(answers[btcConfig.amount.name], null) ||
-                ! answers[btcConfig.to.name].length >0 ||
-                ! btcScripts.checkPasswd(answers[btcConfig.btcPasswd.name])) {
+        promiseAmount.then(function(amountInput){
+
+            let amount = amountInput[btcConfig.amount.name];
+
+            if (! btcScripts.checkBalance(amount, null)) {
 
 		        callback();
                 return;
             }
 
-            let btcBalance = 0;
-            let addressList;
-            let utxos;
-            // btc balance
-            try{
-                addressList = await btcUtil.getAddressList();
-                let array = [];
-                for (let i=0;i<addressList.length; i++) {
-                    array.push(addressList[i].address)
+            let promiseTo = self.prompt([
+                {
+                    type: btcConfig.to.type,
+                    name: btcConfig.to.name,
+                    message: btcConfig.to.message
                 }
+            ]);
 
-                utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, array);
-                let result = await ccUtil.getUTXOSBalance(utxos);
+            promiseTo.then(function(toInput){
+                
+                let to = toInput[btcConfig.to.name];
+                if ( ! to.length >0) {
 
-                btcBalance = web3.toBigNumber(result).div(100000000);
-
-            } catch (e) {
-                print4log(btcConfig.btcBalance.error, e.message);
-
-                callback();
+		        callback();
                 return;
             }
 
-            if (! btcScripts.checkBalance(answers[btcConfig.amount.name], btcBalance) ) {
+            let promiseBtcPasswd = self.prompt([
+                {
+                    type: btcConfig.btcPasswd.type,
+                    name: btcConfig.btcPasswd.name,
+                    message: btcConfig.btcPasswd.message
+                }
+            ]);
 
-                callback();
-                return;
-            }
+            promiseBtcPasswd.then(async function(btcPasswdInput) {
 
-            let keyPairArray = [];
+                let btcPasswd = btcPasswdInput[btcConfig.btcPasswd.name];
 
-            try {
-                print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
-
-                keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
-
-                if (keyPairArray.length === 0) {
-                    print4log('no bitcoin keyPairs!');
-
+                if (! btcScripts.checkPasswd(btcPasswd)) {
+    
                     callback();
                     return;
                 }
+    
+                let btcBalance = 0;
+                let addressList;
+                let utxos;
 
-                let target = {
-                    address: answers.to,
-                    value: web3.toBigNumber(answers.amount).mul(100000000)
-                };
-
-
-                const {rawTx, fee} = await ccUtil.btcBuildTransaction(utxos, keyPairArray, target, config.feeRate);
-                if (!rawTx) {
-
+                // btc balance
+                try{
+                    addressList = await btcUtil.getAddressList();
+                    let array = [];
+                    for (let i=0;i<addressList.length; i++) {
+                        array.push(addressList[i].address)
+                    }
+    
+                    utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, array);
+                    let result = await ccUtil.getUTXOSBalance(utxos);
+    
+                    btcBalance = web3.toBigNumber(result).div(100000000);
+    
+                } catch (e) {
+                    print4log(btcConfig.btcBalance.error, e.message);
+    
                     callback();
                     return;
                 }
-
-                let result = await ccUtil.sendRawTransaction(ccUtil.btcSender, rawTx);
-                print4log('hash: ', result);
-
-                let txInfo = {
-                    from: 'local btc account',
-                    to: target.address,
-                    value: target.value,
-                    txHash: result,
-                    status: 'SUCCESS',
-                    crossType: 'BTC2WAN'
-                };
-
-                ccUtil.saveNormalBtcTransactionInfo(txInfo);
-                console.log('insert info into db.', txInfo);
-            } catch (e) {
-                print4log(btcConfig.normalTransaction.error, e.message);
-
+    
+                if (! btcScripts.checkBalance(amount, btcBalance) ) {
+    
+                    callback();
+                    return;
+                }
+    
+                let keyPairArray = [];
+    
+                try {
+                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
+    
+                    keyPairArray = await btcUtil.getECPairs(btcPasswd);
+    
+                    if (keyPairArray.length === 0) {
+                        print4log('no bitcoin keyPairs!');
+    
+                        callback();
+                        return;
+                    }
+    
+                    let target = {
+                        address: to,
+                        value: web3.toBigNumber(amount).mul(100000000)
+                    };
+    
+    
+                    const {rawTx, fee} = await ccUtil.btcBuildTransaction(utxos, keyPairArray, target, config.feeRate);
+                    if (!rawTx) {
+    
+                        callback();
+                        return;
+                    }
+    
+                    let result = await ccUtil.sendRawTransaction(ccUtil.btcSender, rawTx);
+                    print4log('hash: ', result);
+    
+                    let txInfo = {
+                        from: 'local btc account',
+                        to: target.address,
+                        value: target.value,
+                        txHash: result,
+                        status: 'SUCCESS',
+                        crossType: 'BTC2WAN'
+                    };
+    
+                    ccUtil.saveNormalBtcTransactionInfo(txInfo);
+                    console.log('insert info into db.', txInfo);
+                } catch (e) {
+                    print4log(btcConfig.normalTransaction.error, e.message);
+    
+                    callback();
+                    return;
+                }
+    
                 callback();
-                return;
-            }
+            });
 
-
-            callback();
-		});
+            });
+        });
 	});
 
 /**
