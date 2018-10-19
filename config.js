@@ -19,7 +19,7 @@ config.keyStorePath = process.env.HOME;
 config.ethkeyStorePath = process.env.HOME;
 if (process.platform === 'darwin') {
     config.rpcIpcPath += '/Library/Wanchain/'+'gwan.ipc';
-    config.keyStorePath = path.join(config.keyStorePath, '/Library/wanchain/', wanchainNet, 'keystore/');
+    config.keyStorePath = path.join(config.keyStorePath, '/Library/Wanchain/', wanchainNet, 'keystore/');
     config.ethkeyStorePath = path.join(config.ethkeyStorePath, '/Library/ethereum/',ethereumNet,'keystore/');
 }
 
