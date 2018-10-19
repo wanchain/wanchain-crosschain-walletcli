@@ -418,6 +418,7 @@ vorpal
                     callback();
                     return;
                 }
+<<<<<<< HEAD
     
                 if (! btcScripts.checkBalance(amount, btcBalance) ) {
     
@@ -473,6 +474,25 @@ vorpal
                     return;
                 }
     
+=======
+
+                let result = await ccUtil.sendRawTransaction(ccUtil.btcSender, rawTx);
+                print4log('hash: ', result);
+
+                let txInfo = {
+                    from: 'local btc account',
+                    to: target.address,
+                    value: target.value,
+                    txHash: result,
+                    status: 'SUCCESS',
+                    crossType: 'BTC2WAN'
+                };
+
+                ccUtil.saveNormalBtcTransactionInfo(txInfo);
+            } catch (e) {
+                print4log(btcConfig.normalTransaction.error, e.message);
+
+>>>>>>> 098645f8411b990e94637884a1293cfe54030264
                 callback();
             });
 
@@ -585,6 +605,12 @@ vorpal
                     return;
                 }
 
+                if(wanAddressArray[answers[btcConfig.wanAddress.name]][0] < 0.4) {
+                    print4log('wan balance must >= 0.4 for gas limit.');
+                    callback();
+                    return;
+                }
+
                 let addressList;
                 let btcBalance;
 
@@ -622,10 +648,18 @@ vorpal
 	            let record;
 	            let keyPairArray;
 	            try{
+                    console.time('getECPairs');
                     keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
+                    console.timeEnd('getECPairs');
 
                     if(keyPairArray.length === 0) {
                         print4log("wrong password of btc.");
+                        callback();
+                        return;
+                    }
+
+                    if(!ccUtil.checkWanPassword(wanAddress, answers[btcConfig.wanPasswd.name])) {
+                        print4log("wrong password of wan.");
                         callback();
                         return;
                     }
@@ -652,11 +686,7 @@ vorpal
 	            tx.gasPrice = config.gasPrice;
                 tx.passwd=answers[btcConfig.wanPasswd.name];
 
-                if(!ccUtil.checkWanPassword(tx.from, tx.passwd)) {
-                    print4log("wrong password of wan.");
-                    callback();
-                    return;
-                }
+
 
 	            let txHash;
 	            try {
@@ -962,6 +992,12 @@ vorpal
 	        ], async function (answers) {
 
                 let [wanBalance, wbtcBalance, wanAddress] = wanAddressArray[answers[btcConfig.wanAddress.name]];
+
+                if( wanBalance < 0.4) {
+                    print4log('wan balance must >= 0.4 for gas limit.');
+                    callback();
+                    return;
+                }
 
                 if (wanBalance === 0 || wbtcBalance === 0 ||
                     ! btcScripts.checkBalance(answers[btcConfig.amount.name], wbtcBalance) ||

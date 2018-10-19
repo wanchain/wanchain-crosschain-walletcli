@@ -47,21 +47,21 @@ config.loglevel = 'info';
 config.MAX_CONFIRM_BLKS = 100000000;
 config.MIN_CONFIRM_BLKS = 0;
 config.listOption = true;
-config.feeRate = 3000;
+config.feeRate = 300;
 
-config.databasePath = process.env.HOME;
-if (process.platform === 'win32') {
-    config.databasePath = process.env.APPDATA;
-}
-config.databasePath =  path.join(config.databasePath, 'LocalDb');
+// config.databasePath = process.env.HOME;
+// if (process.platform === 'win32') {
+//     config.databasePath = process.env.APPDATA;
+// }
+// config.databasePath =  path.join(config.databasePath, 'LocalDb');
 
 config.wanKeyStorePath = config.keyStorePath;
 config.ethKeyStorePath = config.ethkeyStorePath;
 
 
 
-config.crossDbname = 'crossTransDb';
-config.crossCollection = 'crossTransaction';
+// config.crossDbname = path.join(config.databasePath, 'crossTransDbBtc');
+// config.crossCollection = 'crossTransaction';
 config.confirmBlocks = 3;
 config.btcConfirmBlocks = 1;
 
