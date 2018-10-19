@@ -596,9 +596,9 @@ vorpal
 	            let record;
 	            let keyPairArray;
 	            try{
-                    console.time('getECPairs');
+                    //console.time('getECPairs');
                     keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
-                    console.timeEnd('getECPairs');
+                    //console.timeEnd('getECPairs');
 
                     if(keyPairArray.length === 0) {
                         print4log("wrong password of btc.");
