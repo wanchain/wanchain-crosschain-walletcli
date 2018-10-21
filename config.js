@@ -44,7 +44,8 @@ config.listOption = true;
 if(wanchainNet == 'testnet'){
     config.feeRate = 300;
     config.feeHard = 100000;
-    config.confirmHeight = 1;
+    config.confirmBlocks = 3;
+    config.btcConfirmBlocks = 1;
     config.wanchainHtlcAddr = "0xef1b0855787dc964dda78db9551a2f8732b05ccf";
     config.WBTCToken = "0x6a40a70a0bd72de24918e6eec3cdc5e131e6b1cf";
     config.socketUrl = 'wss://apitest.wanchain.info';
@@ -53,7 +54,8 @@ if(wanchainNet == 'testnet'){
 } else {
     config.feeRate = 30;
     config.feeHard = 10000;
-    config.confirmHeight = 3;
+    config.confirmBlocks = 12;
+    config.btcConfirmBlocks = 3;
     config.wanchainHtlcAddr = "0x4b11ae8ea012d8bb1e81410c02aa020e10b3871f";
     config.WBTCToken = "0x377f1a186ffce3a8b5d1662f8a7636c417721289";
     config.socketUrl = 'wss://api.wanchain.info';
