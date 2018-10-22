@@ -1,7 +1,12 @@
 const config = {};
-var wanchainNet = 'testnet';
-config.network = wanchainNet;
-var ethereumNet = 'testnet';
+
+if(global.isTestnet){
+    config.network = 'testnet';
+    console.log("This is testnet");
+}else {
+    config.network = '';
+    console.log("This is mainnet");
+}
 const path=require('path');
 const Logger = require('./logger/logger.js');
 config.ccLog = path.join('logs', 'crossChainLog.log');
@@ -13,23 +18,22 @@ config.getLogger = function(name){
 
 config.gasLimit = 1000000;
 config.gasPrice = 200000000000;
-config.dataName = wanchainNet;
 
 
 if (process.platform === 'darwin') {
-    config.rpcIpcPath = path.join(process.env.HOME, '/Library/Wanchain',wanchainNet,'gwan.ipc');
-    config.keyStorePath = path.join(process.env.HOME, '/Library/Wanchain/',wanchainNet,'keystore');
-    config.ethkeyStorePath = path.join(process.env.HOME, '/Library/ethereum/',ethereumNet,'keystore/');
+    config.rpcIpcPath = path.join(process.env.HOME, '/Library/Wanchain',config.network,'gwan.ipc');
+    config.keyStorePath = path.join(process.env.HOME, '/Library/Wanchain/',config.network,'keystore');
+    config.ethkeyStorePath = path.join(process.env.HOME, '/Library/ethereum/',config.network,'keystore/');
     config.databasePath = path.join(process.env.HOME,'Library/LocalDb');
 } else if (process.platform === 'freebsd' || process.platform === 'linux' || process.platform === 'sunos') {
-    config.rpcIpcPath = path.join(process.env.HOME, '.wanchain',wanchainNet,'gwan.ipc');
-    config.keyStorePath = path.join(process.env.HOME, '.wanchain',wanchainNet,'keystore');
-    config.ethkeyStorePath = path.join(process.env.HOME, '.ethereum',ethereumNet,'keystore');
+    config.rpcIpcPath = path.join(process.env.HOME, '.wanchain',config.network,'gwan.ipc');
+    config.keyStorePath = path.join(process.env.HOME, '.wanchain',config.network,'keystore');
+    config.ethkeyStorePath = path.join(process.env.HOME, '.ethereum',config.network,'keystore');
     config.databasePath = path.join(process.env.HOME,'LocalDb');
 } else if (process.platform === 'win32') {
     config.rpcIpcPath = '\\\\.\\pipe\\gwan.ipc';
-    config.keyStorePath = path.join(process.env.APPDATA, 'wanchain', wanchainNet, 'keystore');
-    config.ethkeyStorePath = path.join(process.env.APPDATA, 'ethereum', ethereumNet, 'keystore');
+    config.keyStorePath = path.join(process.env.APPDATA, 'wanchain', config.network, 'keystore');
+    config.ethkeyStorePath = path.join(process.env.APPDATA, 'ethereum', config.network, 'keystore');
     config.databasePath = path.join(process.env.APPDATA,'LocalDb');
 }
 
@@ -41,7 +45,7 @@ config.loglevel = 'info';
 config.MAX_CONFIRM_BLKS = 100000000;
 config.MIN_CONFIRM_BLKS = 0;
 config.listOption = true;
-if(wanchainNet == 'testnet'){
+if(config.network == 'testnet'){
     config.feeRate = 300;
     config.feeHard = 100000;
     config.confirmBlocks = 3;

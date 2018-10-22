@@ -1,4 +1,10 @@
 let WanchainCore = require('wanchain-crosschain');
+const optimist = require('optimist');
+let argv    = optimist
+    .usage('Usage: nodejs $0  [--testnet]')
+    .argv;
+global.isTestnet = argv.testnet ? true : false;
+
 let config = require('./config.js');
 let vorpal = require('vorpal')();
 let sprintf=require("sprintf-js").sprintf;
@@ -19,6 +25,8 @@ const path = require('path');
 const keythereum = require("keythereum");
 keythereum.constants.quiet = true;
 const wanUtil = require('wanchain-util');
+
+
 
 function mkdirsSync(dirname) {
     if (fs.existsSync(dirname)) {
