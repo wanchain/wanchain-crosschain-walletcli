@@ -565,12 +565,9 @@ vorpal
                 try {
                     addressList = await btcUtil.getAddressList();
 
-                    let aliceAddr = [];
-                    for (let i=0;i<addressList.length; i++) {
-                        aliceAddr.push(addressList[i].address)
-                    }
+                    addressList = await ccUtil.filterBtcAddressByAmount(addressList, answers[btcConfig.amount.name]);
 
-                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceAddr);
+                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, addressList);
                     let result = await ccUtil.getUTXOSBalance(utxos);
 
                     btcBalance = web3.toBigNumber(result).div(100000000);
@@ -594,10 +591,13 @@ vorpal
                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
 	            let record;
-	            let keyPairArray;
+	            let keyPairArray = [];
 	            try{
                     //console.time('getECPairs');
-                    keyPairArray = await btcUtil.getECPairs(answers[btcConfig.btcPasswd.name]);
+                    for(let i=0; i<addressList.length; i++) {
+                        let kp = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], addressList[i]);
+                        keyPairArray.push(kp);
+                    }
                     //console.timeEnd('getECPairs');
 
                     if(keyPairArray.length === 0) {
@@ -616,7 +616,7 @@ vorpal
 
 		            record = await ccUtil.fund(keyPairArray, smgBtcAddr, value);
 	            }catch(err){
-		            console.log("lockBtc error: ", err.message||err);
+                    console.log("lockBtc error: ", err.message||err);
                     logger.debug(err);
 		            callback();
 		            return;
