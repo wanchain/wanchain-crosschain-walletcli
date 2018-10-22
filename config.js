@@ -14,28 +14,23 @@ config.getLogger = function(name){
 config.gasLimit = 1000000;
 config.gasPrice = 200000000000;
 config.dataName = wanchainNet;
-config.rpcIpcPath = process.env.HOME;
-config.keyStorePath = process.env.HOME;
-config.ethkeyStorePath = process.env.HOME;
+
+
 if (process.platform === 'darwin') {
-    config.rpcIpcPath += '/Library/Wanchain/'+'gwan.ipc';
-    config.keyStorePath = path.join(config.keyStorePath, '/Library/Wanchain/', wanchainNet, 'keystore/');
-    config.ethkeyStorePath = path.join(config.ethkeyStorePath, '/Library/ethereum/',ethereumNet,'keystore/');
-}
-
-if (process.platform === 'freebsd' ||
-    process.platform === 'linux' ||
-    process.platform === 'sunos') {
-    config.rpcIpcPath += '/.wanchain/'+'gwan.ipc';
-    config.keyStorePath = path.join(config.keyStorePath, '.wanchain',wanchainNet,'keystore/');
-    //config.btckeyStorePath = path.join(config.keyStorePath, '.bitcoin',wanchainNet,'keystore/');
-    config.ethkeyStorePath = path.join(config.ethkeyStorePath, '.ethereum',ethereumNet,'keystore/');
-}
-
-if (process.platform === 'win32') {
+    config.rpcIpcPath = path.join(process.env.HOME, '/Library/Wanchain',wanchainNet,'gwan.ipc');
+    config.keyStorePath = path.join(process.env.HOME, '/Library/Wanchain/',wanchainNet,'keystore');
+    config.ethkeyStorePath = path.join(process.env.HOME, '/Library/ethereum/',ethereumNet,'keystore/');
+    config.databasePath = path.join(process.env.HOME,'Library/LocalDb');
+} else if (process.platform === 'freebsd' || process.platform === 'linux' || process.platform === 'sunos') {
+    config.rpcIpcPath = path.join(process.env.HOME, '.wanchain',wanchainNet,'gwan.ipc');
+    config.keyStorePath = path.join(process.env.HOME, '.wanchain',wanchainNet,'keystore');
+    config.ethkeyStorePath = path.join(process.env.HOME, '.ethereum',ethereumNet,'keystore');
+    config.databasePath = path.join(process.env.HOME,'LocalDb');
+} else if (process.platform === 'win32') {
     config.rpcIpcPath = '\\\\.\\pipe\\gwan.ipc';
-    config.keyStorePath = path.join(process.env.APPDATA, 'wanchain', wanchainNet,'keystore\\');
-    config.ethkeyStorePath = path.join(process.env.APPDATA, 'ethereum', ethereumNet,'keystore\\');
+    config.keyStorePath = path.join(process.env.APPDATA, 'wanchain', wanchainNet, 'keystore');
+    config.ethkeyStorePath = path.join(process.env.APPDATA, 'ethereum', ethereumNet, 'keystore');
+    config.databasePath = path.join(process.env.APPDATA,'LocalDb');
 }
 
 config.port = 8545;
@@ -49,17 +44,23 @@ config.listOption = true;
 if(wanchainNet == 'testnet'){
     config.feeRate = 300;
     config.feeHard = 100000;
-    config.confirmHeight = 1;
+    config.confirmBlocks = 3;
+    config.btcConfirmBlocks = 1;
     config.wanchainHtlcAddr = "0xef1b0855787dc964dda78db9551a2f8732b05ccf";
     config.WBTCToken = "0x6a40a70a0bd72de24918e6eec3cdc5e131e6b1cf";
     config.socketUrl = 'wss://apitest.wanchain.info';
+    config.btcWallet = path.join(config.databasePath, 'btcWallet.db');
+    config.crossDbname = path.join(config.databasePath, 'crossTransDbBtc');
 } else {
     config.feeRate = 30;
     config.feeHard = 10000;
-    config.confirmHeight = 3;
+    config.confirmBlocks = 12;
+    config.btcConfirmBlocks = 3;
     config.wanchainHtlcAddr = "0x4b11ae8ea012d8bb1e81410c02aa020e10b3871f";
     config.WBTCToken = "0x377f1a186ffce3a8b5d1662f8a7636c417721289";
     config.socketUrl = 'wss://api.wanchain.info';
+    config.btcWallet = path.join(config.databasePath, 'main_btcWallet.db');
+    config.crossDbname = path.join(config.databasePath, 'main_crossTransDbBtc');
 }
 
 config.wanKeyStorePath = config.keyStorePath;
