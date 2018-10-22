@@ -645,14 +645,11 @@ vorpal
                                 try {
                                     addressList = await btcUtil.getAddressList();
 
-                                    let aliceAddr = [];
-                                    for (let i=0;i<addressList.length; i++) {
-                                        aliceAddr.push(addressList[i].address)
-                                    }
-
-                                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, aliceAddr);
+                                    addressList = await ccUtil.filterBtcAddressByAmount(addressList, answers[btcConfig.amount.name]);
+                
+                                    let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, addressList);
                                     let result = await ccUtil.getUTXOSBalance(utxos);
-
+                
                                     btcBalance = web3.toBigNumber(result).div(100000000);
 
                                 } catch (e) {
@@ -675,12 +672,14 @@ vorpal
                                 print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
                                 
                                 let record;
-	                            let keyPairArray;
-                                
-                                try{
-                                    console.time('getECPairs');
-                                    keyPairArray = await btcUtil.getECPairs(btcPaasswd);
-                                    console.timeEnd('getECPairs');
+                                let keyPairArray = [];
+                                try {
+                                    //console.time('getECPairs');
+                                    for (let i = 0; i < addressList.length; i++) {
+                                        let kp = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], addressList[i]);
+                                        keyPairArray.push(kp);
+                                    }
+                                    //console.timeEnd('getECPairs');
 
                                     if(keyPairArray.length === 0) {
                                         print4log("wrong password of btc.");
