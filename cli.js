@@ -613,9 +613,9 @@ vorpal
                         ]);
 
                         promiseWanPasswd.then(async function(wanPasInput){
-                            let wanPaasswd = wanPasInput[btcConfig.wanPasswd.name];
+                            let wanPasswd = wanPasInput[btcConfig.wanPasswd.name];
 
-                            if (! btcScripts.checkPasswd(wanPaasswd)){
+                            if (! btcScripts.checkPasswd(wanPasswd)){
                                 
                                 callback();
                                 return;
@@ -631,9 +631,9 @@ vorpal
 
                             promiseBtcPasswd.then(async function(btcPasInput){
 
-                                let btcPaasswd = btcPasInput[btcConfig.btcPasswd.name];
+                                let btcPasswd = btcPasInput[btcConfig.btcPasswd.name];
 
-                                if (! btcScripts.checkPasswd(btcPaasswd)){
+                                if (! btcScripts.checkPasswd(btcPasswd)){
                                 
                                     callback();
                                     return;
@@ -645,7 +645,7 @@ vorpal
                                 try {
                                     addressList = await btcUtil.getAddressList();
 
-                                    addressList = await ccUtil.filterBtcAddressByAmount(addressList, answers[btcConfig.amount.name]);
+                                    addressList = await ccUtil.filterBtcAddressByAmount(addressList, amount);
                 
                                     let utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, addressList);
                                     let result = await ccUtil.getUTXOSBalance(utxos);
@@ -676,7 +676,7 @@ vorpal
                                 try {
                                     //console.time('getECPairs');
                                     for (let i = 0; i < addressList.length; i++) {
-                                        let kp = await btcUtil.getECPairsbyAddr(answers[btcConfig.btcPasswd.name], addressList[i]);
+                                        let kp = await btcUtil.getECPairsbyAddr(btcPasswd, addressList[i]);
                                         keyPairArray.push(kp);
                                     }
                                     //console.timeEnd('getECPairs');
@@ -688,7 +688,7 @@ vorpal
                                         return;
                                     }
 
-                                    if(!ccUtil.checkWanPassword(wanAddress, wanPaasswd)) {
+                                    if(!ccUtil.checkWanPassword(wanAddress, wanPasswd)) {
                         
                                         print4log("wrong password of wan.");
                                         callback();
@@ -718,7 +718,7 @@ vorpal
 	                            tx.lockedTimestamp = record.redeemLockTimeStamp;
 	                            tx.gas = config.gasLimit;
 	                            tx.gasPrice = config.gasPrice;
-                                tx.passwd= wanPaasswd;
+                                tx.passwd= wanPasswd;
                                 
                                 let txHash;
                             
