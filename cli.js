@@ -402,12 +402,10 @@ vorpal
                     // btc balance
                     try{
                         addressList = await btcUtil.getAddressList();
-                        let array = [];
-                        for (let i=0;i<addressList.length; i++) {
-                            array.push(addressList[i].address)
-                        }
+                        addressList = await ccUtil.filterBtcAddressByAmount(addressList, amount);
+
     
-                        utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, array);
+                        utxos = await ccUtil.getBtcUtxo(ccUtil.btcSender, config.MIN_CONFIRM_BLKS, config.MAX_CONFIRM_BLKS, addressList);
                         let result = await ccUtil.getUTXOSBalance(utxos);
     
                         btcBalance = web3.toBigNumber(result).div(100000000);
@@ -430,7 +428,10 @@ vorpal
                     try {
                         print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
     
-                        keyPairArray = await btcUtil.getECPairs(btcPasswd);
+                        for (let i = 0; i < addressList.length; i++) {
+                            let kp = await btcUtil.getECPairsbyAddr(btcPasswd, addressList[i]);
+                            keyPairArray.push(kp);
+                        }
     
                         if (keyPairArray.length === 0) {
                             print4log('no bitcoin keyPairs!');
@@ -465,7 +466,6 @@ vorpal
                         };
     
                         ccUtil.saveNormalBtcTransactionInfo(txInfo);
-                        console.log('insert info into db.', txInfo);
                     } catch (e) {
                         print4log(btcConfig.normalTransaction.error, e.message);
     
