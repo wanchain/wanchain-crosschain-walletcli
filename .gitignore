@@ -62,3 +62,10 @@ typings/
 
 script_test/*
 .idea/
+.vscode/
+
+#crossChain local database file.
+crossTransDb*
+
+package-lock.json
+yarn.lock
