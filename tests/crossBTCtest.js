@@ -1,6 +1,6 @@
 'use strict';
 
-let WanchainCore = require('wanchain-crosschain');
+let WanchainCore = require('wanchain-crosschainbtc');
 const bitcoin  = require('bitcoinjs-lib');
 const Client = require('bitcoin-core');
 const config = require('../config.js');

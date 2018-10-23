@@ -1,4 +1,4 @@
-let WanchainCore = require('wanchain-crosschain');
+let WanchainCore = require('wanchain-crosschainbtc');
 const optimist = require('optimist');
 let argv    = optimist
     .usage('Usage: nodejs $0  [--testnet]')
