@@ -26,7 +26,7 @@ let checkBalance = (amount, balance) => {
             print4log('amount must large than zero.');
             return false;
         } else if (amountNum >0 && amountNum < 0.002) {
-            print4log('Input transaction amount>=0.002');
+            print4log('Input transaction amount must >= 0.002');
             return false;
         } else {
             return true
