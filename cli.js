@@ -1324,8 +1324,6 @@ vorpal
 
                     let wanPasswd = wanPasInput[btcConfig.wanPasswd.name];
                     
-                    print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
-
 	                let record = showArray[wbtcRevokeHash -1];
 
 	                try {
