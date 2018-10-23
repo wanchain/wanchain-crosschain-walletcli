@@ -1083,6 +1083,12 @@ vorpal
     
                         promiseAmount.then(async function(amountInput){
                             let amount = amountInput[btcConfig.amount.name];
+
+                            if (! btcScripts.checkBalance(amount, null)) {
+
+                                callback();
+                                return;
+                            }
     
                             let [wanBalance, wbtcBalance, wanAddress] = wanAddressArray[wanIndex];
 
