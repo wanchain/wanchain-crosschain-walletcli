@@ -623,12 +623,6 @@ vorpal
                         promiseWanPasswd.then(async function(wanPasInput){
                             let wanPasswd = wanPasInput[btcConfig.wanPasswd.name];
 
-                            if (! btcScripts.checkPasswd(wanPasswd)){
-                                
-                                callback();
-                                return;
-                            };
-
                             let promiseBtcPasswd = self.prompt([
                                 {
                                     type: btcConfig.btcPasswd.type,
@@ -817,11 +811,6 @@ vorpal
 
                     let wanPaasswd = wanPasInput[btcConfig.wanPasswd.name];
                     
-                    if (! btcScripts.checkPasswd(wanPaasswd)){
-                        callback();
-                        return;
-                    };
-
                     let record = showArray[btcRedeemHash -1];
                 
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
@@ -1121,12 +1110,6 @@ vorpal
                             promiseWanPasswd.then(async function(wanPasInput){
                                 let wanPaasswd = wanPasInput[btcConfig.wanPasswd.name];
     
-                                if (! btcScripts.checkPasswd(wanPaasswd)){
-                                    
-                                    callback();
-                                    return;
-                                };
-
                                 let wdTx = {};
                                 let txFeeRatio;
 
@@ -1335,11 +1318,6 @@ vorpal
 
                     let wanPasswd = wanPasInput[btcConfig.wanPasswd.name];
                     
-                    if (! btcScripts.checkPasswd(wanPasswd)){
-                        callback();
-                        return;
-                    };
-
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
 	                let record = showArray[wbtcRevokeHash -1];
