@@ -8,6 +8,7 @@ if(global.isTestnet){
     console.log("This is mainnet");
 }
 const path=require('path');
+const bitcoin = require('bitcoinjs-lib');
 const Logger = require('./logger/logger.js');
 config.ccLog = path.join('logs', 'crossChainLog.log');
 config.ccErr = path.join('logs', 'crossChainErr.log');
@@ -46,6 +47,7 @@ config.MAX_CONFIRM_BLKS = 100000000;
 config.MIN_CONFIRM_BLKS = 0;
 config.listOption = true;
 if(config.network == 'testnet'){
+    config.bitcoinNetwork = bitcoin.networks.testnet;
     config.feeRate = 300;
     config.feeHard = 100000;
     config.confirmBlocks = 3;
@@ -56,12 +58,13 @@ if(config.network == 'testnet'){
     config.btcWallet = path.join(config.databasePath, 'btcWallet.db');
     config.crossDbname = path.join(config.databasePath, 'crossTransDbBtc');
 } else {
+    config.bitcoinNetwork = bitcoin.networks.bitcoin;
     config.feeRate = 30;
     config.feeHard = 10000;
     config.confirmBlocks = 12;
     config.btcConfirmBlocks = 3;
-    config.wanchainHtlcAddr = "0x4b11ae8ea012d8bb1e81410c02aa020e10b3871f";
-    config.WBTCToken = "0x377f1a186ffce3a8b5d1662f8a7636c417721289";
+    config.wanchainHtlcAddr = "0x802894ef36050c9b8e94f8d0979c75512491b7d5";
+    config.WBTCToken = "0xfa4b6988e8cb90bb25e51ea80257ffcdd8ebdd24";
     config.socketUrl = 'wss://api.wanchain.info';
     config.btcWallet = path.join(config.databasePath, 'main_btcWallet.db');
     config.crossDbname = path.join(config.databasePath, 'main_crossTransDbBtc');
