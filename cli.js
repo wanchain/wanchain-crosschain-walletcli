@@ -623,6 +623,12 @@ vorpal
                         promiseWanPasswd.then(async function(wanPasInput){
                             let wanPasswd = wanPasInput[btcConfig.wanPasswd.name];
 
+                            if (! btcScripts.checkPasswd(wanPasswd)){
+                                
+                                callback();
+                                return;
+                            };
+
                             let promiseBtcPasswd = self.prompt([
                                 {
                                     type: btcConfig.btcPasswd.type,
