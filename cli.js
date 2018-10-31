@@ -228,16 +228,16 @@ vorpal
         // wan address list
         let wanAddressList = [];
         let print;
-        let wethBalance;
+        let tokenBalance;
         try {
             print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
             wanAddressList = await ccUtil.getWanAccountsInfo(ccUtil.wanSender);
             print4log(config.consoleColor.COLOR_FgRed, sprintf("%20s %58s", "WAN address", "WBTC balance"), '\x1b[0m');
             wanAddressList.forEach(function(wanAddress, index){
-                wethBalance = web3.toBigNumber(wanAddress.wethBalance).div(100000000);
+                tokenBalance = web3.toBigNumber(wanAddress.tokenBalance).div(100000000);
 
-                print = sprintf("%2s %26s",(index +1) + ': ' + wanAddress.address, wethBalance);
+                print = sprintf("%2s %26s",(index +1) + ': ' + wanAddress.address, tokenBalance);
                 print4log(config.consoleColor.COLOR_FgYellow, print, '\x1b[0m');
             });
 
@@ -555,7 +555,7 @@ vorpal
                     
                     wanAddressList.forEach(function(wanAddress, index){
                         let wanBalance = web3.fromWei(wanAddress.balance);
-                        let wbtcBalance = web3.toBigNumber(wanAddress.wethBalance).div(100000000);
+                        let wbtcBalance = web3.toBigNumber(wanAddress.tokenBalance).div(100000000);
                         wanAddressArray[wanAddress.address] = [wanBalance, wbtcBalance,  wanAddress.address];
                         wanAddressArray[index +1] = [wanBalance, wbtcBalance, wanAddress.address];
 
@@ -1008,7 +1008,7 @@ vorpal
 
                     wanAddressList.forEach(function(wanAddress, index){
                         let wanBalance = web3.fromWei(wanAddress.balance);
-                        let wbtcBalance = web3.toBigNumber(wanAddress.wethBalance).div(100000000);
+                        let wbtcBalance = web3.toBigNumber(wanAddress.tokenBalance).div(100000000);
                         
                         wanAddressArray[wanAddress.address] = [wanBalance, wbtcBalance,  wanAddress.address];
                         wanAddressArray[index +1] = [wanBalance, wbtcBalance, wanAddress.address];
