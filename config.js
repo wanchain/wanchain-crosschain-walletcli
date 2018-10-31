@@ -2,9 +2,11 @@ const config = {};
 
 if(global.isTestnet){
     config.network = 'testnet';
+    config.networkPath = 'testnet';
     console.log("This is testnet");
 }else {
-    config.network = '';
+    config.network = 'mainnet';
+    config.networkPath = '';
     console.log("This is mainnet");
 }
 const path=require('path');
@@ -22,19 +24,19 @@ config.gasPrice = 200000000000;
 
 
 if (process.platform === 'darwin') {
-    config.rpcIpcPath = path.join(process.env.HOME, '/Library/Wanchain',config.network,'gwan.ipc');
-    config.keyStorePath = path.join(process.env.HOME, '/Library/Wanchain/',config.network,'keystore');
-    config.ethkeyStorePath = path.join(process.env.HOME, '/Library/ethereum/',config.network,'keystore/');
+    config.rpcIpcPath = path.join(process.env.HOME, '/Library/Wanchain',config.networkPath,'gwan.ipc');
+    config.keyStorePath = path.join(process.env.HOME, '/Library/Wanchain/',config.networkPath,'keystore');
+    config.ethkeyStorePath = path.join(process.env.HOME, '/Library/ethereum/',config.networkPath,'keystore/');
     config.databasePath = path.join(process.env.HOME,'Library/LocalDb');
 } else if (process.platform === 'freebsd' || process.platform === 'linux' || process.platform === 'sunos') {
-    config.rpcIpcPath = path.join(process.env.HOME, '.wanchain',config.network,'gwan.ipc');
-    config.keyStorePath = path.join(process.env.HOME, '.wanchain',config.network,'keystore');
-    config.ethkeyStorePath = path.join(process.env.HOME, '.ethereum',config.network,'keystore');
+    config.rpcIpcPath = path.join(process.env.HOME, '.wanchain',config.networkPath,'gwan.ipc');
+    config.keyStorePath = path.join(process.env.HOME, '.wanchain',config.networkPath,'keystore');
+    config.ethkeyStorePath = path.join(process.env.HOME, '.ethereum',config.networkPath,'keystore');
     config.databasePath = path.join(process.env.HOME,'LocalDb');
 } else if (process.platform === 'win32') {
     config.rpcIpcPath = '\\\\.\\pipe\\gwan.ipc';
-    config.keyStorePath = path.join(process.env.APPDATA, 'wanchain', config.network, 'keystore');
-    config.ethkeyStorePath = path.join(process.env.APPDATA, 'ethereum', config.network, 'keystore');
+    config.keyStorePath = path.join(process.env.APPDATA, 'wanchain', config.networkPath, 'keystore');
+    config.ethkeyStorePath = path.join(process.env.APPDATA, 'ethereum', config.networkPath, 'keystore');
     config.databasePath = path.join(process.env.APPDATA,'LocalDb');
 }
 
