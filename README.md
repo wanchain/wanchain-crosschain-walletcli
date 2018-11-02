@@ -66,8 +66,7 @@ Examples
 
 Example 1: (Lock on BTC chain, redeem on WAN chain)
 
-    Alice wants to cross BTC coin from BTC chain to WAN chain. Firstly she needs lock BTC on
-    the source chain(here the source chain is BTC), and redeem her BTC on the destination chain
+    Alice has BTC and WAN coins in her btc account and wan account. She wants to cross BTC from BTC chain to WAN chain. Firstly she needs lock BTC on the source chain(here the source chain is BTC), and redeem her BTC on the destination chain
     (here the destination chain is WAN).
 
     step1:
