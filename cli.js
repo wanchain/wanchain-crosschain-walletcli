@@ -352,17 +352,17 @@ vorpal
 
         let promiseAmount = self.prompt([
 		    {
-                type: btcConfig.amount.type,
-                name: btcConfig.amount.name,
-                message: btcConfig.amount.message
+                type: btcConfig.normalAmount.type,
+                name: btcConfig.normalAmount.name,
+                message: btcConfig.normalAmount.message
             }
         ]);
 
         promiseAmount.then(function(amountInput){
 
-            let amount = amountInput[btcConfig.amount.name];
+            let amount = amountInput[btcConfig.normalAmount.name];
 
-            if (! btcScripts.checkBalance(amount, null)) {
+            if (! btcScripts.checkBalanceNormal(amount, null)) {
 
 		        callback();
                 return;
