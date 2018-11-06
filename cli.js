@@ -450,7 +450,7 @@ vorpal
     
                         let target = {
                             address: to,
-                            value: web3.toBigNumber(amount).mul(100000000)
+                            value: Number(web3.toBigNumber(amount).mul(100000000))
                         };
     
     
