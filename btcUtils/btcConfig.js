@@ -23,6 +23,11 @@ module.exports = {
         name: 'amount',
         message: 'Input transaction amount(>=' + config.defaultAmount.toString() + '): '
     },
+    'normalAmount': {
+        type: 'input',
+        name: 'amount',
+        message: 'Input transaction amount: '
+    },
     'rate': {
         type: 'input',
         name: 'rate',

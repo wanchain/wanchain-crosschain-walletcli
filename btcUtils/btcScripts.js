@@ -50,7 +50,37 @@ let checkBalance = (amount, balance) => {
         return false;
     }
 };
-
+let checkBalanceNormal = (amount, balance) => {
+    if (amount && !balance) {
+        let amountNum = amount * 1;
+        if (isNaN(amountNum)) {
+            print4log('input the number');
+            return false;
+        } else if (amountNum <= 0) {
+            print4log('amount must large than zero.');
+            return false;
+        } else {
+            return true
+        }
+    } else if (amount && balance) {
+        let amountNum = amount * 1;
+        if (isNaN(amountNum)) {
+            print4log('input the number');
+            return false;
+        }else if (amountNum > balance) {
+            print4log('Not enough balance');
+            return false;
+        } else if (amountNum <= 0) {
+            print4log('amount must large than zero.');
+            return false;
+        } else {
+            return true
+        }
+    } else {
+        print4log('amount is empty');
+        return false;
+    }
+};
 let timeStamp2String = function (time){
     let datetime = new Date();
     datetime.setTime(time);
@@ -119,4 +149,4 @@ let checkTransaction = (records, web3, hash160ToAddress) => {
     return showArray;
 };
 
-module.exports = {checkPasswd, checkBalance, checkTransaction};
+module.exports = {checkPasswd, checkBalance,checkBalanceNormal, checkTransaction};
