@@ -59,6 +59,7 @@ if(config.network == 'testnet'){
     config.socketUrl = 'wss://apitest.wanchain.info';
     config.btcWallet = path.join(config.databasePath, 'btcWallet.db');
     config.crossDbname = path.join(config.databasePath, 'crossTransDbBtc');
+    config.defaultAmount = 0.002;
 } else {
     config.bitcoinNetwork = bitcoin.networks.bitcoin;
     config.feeRate = 30;
@@ -70,6 +71,7 @@ if(config.network == 'testnet'){
     config.socketUrl = 'wss://api.wanchain.info';
     config.btcWallet = path.join(config.databasePath, 'main_btcWallet.db');
     config.crossDbname = path.join(config.databasePath, 'main_crossTransDbBtc');
+    config.defaultAmount = 0.0002;
 }
 
 config.wanKeyStorePath = config.keyStorePath;

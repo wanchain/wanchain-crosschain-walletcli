@@ -1,3 +1,5 @@
+let config = require('../config.js');
+
 module.exports = {
     'help': '====== Type help for more information.  ====== ',
     'waiting': 'wait a moment...',
@@ -19,7 +21,7 @@ module.exports = {
     'amount': {
         type: 'input',
         name: 'amount',
-        message: 'Input transaction amount(>=0.002): '
+        message: 'Input transaction amount(>=' + config.defaultAmount.toString() + '): '
     },
     'rate': {
         type: 'input',

@@ -25,8 +25,8 @@ let checkBalance = (amount, balance) => {
         } else if (amountNum <= 0) {
             print4log('amount must large than zero.');
             return false;
-        } else if (amountNum >0 && amountNum < 0.002) {
-            print4log('Input transaction amount must >= 0.002');
+        } else if (amountNum >0 && amountNum < config.defaultAmount) {
+            print4log('Input transaction amount must >= ' + config.defaultAmount.toString());
             return false;
         } else {
             return true
