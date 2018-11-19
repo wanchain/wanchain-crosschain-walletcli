@@ -622,12 +622,13 @@ vorpal
 
                         promiseWanPasswd.then(async function(wanPasInput){
                             let wanPasswd = wanPasInput[btcConfig.wanPasswd.name];
-
-                            if (! btcScripts.checkPasswd(wanPasswd)){
-                                
-                                callback();
-                                return;
-                            };
+                            // Don't check wan password length. only limit when create.
+                            // because user copy a keystore file is a common senarial.
+                            // if (! btcScripts.checkPasswd(wanPasswd)){
+                            //
+                            //     callback();
+                            //     return;
+                            // };
 
                             let promiseBtcPasswd = self.prompt([
                                 {
