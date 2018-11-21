@@ -65,8 +65,8 @@ if(config.network == 'testnet'){
     config.feeHard = 10000;
     config.confirmBlocks = 12;
     config.btcConfirmBlocks = 3;
-    config.wanchainHtlcAddr = "0x802894ef36050c9b8e94f8d0979c75512491b7d5";
-    config.WBTCToken = "0xfa4b6988e8cb90bb25e51ea80257ffcdd8ebdd24";
+    config.wanchainHtlcAddr = "0x50c53a4f6702c2713b3535fc896bc21597534906";
+    config.WBTCToken = "0xd15e200060fc17ef90546ad93c1c61bfefdc89c7";
     config.socketUrl = 'wss://api.wanchain.info';
     config.btcWallet = path.join(config.databasePath, 'main_btcWallet.db');
     config.crossDbname = path.join(config.databasePath, 'main_crossTransDbBtc');
