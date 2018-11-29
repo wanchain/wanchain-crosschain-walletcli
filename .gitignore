@@ -69,3 +69,6 @@ crossTransDb*
 
 package-lock.json
 yarn.lock
+
+test_result
+test_log

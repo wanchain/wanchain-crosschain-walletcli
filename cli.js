@@ -72,9 +72,9 @@ vorpal
                 newAddress = await btcUtil.createAddress(answers[btcConfig.btcPasswd.name]);
 
                 await ccUtil.btcImportAddress(ccUtil.btcSender, newAddress.address);
-                print4log(config.consoleColor.COLOR_FgYellow, newAddress.address, '\x1b[0m');
+                print4log(config.consoleColor.COLOR_FgYellow, 'Account: ' + newAddress.address, '\x1b[0m');
             } catch (e) {
-                print4log(btcConfig.createNewAddress.error, e);
+                print4log(btcConfig.createNewAddress.error);
 
                 callback();
                 return;
@@ -165,6 +165,7 @@ vorpal
         try{
             addressList = await btcUtil.getAddressList();
 
+            print4log(config.consoleColor.COLOR_FgYellow, "All BTC Address", '\x1b[0m');
             addressList.forEach(function(Array, index){
                 print4log(config.consoleColor.COLOR_FgYellow, (index +1) + ': ' + Array.address, '\x1b[0m');
             });

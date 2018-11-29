@@ -52,6 +52,6 @@
     "optimist": "^0.6.1"
   },
   "scripts": {
-    "test": "mocha --timeout 900000 tests"
+    "test": "node tests/autoCliTestCases.js"
   }
 }
