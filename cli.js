@@ -622,12 +622,13 @@ vorpal
 
                         promiseWanPasswd.then(async function(wanPasInput){
                             let wanPasswd = wanPasInput[btcConfig.wanPasswd.name];
-
-                            if (! btcScripts.checkPasswd(wanPasswd)){
-                                
-                                callback();
-                                return;
-                            };
+                            // Don't check wan password length. only limit when create.
+                            // because user copy a keystore file is a common senarial.
+                            // if (! btcScripts.checkPasswd(wanPasswd)){
+                            //
+                            //     callback();
+                            //     return;
+                            // };
 
                             let promiseBtcPasswd = self.prompt([
                                 {
@@ -1129,7 +1130,7 @@ vorpal
                                 wdTx.gasPrice = config.gasPrice;
                                 wdTx.passwd = wanPaasswd;
                                 let btcAddr = btcAddressArray[btcIndex];
-                                wdTx.cross = '0x' + btcUtil.addressToHash160(btcAddr, 'pubkeyhash','testnet');
+                                wdTx.cross = '0x' + btcUtil.addressToHash160(btcAddr, 'pubkeyhash',config.network);
                                 wdTx.from = wanAddress;
                                 wdTx.amount = Number(web3.toBigNumber(amount).mul(100000000));
                                 [wdTx.storemanGroup, txFeeRatio] = smgsArray[storemanIndex];
@@ -1243,7 +1244,7 @@ vorpal
                     print4log(config.consoleColor.COLOR_FgGreen, btcConfig.waiting, '\x1b[0m');
 
                     try {
-                        let aliceAddr = btcUtil.hash160ToAddress(record.crossAddress,'pubkeyhash','testnet');
+                        let aliceAddr = btcUtil.hash160ToAddress(record.crossAddress,'pubkeyhash',config.network);
                         let alice = await btcUtil.getECPairsbyAddr(btcPaasswd,  aliceAddr);
                         if(alice.length === 0) {
                             print4log('btc password is wrong.');
