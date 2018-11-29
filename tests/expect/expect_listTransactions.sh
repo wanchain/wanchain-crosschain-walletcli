@@ -29,6 +29,10 @@ expect "wanWallet$ "
 send "${action}\n"
 
 expect {
+	"get bitcoin transaction list error" {
+		puts $fd "${test_case} failed, get bitcoin transaction list error"
+		exit
+	}
 	"from " {
 		puts $fd "${test_case} successful"
 	}

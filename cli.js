@@ -143,7 +143,7 @@ vorpal
             console.log("Your WAN address is: 0x"+keyObject.address);
 
         } catch (e) {
-            print4log('create WAN account error.', e);
+            print4log('create WAN account error.');
 
             callback();
             return;
@@ -170,7 +170,7 @@ vorpal
                 print4log(config.consoleColor.COLOR_FgYellow, (index +1) + ': ' + Array.address, '\x1b[0m');
             });
         } catch (e) {
-            print4log(btcConfig.addressList.error, e.message);
+            print4log(btcConfig.addressList.error);
 
             callback();
             return;
@@ -209,7 +209,7 @@ vorpal
             let print = 'btcBalance: ' + web3.toBigNumber(result).div(100000000).toString();
             print4log(config.consoleColor.COLOR_FgYellow, print, '\x1b[0m');
         } catch (e) {
-            print4log(btcConfig.btcBalance.error, e.message);
+            print4log(btcConfig.btcBalance.error);
 
             callback();
             return;
@@ -243,7 +243,7 @@ vorpal
             });
 
         }catch(e) {
-            print4log(btcConfig.wbtcBalance.error, e.message);
+            print4log(btcConfig.wbtcBalance.error);
 
             callback();
             return;
@@ -275,7 +275,7 @@ vorpal
             });
 
         }catch(e) {
-            print4log(btcConfig.wanBalance.error, e.message);
+            print4log(btcConfig.wanBalance.error);
 
             callback();
             return;
@@ -305,7 +305,7 @@ vorpal
             });
 
         } catch (e) {
-            print4log(btcConfig.listStoreman.error, e.message);
+            print4log(btcConfig.listStoreman.error);
 
             callback();
             return;
@@ -328,7 +328,7 @@ vorpal
             // print4log('records: ', records);
             btcScripts.checkTransaction(records, web3, btcUtil.hash160ToAddress);
         } catch (e) {
-            print4log(btcConfig.listTransactions.error, e.message);
+            print4log(btcConfig.listTransactions.error);
             logger.debug(e);
             callback();
             return;
@@ -420,7 +420,7 @@ vorpal
                         btcBalance = web3.toBigNumber(result).div(100000000);
     
                     } catch (e) {
-                        print4log(btcConfig.btcBalance.error, e.message);
+                        print4log(btcConfig.btcBalance.error);
     
                         callback();
                         return;
@@ -476,7 +476,7 @@ vorpal
     
                         ccUtil.saveNormalBtcTransactionInfo(txInfo);
                     } catch (e) {
-                        print4log(btcConfig.normalTransaction.error, e.message);
+                        print4log(btcConfig.normalTransaction.error);
     
                         callback();
                         return;

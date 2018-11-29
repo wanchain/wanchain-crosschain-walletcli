@@ -47,6 +47,13 @@ expect 	{
 }
 
 expect {
+	
+	"get bitcoin address balance error" {
+		puts $fd "get bitcoin address balance error: failed"
+	}
+	"no bitcoin keyPairs!" {
+		put $fd "no bitcoin keyPairs!"
+	}
 	"Not enough balance " {
 		puts $fd "Not enough balance "
 	}

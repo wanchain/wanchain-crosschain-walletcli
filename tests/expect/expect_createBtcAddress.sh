@@ -45,6 +45,10 @@ expect {
 }
 
 expect {
+	"create btc address error" {
+		puts $fd "${test_case} failed, create btc address error"
+		exit
+	}
 	"Account: " {
 		puts $fd "${test_case} successful"
 	}

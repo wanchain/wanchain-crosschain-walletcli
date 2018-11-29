@@ -29,6 +29,11 @@ expect "wanWallet$ "
 send "${action}\n"
 
 expect {
+	
+	"get storemanGroup list error" {
+		puts $fd "${test_case} failed, get storemanGroup list error"
+		exit
+	}
 	"wanAddress " {
 		puts $fd "${test_case} successful"
 	}

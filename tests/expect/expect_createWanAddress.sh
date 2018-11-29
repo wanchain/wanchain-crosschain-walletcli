@@ -45,6 +45,10 @@ expect {
 }
 
 expect {
+	"create WAN account error." {
+		puts $fd "${test_case} failed, create WAN account error."
+		exit
+	}
 	"Your WAN address is: " {
 		puts $fd "${test_case} successful"
 	}

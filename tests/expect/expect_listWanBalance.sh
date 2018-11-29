@@ -29,6 +29,10 @@ expect "wanWallet$ "
 send "${action}\n"
 
 expect {
+	"listWanAddr error" {
+		puts $fd "${test_case} failed, listWanAddr error"
+		exit
+	}
 	"WAN address " {
 		puts $fd "${test_case} successful"
 	}

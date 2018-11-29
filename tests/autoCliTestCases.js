@@ -6,15 +6,19 @@ const child_process = require('child_process');
 
 const testnet = true;
 const skipKeyword = 'skip';
+
 // const password = process.env.KEYSTORE_PWD; //wanglu
-const BtcPasswd = "1234567890";
-const wanPasswd = "12345678";
+const BtcPasswd = "";
+const wanPasswd = "";
 const sendBtcAmount = 0.0002;
 const sendBtcTo = "mtCotFuC1JP448Y3uhEbyPeP7UduYUn6Vb";
-const lockBtcStroemanIndex = 1;
-const lockBtcWanAddressIndex = 1;
-const lockBtcAmount = 0.002;
-const lockBtcWanAddressPasswd = 'astroastro';
+
+const stroemanIndex = 1;
+const wanAddressIndex = 1;
+const lockAmount = 0.002;
+const redeemIndex = 1;
+const revokeIndex = 1;
+const btcAddressIndex = 1;
 
 const testCaseFile = __dirname + '/testcase/autoCliTestCase.xlsx';
 
@@ -50,13 +54,14 @@ const commandDict = {
   listStoremanGroups: "expect_listStoremanGroups.sh",
   listTransactions: "expect_listTransactions.sh",
   sendBtcToAddress: "expect_sendBtcToAddress.sh",
+  
   lockBtc: 'expect_lockBtc.sh',
+  redeemBtc: 'expect_redeemBtc.sh',
+  revokeBtc: "expect_revokeBtc.sh",
 
-  approve: "expect_approve.sh",
-  lock: "expect_lock.sh",
-  redeem: "expect_redeem.sh",
-  revoke: "expect_revoke.sh",
-  transfer: "expect_transfer.sh"
+  lockWbtc: 'expect_lockWbtc.sh',
+  redeemWbtc: 'expect_redeemWbtc.sh',
+  revokeWbtc: "expect_revokeWbtc.sh",
 }
 
 
@@ -157,10 +162,36 @@ function buildCommand(testdata) {
       }
       case "lockBtc":
       {
-        command = command + ' ' + testLabel + ' ' + testnet + ' ' + lockBtcStroemanIndex + ' ' + lockBtcWanAddressIndex + ' ' + lockBtcAmount + ' ' + lockBtcWanAddressPasswd + ' ' + BtcPasswd;
+        command = command + ' ' + testLabel + ' ' + testnet + ' ' + stroemanIndex + ' ' + wanAddressIndex + ' ' + lockAmount + ' ' + wanPasswd + ' ' + BtcPasswd;
         break;
       }
-      
+      case "redeemBtc":
+      {
+        command = command + ' ' + testLabel + ' ' + testnet + ' ' + redeemIndex + ' ' + wanPasswd;
+        break;
+      }
+      case "revokeBtc":
+      {
+        command = command + ' ' + testLabel + ' ' + testnet + ' ' + revokeIndex + ' ' + BtcPasswd;
+        break;
+      }
+
+      case "lockWbtc":
+      {
+        command = command + ' ' + testLabel + ' ' + testnet + ' ' + stroemanIndex + ' ' + wanAddressIndex + ' ' + btcAddressIndex + ' ' + lockAmount + ' ' + wanPasswd;
+        break;
+      }
+      case "redeemWbtc":
+      {
+        command = command + ' ' + testLabel + ' ' + testnet + ' ' + redeemIndex + ' ' + BtcPasswd;
+        break;
+      }
+      case "revokeWbtc":
+      {
+        command = command + ' ' + testLabel + ' ' + testnet + ' ' + revokeIndex + ' ' + wanPasswd;
+        break;
+      }
+
     default:
       break;
   }
